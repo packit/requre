@@ -1,0 +1,8 @@
+# Packit (test) dependencies.
+# To run tests locally via 'make check_in_container'.
+
+FROM fedora:30
+
+RUN dnf -y install make git python3-pip python3-pytest python3-pytest-cov && dnf clean all
+
+WORKDIR /src
