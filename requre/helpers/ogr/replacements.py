@@ -22,14 +22,60 @@
 
 
 from requre.import_system import ReplaceType
-from requre.helpers.ogr.github import BetterGithubIntegrationMock, Requester
-from requre.helpers.ogr.gitlab import BetterGitlab
-from requre.helpers.ogr.pagure import PagureService
+from requre.helpers.requests_response import RequestResponseHandling
 
-SELECTOR = "ogr"
-MODULE_LIST = [(f"^{SELECTOR}$", {}, {"BetterGithubIntegration": [ReplaceType.REPLACE, BetterGithubIntegrationMock],
-                                      "PagureService":  [ReplaceType.REPLACE, PagureService],
-                                      }),
-               ("^github", {"who_name": SELECTOR}, {"MainClass.Requester": [ReplaceType.REPLACE, Requester]}),
-               ("^gitlab", {"who_name": SELECTOR}, {"Gitlab": [ReplaceType.REPLACE, BetterGitlab]}),
-               ]
+MODULE_LIST = [
+    ("^requests$", {"who_name": "ogr"}),
+    ("^requests$", {"who_name": "gitlab"}),
+    ("^requests$", {"who_name": "github"}),
+    (
+        "^requests$",
+        {"who_name": "ogr.services.pagure"},
+        {
+            "Session.request": [
+                ReplaceType.DECORATOR,
+                RequestResponseHandling.decorator(item_list=[]),
+            ]
+        },
+    ),
+    (
+        "^requests$",
+        {"who_name": "gitlab"},
+        {
+            "Session.request": [
+                ReplaceType.DECORATOR,
+                RequestResponseHandling.decorator(item_list=[]),
+            ]
+        },
+    ),
+    (
+        "^requests$",
+        {"who_name": "github.MainClass"},
+        {
+            "request": [
+                ReplaceType.DECORATOR,
+                RequestResponseHandling.decorator(item_list=[]),
+            ]
+        },
+    ),
+    (
+        "^requests$",
+        {"who_name": "github.Requester"},
+        {
+            "Session.request": [
+                ReplaceType.DECORATOR,
+                RequestResponseHandling.decorator(item_list=[]),
+            ]
+        },
+    ),
+    (
+        "^requests$",
+        {"who_name": "ogr.services.github_tweak"},
+        {
+            "request": [
+                ReplaceType.DECORATOR,
+                RequestResponseHandling.decorator(item_list=[]),
+            ]
+        },
+    ),
+]

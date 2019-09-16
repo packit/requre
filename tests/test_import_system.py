@@ -5,10 +5,14 @@ import builtins
 
 from requre.import_system import ReplaceType, _upgrade_import_system, upgrade_import_system
 from requre.helpers.tempfile import tempfile as tempfile_better
+import requre
 
 SELECTOR = os.path.basename(__file__).rsplit(".", 1)[0]
 
 class TestUpgradeImportSystem(unittest.TestCase):
+    def setUp(self) -> None:
+        requre.import_system.replace_dict = {}
+
     def tearDown(self) -> None:
         if "tempfile" in sys.modules:
             del sys.modules["tempfile"]

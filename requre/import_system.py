@@ -29,6 +29,8 @@ from enum import Enum
 from typing import Callable, Optional, Any
 
 ORIGIN_IMPORT = builtins.__import__
+replace_dict: dict = {}
+
 
 class ReplaceType(Enum):
     """
@@ -87,32 +89,39 @@ def _upgrade_import_system(
                             replace_object = replacement[1]
                             original_obj = out
                             parent_obj = out
-                            # traverse into
-                            if len(key) > 0:
-                                for key_item in key.split("."):
-                                    parent_obj = original_obj
-                                    original_obj = getattr(original_obj, key_item)
-                            if replace_type == ReplaceType.REPLACE:
-                                setattr(
-                                    parent_obj, original_obj.__name__, replace_object
-                                )
-                                text.append(
-                                    f"\treplacing {key} by function {replace_object.__name__}\n"
-                                )
-                            elif replace_type == ReplaceType.DECORATOR:
-                                setattr(
-                                    parent_obj,
-                                    original_obj.__name__,
-                                    replace_object(original_obj),
-                                )
-                                text.append(
-                                    f"\tdecorate {key}  by {replace_object.__name__}\n"
-                                )
-                            elif replace_type == ReplaceType.REPLACE_MODULE:
-                                out = replace_object
-                                text.append(
-                                    f"\treplace module {module_name} by {replace_object.__name__}\n"
-                                )
+                            if key in replace_dict.get(name, {}):
+                                text.append(f"\t{key} in module {name} already replaced: {one_filter} -> {key}  by {replacement}\n")
+                            else:
+                                if name not in replace_dict:
+                                    replace_dict[name] = {key: [one_filter, key, replacement]}
+                                else:
+                                    replace_dict[name][key] = [one_filter, key, replacement]
+                                # traverse into
+                                if len(key) > 0:
+                                    for key_item in key.split("."):
+                                        parent_obj = original_obj
+                                        original_obj = getattr(original_obj, key_item)
+                                if replace_type == ReplaceType.REPLACE:
+                                    setattr(
+                                        parent_obj, original_obj.__name__, replace_object
+                                    )
+                                    text.append(
+                                        f"\treplacing {key} by function {replace_object.__name__}\n"
+                                    )
+                                elif replace_type == ReplaceType.DECORATOR:
+                                    setattr(
+                                        parent_obj,
+                                        original_obj.__name__,
+                                        replace_object(original_obj),
+                                    )
+                                    text.append(
+                                        f"\tdecorate {key}  by {replace_object.__name__}\n"
+                                    )
+                                elif replace_type == ReplaceType.REPLACE_MODULE:
+                                    out = replace_object
+                                    text.append(
+                                        f"\treplace module {module_name} by {replace_object.__name__}\n"
+                                    )
                     if debug_file:
                         with open(debug_file, "a") as fd:
                             fd.write("".join(text))
