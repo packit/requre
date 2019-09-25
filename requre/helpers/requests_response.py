@@ -23,6 +23,7 @@
 
 from io import BytesIO
 import datetime
+import json
 from typing import Any
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
@@ -31,9 +32,10 @@ from requre.objects import ObjectStorage
 
 
 class RequestResponseHandling(ObjectStorage):
-    __response_keys = ["status_code", "_content", "encoding", "reason"]
+    __response_keys = ["status_code", "encoding", "reason"]
     __ignored = ["cookies"]
-    __response_keys_special = ["raw", "_next", "headers", "elapsed"]
+    __response_keys_special = ["raw", "_next", "headers", "elapsed", "_content"]
+    __store_indicator = "__store_indicator"
 
     def write(self, response: Response) -> Response:
         super().write(response)
@@ -58,6 +60,21 @@ class RequestResponseHandling(ObjectStorage):
                 output[key] = dict(response.headers)
             if key == "elapsed":
                 output[key] = response.elapsed.total_seconds()
+            if key == "_content":
+                what_store = response._content
+                indicator = 0
+                if response.encoding:
+                    try:
+                        what_store = what_store.decode(response.encoding)
+                        try:
+                            what_store = json.loads(what_store)
+                            indicator = 2
+                        except json.decoder.JSONDecodeError:
+                            indicator = 1
+                    except ValueError:
+                        indicator = 0
+                output[key] = what_store
+                output[self.__store_indicator] = indicator
             if key == "_next":
                 output[key] = None
                 if getattr(response, "next") is not None:
@@ -75,6 +92,16 @@ class RequestResponseHandling(ObjectStorage):
                 response.headers = CaseInsensitiveDict(data[key])
             if key == "elapsed":
                 response.elapsed = datetime.timedelta(seconds=data[key])
+            if key == "_content":
+                indicator = data[self.__store_indicator]
+                if indicator == 0:
+                    what_store = data[key]
+                elif indicator == 1:
+                    what_store = data[key].encode(response.encoding)
+                elif indicator == 2:
+                    what_store = json.dumps(data[key])
+                    what_store = what_store.encode(response.encoding)
+                response._content = what_store
             if key == "_next":
                 setattr(response, "_next", data[key])
         return response
