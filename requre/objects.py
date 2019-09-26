@@ -49,6 +49,19 @@ class ObjectStorage:
             self.persistent_storage = pstorage
         self.store_keys = store_keys
 
+    @staticmethod
+    def __get_base_keys(func: Callable) -> list:
+        output = list()
+        # callers module name, to be able to separate requests for various services
+        output.append(inspect.getmodule(inspect.stack()[2][0]).__name__)
+        # module name where function is
+        output.append(inspect.getmodule(func).__name__)
+        # name of function what were used
+        output.append( func.__name__)
+        return output
+
+
+
     @classmethod
     def execute(cls, keys: list, func: Callable, *args, **kwargs) -> Any:
         """
@@ -79,7 +92,7 @@ class ObjectStorage:
         :return: output of called func
         """
         keys = (
-                [inspect.getmodule(func).__name__, func.__name__]
+                cls.__get_base_keys(func)
                 + [x for x in args if isinstance(int, str)]
                 + [f"{k}:{v}" for k, v in kwargs.items()]
         )
@@ -95,9 +108,7 @@ class ObjectStorage:
         :param kwargs: parameters of original function
         :return: output of called func
         """
-        keys = (
-            [inspect.getmodule(func).__name__, func.__name__]
-        )
+        keys = cls.__get_base_keys(func)
         return cls.execute(keys, func, *args, **kwargs)
 
 
@@ -129,7 +140,7 @@ class ObjectStorage:
         def internal(func: Callable):
             @functools.wraps(func)
             def internal_internal(*args, **kwargs):
-                keys = [inspect.getmodule(func).__name__, func.__name__]
+                keys = cls.__get_base_keys(func)
                 for item in item_list:
                     if isinstance(item, int):
                         keys.append(args[item])
