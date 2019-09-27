@@ -52,8 +52,18 @@ class ObjectStorage:
     @staticmethod
     def __get_base_keys(func: Callable) -> list:
         output = list()
-        # callers module name, to be able to separate requests for various services
-        output.append(inspect.getmodule(inspect.stack()[2][0]).__name__)
+        # callers module list, to be able to separate requests for various services in one file
+        caller_list = list()
+        for currnetframe in inspect.stack():
+            module_name = inspect.getmodule(currnetframe[0]).__name__
+            if module_name.startswith("_"):
+                break
+            else:
+                if len(caller_list) and caller_list[-1] == module_name:
+                    continue
+                else:
+                    caller_list.append(module_name)
+        output += caller_list[::-1]
         # module name where function is
         output.append(inspect.getmodule(func).__name__)
         # name of function what were used
