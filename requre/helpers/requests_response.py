@@ -70,7 +70,7 @@ class RequestResponseHandling(ObjectStorage):
                         indicator = 2
                     except json.decoder.JSONDecodeError:
                         indicator = 1
-                except ValueError:
+                except (ValueError, AttributeError):
                     indicator = 0
                 output[key] = what_store
                 output[self.__store_indicator] = indicator
