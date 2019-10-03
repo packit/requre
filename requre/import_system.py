@@ -89,7 +89,9 @@ def _upgrade_import_system(
                             replace_object = replacement[1]
                             original_obj = out
                             parent_obj = out
-                            if key in replace_dict.get(name, {}):
+                            # avoid multiple replacing, just in case of module, because python import system has check
+                            # so in case of module it has to be replaced everytime.
+                            if key in replace_dict.get(name, {}) and replace_type is not ReplaceType.REPLACE_MODULE:
                                 text.append(f"\t{key} in module {name} already replaced: {one_filter} -> {key}  by {replacement}\n")
                             else:
                                 if name not in replace_dict:
@@ -120,7 +122,7 @@ def _upgrade_import_system(
                                 elif replace_type == ReplaceType.REPLACE_MODULE:
                                     out = replace_object
                                     text.append(
-                                        f"\treplace module {module_name} by {replace_object.__name__}\n"
+                                        f"\treplace module {name} in {module_name} by {replace_object.__name__}\n"
                                     )
                     if debug_file:
                         with open(debug_file, "a") as fd:

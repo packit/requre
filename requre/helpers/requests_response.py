@@ -55,7 +55,10 @@ class RequestResponseHandling(ObjectStorage):
             output[key] = getattr(response, key)
         for key in self.__response_keys_special:
             if key == "raw":
-                output[key] = response.raw.read()
+                binary_data = response.raw.read()
+                output[key] = binary_data
+                # replay it back to raw
+                response.raw = BytesIO(binary_data)
             if key == "headers":
                 output[key] = dict(response.headers)
             if key == "elapsed":

@@ -25,7 +25,7 @@ from typing import Optional
 from requre.singleton import SingletonMeta
 
 
-class tempfile(metaclass=SingletonMeta):
+class TempFile(metaclass=SingletonMeta):
     """
     replace system tempfile module with own predictable names implementation
      of temp files for mocking
