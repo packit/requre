@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 
+import logging
 import inspect
 import functools
 from typing import Optional, Callable, Any
@@ -67,10 +68,8 @@ class ObjectStorage:
         # module name where function is
         output.append(inspect.getmodule(func).__name__)
         # name of function what were used
-        output.append( func.__name__)
+        output.append(func.__name__)
         return output
-
-
 
     @classmethod
     def execute(cls, keys: list, func: Callable, *args, **kwargs) -> Any:
@@ -83,13 +82,16 @@ class ObjectStorage:
         :param kwargs: parameters of original function
         :return: output of called func
         """
+        logger = logging.getLogger(cls.__name__)
         rrstorage = cls(store_keys=keys)
         if rrstorage.persistent_storage.is_write_mode:
             response = func(*args, **kwargs)
             rrstorage.write(response)
+            logger.debug(f"WRITE Keys: {keys} -> {response}")
             return response
         else:
             response = rrstorage.read()
+            logger.debug(f"READ  Keys: {keys} -> {response}")
             return response
 
     @classmethod

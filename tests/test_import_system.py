@@ -4,7 +4,7 @@ import os
 import builtins
 
 from requre.import_system import ReplaceType, _upgrade_import_system, upgrade_import_system
-from requre.helpers.tempfile import tempfile as tempfile_better
+from requre.helpers.tempfile import TempFile
 import requre
 
 SELECTOR = os.path.basename(__file__).rsplit(".", 1)[0]
@@ -96,9 +96,9 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 "^tempfile$",
                 {"who_name": SELECTOR},
                 {
-                    "mktemp": [
+                    "": [
                         ReplaceType.REPLACE_MODULE,
-                        tempfile_better,
+                        TempFile,
                     ]
                 },
             )
