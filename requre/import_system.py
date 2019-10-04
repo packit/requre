@@ -59,6 +59,7 @@ def _upgrade_import_system(
 
     @functools.wraps(func)
     def new_import(*args, **kwargs):
+
         out = func(*args, **kwargs)
         name = list(args)[0]
 
@@ -169,3 +170,20 @@ def revert_import_system():
     :return: None
     """
     builtins.__import__ = ORIGIN_IMPORT
+
+
+class UpgradeImportSystem:
+    def __init__(self, filters, debug_file: Optional[str] = None) -> None:
+        self.filters = filters
+        self.debug_file = debug_file
+        self._original_import = None
+
+    def __enter__(self):
+        self._original_import = builtins.__import__
+        builtins.__import__ = _upgrade_import_system(
+            builtins.__import__, name_filters=self.filters, debug_file=self.debug_file
+        )
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        builtins.__import__ = self._original_import
