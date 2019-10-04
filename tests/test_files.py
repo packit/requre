@@ -2,24 +2,23 @@ import os
 import tempfile
 
 from requre.storage import PersistentObjectStorage
-from requre.helpers.files import store_files_arg_references, store_files_guess_args, store_files_return_value
+from requre.helpers.files import StoreFiles
 from requre.helpers.function_output import run_command_wrapper
 from tests.testbase import BaseClass
 
 
 class Base(BaseClass):
-    @store_files_arg_references({"target_file": 2})
+
+    @StoreFiles.arg_references({"target_file": 2})
     def create_file_content(self, value, target_file):
         with open(target_file, "w") as fd:
             fd.write(value)
         return "value"
 
-    @store_files_arg_references({"target_dir": 2})
+    @StoreFiles.arg_references({"target_dir": 2})
     def create_dir_content(self, filename, target_dir, content="empty"):
         with open(os.path.join(target_dir, filename), "w") as fd:
             fd.write(content)
-
-
 
 
 class FileStorage(Base):
@@ -27,19 +26,19 @@ class FileStorage(Base):
         """
         test if is able store files via decorated function create_file_content
         """
-        self.assertEqual(PersistentObjectStorage().dir_count, 0)
+        self.assertEqual(StoreFiles.counter, 0)
         self.create_temp_file()
         self.assertEqual(
             "value", self.create_file_content("ahoj", target_file=self.temp_file)
         )
 
-        self.assertEqual(PersistentObjectStorage().dir_count, 1)
+        self.assertEqual(StoreFiles.counter, 1)
         self.create_file_content("cao", target_file=self.temp_file)
-        self.assertEqual(PersistentObjectStorage().dir_count, 2)
+        self.assertEqual(StoreFiles.counter, 2)
 
         PersistentObjectStorage().dump()
         PersistentObjectStorage()._is_write_mode = False
-        PersistentObjectStorage().dir_count = 0
+        StoreFiles.counter = 0
 
         self.create_file_content("first", target_file=self.temp_file)
         with open(self.temp_file, "r") as fd:
@@ -60,16 +59,16 @@ class FileStorage(Base):
         Similar to  test_create_file_content,
         but test it also via positional parameters and mixing them
         """
-        self.assertEqual(PersistentObjectStorage().dir_count, 0)
+        self.assertEqual(StoreFiles.counter, 0)
         self.create_temp_file()
         self.create_file_content("ahoj", self.temp_file)
-        self.assertEqual(PersistentObjectStorage().dir_count, 1)
+        self.assertEqual(StoreFiles.counter, 1)
         self.create_file_content("cao", self.temp_file)
-        self.assertEqual(PersistentObjectStorage().dir_count, 2)
+        self.assertEqual(StoreFiles.counter, 2)
 
         PersistentObjectStorage().dump()
         PersistentObjectStorage()._is_write_mode = False
-        PersistentObjectStorage().dir_count = 0
+        StoreFiles.counter = 0
 
         self.create_temp_file()
         self.create_file_content("first", self.temp_file)
@@ -94,12 +93,12 @@ class FileStorage(Base):
         """
         Check if properly store and restore directory content
         """
-        self.assertEqual(PersistentObjectStorage().dir_count, 0)
+        self.assertEqual(StoreFiles.counter, 0)
         self.create_temp_dir()
         self.create_dir_content(
             filename="ahoj", target_dir=self.temp_dir, content="ciao"
         )
-        self.assertEqual(PersistentObjectStorage().dir_count, 1)
+        self.assertEqual(StoreFiles.counter, 1)
         self.assertIn("ahoj", os.listdir(self.temp_dir))
         with open(os.path.join(self.temp_dir, "ahoj"), "r") as fd:
             content = fd.read()
@@ -107,7 +106,7 @@ class FileStorage(Base):
 
         PersistentObjectStorage().dump()
         PersistentObjectStorage()._is_write_mode = False
-        PersistentObjectStorage().dir_count = 0
+        StoreFiles.counter = 0
 
         self.create_temp_dir()
         self.create_dir_content(
@@ -122,7 +121,7 @@ class FileStorage(Base):
 
 
 class SessionRecordingWithFileStore(Base):
-    @store_files_arg_references({"target_file": 2})
+    @StoreFiles.arg_references({"target_file": 2})
     def create_file_content(self, value, target_file):
         run_command_wrapper(
             cmd=["bash", "-c", f"echo {value} > {target_file}"]
@@ -134,16 +133,16 @@ class SessionRecordingWithFileStore(Base):
         """
         Mixing command wrapper with file storage
         """
-        self.assertEqual(PersistentObjectStorage().dir_count, 0)
+        self.assertEqual(StoreFiles.counter, 0)
         self.create_temp_file()
         self.create_file_content("ahoj", target_file=self.temp_file)
-        self.assertEqual(PersistentObjectStorage().dir_count, 1)
+        self.assertEqual(StoreFiles.counter, 1)
         self.create_file_content("cao", target_file=self.temp_file)
-        self.assertEqual(PersistentObjectStorage().dir_count, 2)
+        self.assertEqual(StoreFiles.counter, 2)
 
         PersistentObjectStorage().dump()
         PersistentObjectStorage()._is_write_mode = False
-        PersistentObjectStorage().dir_count = 0
+        StoreFiles.counter = 0
         before = str(PersistentObjectStorage().storage_object)
 
         self.create_file_content("ahoj", target_file=self.temp_file)
@@ -162,7 +161,7 @@ class SessionRecordingWithFileStore(Base):
 
 
 class DynamicFileStorage(Base):
-    @store_files_guess_args
+    @StoreFiles.guess_args
     def create_file(self, value, target_file):
         with open(target_file, "w") as fd:
             fd.write(value)
@@ -171,16 +170,16 @@ class DynamicFileStorage(Base):
         """
         File storage where it try to guess what to store, based on *args and **kwargs values
         """
-        self.assertEqual(PersistentObjectStorage().dir_count, 0)
+        self.assertEqual(StoreFiles.counter, 0)
         self.create_temp_file()
         self.create_file("ahoj", self.temp_file)
-        self.assertEqual(PersistentObjectStorage().dir_count, 1)
+        self.assertEqual(StoreFiles.counter, 1)
         self.create_file("cao", self.temp_file)
-        self.assertEqual(PersistentObjectStorage().dir_count, 2)
+        self.assertEqual(StoreFiles.counter, 2)
 
         PersistentObjectStorage().dump()
         PersistentObjectStorage()._is_write_mode = False
-        PersistentObjectStorage().dir_count = 0
+        StoreFiles.counter = 0
         self.create_temp_file()
         self.create_file("first", self.temp_file)
         with open(self.temp_file, "r") as fd:
@@ -202,7 +201,7 @@ class DynamicFileStorage(Base):
 
 
 class StoreOutputFile(Base):
-    @store_files_return_value
+    @StoreFiles.return_value
     def create_file(self, value):
         tmpfile = tempfile.mktemp()
         with open(tmpfile, "w") as fd:
@@ -213,15 +212,15 @@ class StoreOutputFile(Base):
         """
         Test File storage if file name is return value of function
         """
-        self.assertEqual(PersistentObjectStorage().dir_count, 0)
+        self.assertEqual(StoreFiles.counter, 0)
         ofile1 = self.create_file("ahoj")
-        self.assertEqual(PersistentObjectStorage().dir_count, 1)
+        self.assertEqual(StoreFiles.counter, 1)
         ofile2 = self.create_file("cao")
-        self.assertEqual(PersistentObjectStorage().dir_count, 2)
+        self.assertEqual(StoreFiles.counter, 2)
 
         PersistentObjectStorage().dump()
         PersistentObjectStorage()._is_write_mode = False
-        PersistentObjectStorage().dir_count = 0
+        StoreFiles.counter = 0
 
         oofile1 = self.create_file("first")
         with open(ofile1, "r") as fd:
