@@ -21,13 +21,14 @@
 # SOFTWARE.
 
 
-import logging
-import inspect
 import functools
-from typing import Optional, Callable, Any
+import inspect
+import logging
+import pickle
+from typing import Optional, Callable, Any, List
+
 from requre.storage import PersistentObjectStorage
 from requre.utils import STORAGE
-import pickle
 
 
 class ObjectStorage:
@@ -35,15 +36,17 @@ class ObjectStorage:
     Generic object API for objects for persistent storage.
     Use it as parent class for your custom object handling
 
-    This class use pickle module for object serialization, it is generic, but may lead to some issues
+    This class use pickle module for object serialization,
+    it is generic, but may lead to some issues
     in case object is not serializable well. Use this class very carefully.
     """
+
     persistent_storage = STORAGE
     __response_keys: list = list()
     object_type = object
 
     def __init__(
-            self, store_keys: list, pstorage: Optional[PersistentObjectStorage] = None
+        self, store_keys: list, pstorage: Optional[PersistentObjectStorage] = None
     ) -> None:
         self.store_keys = store_keys
         if pstorage:
@@ -51,10 +54,10 @@ class ObjectStorage:
         self.store_keys = store_keys
 
     @staticmethod
-    def __get_base_keys(func: Callable) -> list:
-        output = list()
+    def __get_base_keys(func: Callable) -> List[Any]:
+        output: List[str] = list()
         # callers module list, to be able to separate requests for various services in one file
-        caller_list = list()
+        caller_list: List[str] = list()
         for currnetframe in inspect.stack():
             module_name = inspect.getmodule(currnetframe[0]).__name__
             if module_name.startswith("_"):
@@ -104,9 +107,9 @@ class ObjectStorage:
         :return: output of called func
         """
         keys = (
-                cls.__get_base_keys(func)
-                + [x for x in args if isinstance(int, str)]
-                + [f"{k}:{v}" for k, v in kwargs.items()]
+            cls.__get_base_keys(func)
+            + [x for x in args if isinstance(int, str)]
+            + [f"{k}:{v}" for k, v in kwargs.items()]
         )
         return cls.execute(keys, func, *args, **kwargs)
 
@@ -123,7 +126,6 @@ class ObjectStorage:
         keys = cls.__get_base_keys(func)
         return cls.execute(keys, func, *args, **kwargs)
 
-
     @classmethod
     def decorator_all_keys(cls, func: Callable) -> Any:
         """
@@ -133,6 +135,7 @@ class ObjectStorage:
         :param func: Callable object
         :return: output of func
         """
+
         @functools.wraps(func)
         def internal(*args, **kwargs):
             return cls.execute_all_keys(func, *args, **kwargs)
@@ -149,6 +152,7 @@ class ObjectStorage:
         :param item_list: list of values of *args nums,  **kwargs names to use as keys
         :return: output of func
         """
+
         def internal(func: Callable):
             @functools.wraps(func)
             def internal_internal(*args, **kwargs):
@@ -173,15 +177,18 @@ class ObjectStorage:
         :param func: Callable object
         :return: output of func
         """
+
         @functools.wraps(func)
         def internal(*args, **kwargs):
             return cls.execute_plain(func, *args, **kwargs)
+
         return internal
 
     def write(self, obj: Any) -> Any:
         """
         Write the object representation to storage
-        Internally it will use self.to_serializable() method to get serializable object representation
+        Internally it will use self.to_serializable()
+        method to get serializable object representation
 
         :param obj: some object
         :return: same obj
@@ -219,4 +226,3 @@ class ObjectStorage:
         """
         output = pickle.loads(data)
         return output
-

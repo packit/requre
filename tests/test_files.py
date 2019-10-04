@@ -1,14 +1,13 @@
 import os
 import tempfile
 
-from requre.storage import PersistentObjectStorage
 from requre.helpers.files import StoreFiles
 from requre.helpers.function_output import run_command_wrapper
+from requre.storage import PersistentObjectStorage
 from tests.testbase import BaseClass
 
 
 class Base(BaseClass):
-
     @StoreFiles.arg_references({"target_file": 2})
     def create_file_content(self, value, target_file):
         with open(target_file, "w") as fd:
@@ -123,9 +122,7 @@ class FileStorage(Base):
 class SessionRecordingWithFileStore(Base):
     @StoreFiles.arg_references({"target_file": 2})
     def create_file_content(self, value, target_file):
-        run_command_wrapper(
-            cmd=["bash", "-c", f"echo {value} > {target_file}"]
-        )
+        run_command_wrapper(cmd=["bash", "-c", f"echo {value} > {target_file}"])
         with open(target_file, "w") as fd:
             fd.write(value)
 

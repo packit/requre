@@ -1,7 +1,9 @@
 import importlib
+
 from requre.helpers.requests_response import RequestResponseHandling
 from requre.storage import PersistentObjectStorage
 from tests.testbase import BaseClass
+
 
 class StoreAnyRequest(BaseClass):
     domain = "https://example.com/"
@@ -81,9 +83,7 @@ class StoreAnyRequest(BaseClass):
         Test if it is able to use partial storing of args, kwargs
         prepare to avoid leak authentication to data
         """
-        self.requests.post = RequestResponseHandling.decorator(
-            item_list=[0]
-        )(
+        self.requests.post = RequestResponseHandling.decorator(item_list=[0])(
             self.requests.post
         )
         response_before = self.requests.post(self.domain)
@@ -103,9 +103,7 @@ class StoreAnyRequest(BaseClass):
         """
         Check exceptions if using partial keys storing
         """
-        self.requests.post = RequestResponseHandling.decorator(
-            item_list=[0, "data"]
-        )(
+        self.requests.post = RequestResponseHandling.decorator(item_list=[0, "data"])(
             self.requests.post
         )
         self.requests.post(self.domain, data={"a": "b"})

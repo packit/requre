@@ -20,14 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-import shlex
-from pathlib import Path
-import subprocess
 import logging
+import shlex
+import subprocess
+from pathlib import Path
 
 from requre.exceptions import PersistentStorageException
 from requre.storage import PersistentObjectStorage
+
 logger = logging.getLogger(__name__)
 
 STORAGE = PersistentObjectStorage()
@@ -78,7 +78,9 @@ def run_command(cmd, error_message=None, cwd=None, fail=True, output=False):
         logger.error("Command %s failed", shell.args)
         logger.error("%s", error_message)
         if fail:
-            raise PersistentStorageException(f"Command {shell.args!r} failed: {error_message}")
+            raise PersistentStorageException(
+                f"Command {shell.args!r} failed: {error_message}"
+            )
         success = False
     else:
         success = True

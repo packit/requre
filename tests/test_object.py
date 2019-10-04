@@ -17,7 +17,6 @@ class StoreAnyRequest(BaseClass):
     def tearDown(self) -> None:
         super().tearDown()
 
-
     def testRawCall(self):
         """
         Test if is class is able to explicitly write and read object handling
@@ -44,12 +43,7 @@ class StoreAnyRequest(BaseClass):
         obj_after = ObjectStorage.execute_all_keys(OwnClass, 1)
         self.assertEqual(obj_before.num, obj_after.num)
         # all objects are already read, next have to fail
-        self.assertRaises(
-            Exception,
-            ObjectStorage.execute_all_keys,
-            OwnClass,
-            1,
-        )
+        self.assertRaises(Exception, ObjectStorage.execute_all_keys, OwnClass, 1)
 
     def testFunctionDecorator(self):
         """

@@ -22,6 +22,7 @@
 
 import os
 from typing import Optional
+
 from requre.singleton import SingletonMeta
 
 

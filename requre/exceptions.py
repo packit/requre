@@ -24,5 +24,6 @@
 Exceptions for requre project
 """
 
+
 class PersistentStorageException(Exception):
     """ Exceptions for persistent storage of objects """

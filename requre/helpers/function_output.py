@@ -23,6 +23,7 @@
 import functools
 import inspect
 from typing import Callable, Any
+
 from requre.utils import get_if_recording, STORAGE, run_command
 
 
@@ -43,6 +44,7 @@ def store_function_output(func: Callable) -> Any:
             else:
                 output = STORAGE.read(keys)
             return output
+
     return recorded_function
 
 
