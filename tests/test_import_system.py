@@ -1,13 +1,18 @@
-import unittest
-import sys
-import os
 import builtins
+import os
+import sys
+import unittest
 
-from requre.import_system import ReplaceType, _upgrade_import_system, upgrade_import_system
-from requre.helpers.tempfile import TempFile
 import requre
+from requre.helpers.tempfile import TempFile
+from requre.import_system import (
+    ReplaceType,
+    _upgrade_import_system,
+    upgrade_import_system,
+)
 
 SELECTOR = os.path.basename(__file__).rsplit(".", 1)[0]
+
 
 class TestUpgradeImportSystem(unittest.TestCase):
     def setUp(self) -> None:
@@ -95,12 +100,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
             (
                 "^tempfile$",
                 {"who_name": SELECTOR},
-                {
-                    "": [
-                        ReplaceType.REPLACE_MODULE,
-                        TempFile,
-                    ]
-                },
+                {"": [ReplaceType.REPLACE_MODULE, TempFile]},
             )
         ]
         builtins.__import__ = _upgrade_import_system(

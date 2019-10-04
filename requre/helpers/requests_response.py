@@ -21,10 +21,11 @@
 # SOFTWARE.
 
 
-from io import BytesIO
 import datetime
 import json
+from io import BytesIO
 from typing import Any
+
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 
@@ -37,6 +38,7 @@ class RequestResponseHandling(ObjectStorage):
     __response_keys_special = ["raw", "_next", "headers", "elapsed", "_content"]
     __store_indicator = "__store_indicator"
     __implicit_encoding = "UTF-8"
+
     def write(self, response: Response) -> Response:
         super().write(response)
         if getattr(response, "next"):
@@ -64,7 +66,7 @@ class RequestResponseHandling(ObjectStorage):
             if key == "elapsed":
                 output[key] = response.elapsed.total_seconds()
             if key == "_content":
-                what_store = response._content
+                what_store = response._content  # type: ignore
                 encoding = response.encoding or self.__implicit_encoding
                 try:
                     what_store = what_store.decode(encoding)
@@ -104,7 +106,7 @@ class RequestResponseHandling(ObjectStorage):
                 elif indicator == 2:
                     what_store = json.dumps(data[key])
                     what_store = what_store.encode(encoding)
-                response._content = what_store
+                response._content = what_store  # type: ignore
             if key == "_next":
                 setattr(response, "_next", data[key])
         return response

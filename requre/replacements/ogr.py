@@ -1,5 +1,5 @@
-from requre.import_system import ReplaceType
 from requre.helpers.requests_response import RequestResponseHandling
+from requre.import_system import ReplaceType
 
 session_send = {
     "Session.send": [

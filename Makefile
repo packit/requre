@@ -18,4 +18,3 @@ clean:
 
 check:
 	PYTHONPATH=$(CURDIR) PYTHONDONTWRITEBYTECODE=1 python3 -m pytest --verbose --showlocals --cov=requre --cov-report=term-missing -x $(TESTS_TARGET)
-

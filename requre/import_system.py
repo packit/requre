@@ -21,10 +21,10 @@
 # SOFTWARE.
 
 
-import inspect
-import functools
-import re
 import builtins
+import functools
+import inspect
+import re
 from enum import Enum
 from typing import Callable, Optional, Any
 
@@ -39,6 +39,7 @@ class ReplaceType(Enum):
     REPLACE: replace object by another one
     REPLACE_MODULE: replace whole module by another implementation
     """
+
     DECORATOR = 1
     REPLACE = 2
     REPLACE_MODULE = 3
@@ -55,6 +56,7 @@ def _upgrade_import_system(
     :param debug_file: file where to store debug information about replacements
     :return: called import function
     """
+
     @functools.wraps(func)
     def new_import(*args, **kwargs):
         out = func(*args, **kwargs)
@@ -89,15 +91,28 @@ def _upgrade_import_system(
                             replace_object = replacement[1]
                             original_obj = out
                             parent_obj = out
-                            # avoid multiple replacing, just in case of module, because python import system has check
+                            # avoid multiple replacing, just in case of module,
+                            # because python import system has check
                             # so in case of module it has to be replaced everytime.
-                            if key in replace_dict.get(name, {}) and replace_type is not ReplaceType.REPLACE_MODULE:
-                                text.append(f"\t{key} in module {name} already replaced: {one_filter} -> {key}  by {replacement}\n")
+                            if (
+                                key in replace_dict.get(name, {})
+                                and replace_type is not ReplaceType.REPLACE_MODULE
+                            ):
+                                text.append(
+                                    f"\t{key} in module {name} already replaced: "
+                                    f"{one_filter} -> {key}  by {replacement}\n"
+                                )
                             else:
                                 if name not in replace_dict:
-                                    replace_dict[name] = {key: [one_filter, key, replacement]}
+                                    replace_dict[name] = {
+                                        key: [one_filter, key, replacement]
+                                    }
                                 else:
-                                    replace_dict[name][key] = [one_filter, key, replacement]
+                                    replace_dict[name][key] = [
+                                        one_filter,
+                                        key,
+                                        replacement,
+                                    ]
                                 # traverse into
                                 if len(key) > 0:
                                     for key_item in key.split("."):
@@ -105,7 +120,9 @@ def _upgrade_import_system(
                                         original_obj = getattr(original_obj, key_item)
                                 if replace_type == ReplaceType.REPLACE:
                                     setattr(
-                                        parent_obj, original_obj.__name__, replace_object
+                                        parent_obj,
+                                        original_obj.__name__,
+                                        replace_object,
                                     )
                                     text.append(
                                         f"\treplacing {key} by function {replace_object.__name__}\n"
@@ -122,7 +139,8 @@ def _upgrade_import_system(
                                 elif replace_type == ReplaceType.REPLACE_MODULE:
                                     out = replace_object
                                     text.append(
-                                        f"\treplace module {name} in {module_name} by {replace_object.__name__}\n"
+                                        f"\treplace module {name} in {module_name} "
+                                        f"by {replace_object.__name__}\n"
                                     )
                     if debug_file:
                         with open(debug_file, "a") as fd:

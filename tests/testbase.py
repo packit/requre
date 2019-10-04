@@ -1,9 +1,10 @@
-import unittest
-import tempfile
 import os
 import shutil
-from requre.storage import PersistentObjectStorage
+import tempfile
+import unittest
+
 from requre.helpers.files import StoreFiles
+from requre.storage import PersistentObjectStorage
 
 
 class BaseClass(unittest.TestCase):

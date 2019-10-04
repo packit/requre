@@ -22,10 +22,12 @@
 
 
 from typing import Any
-from git.remote import PushInfo
-from git.util import IterableList
+
 from git.refs.head import HEAD
+from git.remote import PushInfo
 from git.repo.base import Repo
+from git.util import IterableList
+
 from requre.objects import ObjectStorage
 
 
@@ -64,5 +66,3 @@ class PushInfoStorageList(ObjectStorage):
                     setattr(tmp, key, HEAD(Repo(item[key][0])))
             out.append(tmp)
         return out
-
-

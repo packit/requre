@@ -1,8 +1,8 @@
 # REQUest REcording
 
-Requre \[rekure\] 
+Requre \[rekure\]
 
-Is Library for storing output of various function and methods to 
+Is Library for storing output of various function and methods to
 persistent storage and be able to replay the stored output to functions
 back
 

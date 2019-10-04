@@ -21,15 +21,15 @@
 # SOFTWARE.
 
 
-import os
-import logging
-import shutil
 import functools
+import logging
+import os
+import shutil
 from typing import Callable, Any, Dict
 
+from requre.helpers.function_output import store_function_output
 from requre.storage import PersistentObjectStorage
 from requre.utils import run_command, get_if_recording, STORAGE
-from requre.helpers.function_output import store_function_output
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +92,7 @@ class StoreFiles:
         Decorator what will store return value of function/method as file and will store content
 
         """
+
         @functools.wraps(func)
         def store_files_int(*args, **kwargs):
             if not get_if_recording():
@@ -110,6 +111,7 @@ class StoreFiles:
         """
         Decorator what try to guess, which arg is file or directory and store its content
         """
+
         @functools.wraps(func)
         def store_files_int(*args, **kwargs):
             if not get_if_recording():

@@ -25,6 +25,7 @@ class SingletonMeta(type):
     """
     Metaclass for singleton, eg. to have right one object for persistent storage
     """
+
     _instance = None
 
     def __call__(self):

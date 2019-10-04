@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from _collections_abc import Hashable
 import os
+from _collections_abc import Hashable
 from typing import Dict, List, Any, Optional
 
 import yaml
