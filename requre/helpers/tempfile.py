@@ -38,6 +38,7 @@ class TempFile(metaclass=SingletonMeta):
     @classmethod
     def _get_name(cls, prefix: Optional[str] = None) -> str:
         cls.counter += 1
+        os.makedirs(cls.root, exist_ok=True)
         return os.path.join(cls.root, f"{prefix or cls.prefix}_{cls.counter}")
 
     @classmethod

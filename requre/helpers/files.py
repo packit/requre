@@ -36,10 +36,22 @@ logger = logging.getLogger(__name__)
 
 class StoreFiles:
     counter = 0
+    dir_suffix = "file_storage"
+    previous = None
+    current = None
 
-    @staticmethod
-    def _get_data_dir():
-        return os.path.dirname(STORAGE.storage_file)
+    @classmethod
+    def _get_data_dir(cls):
+        dirname = os.path.dirname(STORAGE.storage_file)
+        additional = f"{os.path.basename(STORAGE.storage_file)}.{cls.dir_suffix}"
+        output = os.path.join(dirname, additional)
+        os.makedirs(output, exist_ok=True)
+        # reset counter if output directory is switched, to ensure that you always start from zero
+        if cls.current != output:
+            cls.counter = 0
+            cls.previous = cls.current
+            cls.current = output
+        return output
 
     @classmethod
     def _next(cls):
