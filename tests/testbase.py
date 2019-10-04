@@ -3,6 +3,7 @@ import tempfile
 import os
 import shutil
 from requre.storage import PersistentObjectStorage
+from requre.helpers.files import StoreFiles
 
 
 class BaseClass(unittest.TestCase):
@@ -16,7 +17,7 @@ class BaseClass(unittest.TestCase):
         PersistentObjectStorage().storage_file = self.response_file
         PersistentObjectStorage().dump_after_store = True
         PersistentObjectStorage()._is_write_mode = True
-        PersistentObjectStorage().dir_count = 0
+        StoreFiles.counter = 0
 
     def tearDown(self) -> None:
         pass
