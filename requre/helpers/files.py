@@ -28,39 +28,26 @@ import shutil
 from typing import Callable, Any, Dict
 
 from requre.helpers.function_output import store_function_output
-from requre.storage import PersistentObjectStorage
+from requre.storage import PersistentObjectStorage, StorageCounter
 from requre.utils import run_command, get_if_recording, STORAGE
 
 logger = logging.getLogger(__name__)
 
 
-class StoreFiles:
-    counter = 0
+class StoreFiles(StorageCounter):
     dir_suffix = "file_storage"
-    previous = None
-    current = None
-
     @classmethod
     def _get_data_dir(cls):
-        dirname = os.path.dirname(STORAGE.storage_file)
-        additional = f"{os.path.basename(STORAGE.storage_file)}.{cls.dir_suffix}"
-        output = os.path.join(dirname, additional)
-        os.makedirs(output, exist_ok=True)
-        # reset counter if output directory is switched, to ensure that you always start from zero
-        if cls.current != output:
-            cls.counter = 0
-            cls.previous = cls.current
-            cls.current = output
+        cls.reset_counter_if_changed()
+        additional = f"{cls.storage_file()}.{cls.dir_suffix}"
+        output = os.path.join(cls.storage_dir(), additional)
+        os.makedirs(output, mode=0o777, exist_ok=True)
+        logger.debug(f"Use data name: ${output}")
         return output
 
     @classmethod
-    def _next(cls):
-        cls.counter += 1
-        return cls.counter
-
-    @classmethod
     def _next_directory_name(cls):
-        return os.path.join(cls._get_data_dir(), str(cls._next()))
+        return os.path.join(cls._get_data_dir(), str(cls.next()))
 
     @staticmethod
     def _copy_logic(

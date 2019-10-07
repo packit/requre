@@ -176,3 +176,29 @@ def use_persistent_storage_without_overwriting(cls):
 
     ClassWithPersistentStorage.__name__ = cls.__name__
     return ClassWithPersistentStorage
+
+
+class StorageCounter:
+    counter = 0
+    dir_suffix = "file_storage"
+    previous = None
+
+    @classmethod
+    def reset_counter_if_changed(cls):
+        current = os.path.basename(PersistentObjectStorage().storage_file)
+        if cls.previous != current:
+            cls.counter = 0
+            cls.previous = current
+
+    @classmethod
+    def next(cls):
+        cls.counter += 1
+        return cls.counter
+
+    @staticmethod
+    def storage_file():
+        return os.path.basename(PersistentObjectStorage().storage_file)
+
+    @staticmethod
+    def storage_dir():
+        return os.path.dirname(PersistentObjectStorage().storage_file)

@@ -4,6 +4,7 @@ import sys
 import unittest
 
 import requre
+from requre.utils import STORAGE
 from requre.helpers.tempfile import TempFile
 from requre.import_system import (
     ReplaceType,
@@ -110,8 +111,8 @@ class TestUpgradeImportSystem(unittest.TestCase):
 
         tmpfile = tempfile.mktemp()
         tmpdir = tempfile.mkdtemp()
-        self.assertIn("/tmp/static_tmp", tmpfile)
-        self.assertIn("/tmp/static_tmp", tmpdir)
+        self.assertIn(f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile)
+        self.assertIn(f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir)
         self.assertFalse(os.path.exists(tmpfile))
         self.assertTrue(os.path.exists(tmpdir))
         self.assertTrue(os.path.isdir(tmpdir))
