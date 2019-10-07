@@ -21,26 +21,29 @@
 # SOFTWARE.
 
 import os
+import logging
 from typing import Optional
+from requre.storage import StorageCounter
 
-from requre.singleton import SingletonMeta
+logger = logging.getLogger(__name__)
 
 
-class TempFile(metaclass=SingletonMeta):
+class TempFile(StorageCounter):
     """
     replace system tempfile module with own predictable names implementation
      of temp files for mocking
     """
-
-    counter = 0
     root = "/tmp"
     prefix = "static_tmp"
 
     @classmethod
     def _get_name(cls, prefix: Optional[str] = None) -> str:
-        cls.counter += 1
-        os.makedirs(cls.root, exist_ok=True)
-        return os.path.join(cls.root, f"{prefix or cls.prefix}_{cls.counter}")
+        cls.reset_counter_if_changed()
+        filename = f"{prefix or cls.prefix}_{cls.next()}"
+        os.makedirs(os.path.join(cls.root, cls.storage_file()), mode=0o777, exist_ok=True)
+        output = os.path.join(cls.root, cls.storage_file(), filename)
+        logger.debug(f"Use name for tempfile: ${output}")
+        return output
 
     @classmethod
     def mktemp(cls, prefix: Optional[str] = None) -> str:
