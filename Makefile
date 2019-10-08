@@ -17,4 +17,4 @@ clean:
 	 git clean -fd
 
 check:
-	PYTHONPATH=$(CURDIR) PYTHONDONTWRITEBYTECODE=1 python3 -m pytest --verbose --showlocals --cov=requre --cov-report=term-missing -x $(TESTS_TARGET)
+	PYTHONPATH=$(CURDIR) PYTHONDONTWRITEBYTECODE=1 python3 -m pytest --verbose --showlocals $(TESTS_TARGET)

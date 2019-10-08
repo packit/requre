@@ -111,8 +111,12 @@ class TestUpgradeImportSystem(unittest.TestCase):
 
         tmpfile = tempfile.mktemp()
         tmpdir = tempfile.mkdtemp()
-        self.assertIn(f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile)
-        self.assertIn(f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir)
+        self.assertIn(
+            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile
+        )
+        self.assertIn(
+            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir
+        )
         self.assertFalse(os.path.exists(tmpfile))
         self.assertTrue(os.path.exists(tmpdir))
         self.assertTrue(os.path.isdir(tmpdir))

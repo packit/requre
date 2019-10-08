@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 
 class StoreFiles(StorageCounter):
     dir_suffix = "file_storage"
+
     @classmethod
     def _get_data_dir(cls):
         cls.reset_counter_if_changed()
