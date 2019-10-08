@@ -1,4 +1,3 @@
-import builtins
 import os
 import sys
 import unittest
@@ -32,9 +31,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 {"mktemp": [ReplaceType.REPLACE, lambda: "a"]},
             )
         ]
-        builtins.__import__ = upgrade_import_system(
-            filters=HANDLE_MODULE_LIST, debug_file=debug_file
-        )
+        upgrade_import_system(filters=HANDLE_MODULE_LIST, debug_file=debug_file)
         import tempfile
 
         self.assertNotIn("/tmp", tempfile.mktemp())
@@ -56,7 +53,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 {"mktemp": [ReplaceType.REPLACE, lambda: "b"]},
             )
         ]
-        builtins.__import__ = upgrade_import_system(filters=HANDLE_MODULE_LIST)
+        upgrade_import_system(filters=HANDLE_MODULE_LIST)
         from tempfile import mktemp
 
         self.assertNotIn("/tmp", mktemp())
@@ -78,7 +75,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 },
             )
         ]
-        builtins.__import__ = upgrade_import_system(filters=HANDLE_MODULE_LIST)
+        upgrade_import_system(filters=HANDLE_MODULE_LIST)
         import tempfile
 
         self.assertIn("decorated", tempfile.mktemp())
@@ -97,7 +94,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 {"": [ReplaceType.REPLACE_MODULE, TempFile]},
             )
         ]
-        builtins.__import__ = upgrade_import_system(filters=HANDLE_MODULE_LIST)
+        upgrade_import_system(filters=HANDLE_MODULE_LIST)
         import tempfile
 
         tmpfile = tempfile.mktemp()

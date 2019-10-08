@@ -56,10 +56,16 @@ def upgrade_import_system(
     :param func: Callable to upgrade
     :return: decorated import system
     """
-    func = func or builtins.__import__
-    return UpgradeImportSystem(
+    func_to_upgrade = func or builtins.__import__
+
+    upgraded_import_system = UpgradeImportSystem(
         filters=filters, debug_file=debug_file
-    ).upgrade_import_system(func=func)
+    ).upgrade_import_system(func=func_to_upgrade)
+
+    if not func:
+        builtins.__import__ = upgraded_import_system
+
+    return upgraded_import_system
 
 
 class UpgradeImportSystem:
