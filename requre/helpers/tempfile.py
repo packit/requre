@@ -33,6 +33,7 @@ class TempFile(StorageCounter):
     replace system tempfile module with own predictable names implementation
      of temp files for mocking
     """
+
     root = "/tmp"
     prefix = "static_tmp"
 
@@ -40,7 +41,9 @@ class TempFile(StorageCounter):
     def _get_name(cls, prefix: Optional[str] = None) -> str:
         cls.reset_counter_if_changed()
         filename = f"{prefix or cls.prefix}_{cls.next()}"
-        os.makedirs(os.path.join(cls.root, cls.storage_file()), mode=0o777, exist_ok=True)
+        os.makedirs(
+            os.path.join(cls.root, cls.storage_file()), mode=0o777, exist_ok=True
+        )
         output = os.path.join(cls.root, cls.storage_file(), filename)
         logger.debug(f"Use name for tempfile: ${output}")
         return output
