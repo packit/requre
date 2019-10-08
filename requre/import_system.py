@@ -26,7 +26,8 @@ import functools
 import inspect
 import re
 from enum import Enum
-from typing import Callable, Optional, Any
+from importlib import reload
+from typing import Callable, Optional, Any, Tuple, List
 
 ORIGIN_IMPORT = builtins.__import__
 replace_dict: dict = {}
@@ -45,123 +46,21 @@ class ReplaceType(Enum):
     REPLACE_MODULE = 3
 
 
-def _upgrade_import_system(
-    func: Callable, name_filters: list, debug_file: Optional[str] = None
-) -> Any:
-    """
-    Internal function what replace import function by decorated one, what is able to do replaces
-    inside them
-    :param func: buildin.__import__ is original purpose
-    :param name_filters: list of filters with replacements
-    :param debug_file: file where to store debug information about replacements
-    :return: called import function
-    """
-
-    @functools.wraps(func)
-    def new_import(*args, **kwargs):
-
-        out = func(*args, **kwargs)
-        name = list(args)[0]
-
-        for filter_item in name_filters:
-            one_filter = filter_item[0]
-            additional_filters = filter_item[1]
-            if re.search(one_filter, name):
-                mod = inspect.getmodule(inspect.stack()[1][0])
-                fromlist = ()
-                if len(args) > 3:
-                    fromlist = list(args)[3]
-                module_name = getattr(mod, "__name__", "")
-                module_file = getattr(mod, "__file__", "")
-                item = {
-                    "module_object": out,
-                    "who": mod,
-                    "who_name": module_name,
-                    "who_filename": module_file,
-                    "fromlist": fromlist,
-                }
-
-                if all([re.search(v, item[k]) for k, v in additional_filters.items()]):
-                    text = list()
-                    text.append(
-                        f"{module_name} ({module_file})-> {name} ({fromlist})\n"
-                    )
-                    if len(filter_item) > 2:
-                        for key, replacement in filter_item[2].items():
-                            replace_type = replacement[0]
-                            replace_object = replacement[1]
-                            original_obj = out
-                            parent_obj = out
-                            # avoid multiple replacing, just in case of module,
-                            # because python import system has check
-                            # so in case of module it has to be replaced everytime.
-                            if (
-                                key in replace_dict.get(name, {})
-                                and replace_type is not ReplaceType.REPLACE_MODULE
-                            ):
-                                text.append(
-                                    f"\t{key} in module {name} already replaced: "
-                                    f"{one_filter} -> {key}  by {replacement}\n"
-                                )
-                            else:
-                                if name not in replace_dict:
-                                    replace_dict[name] = {
-                                        key: [one_filter, key, replacement]
-                                    }
-                                else:
-                                    replace_dict[name][key] = [
-                                        one_filter,
-                                        key,
-                                        replacement,
-                                    ]
-                                # traverse into
-                                if len(key) > 0:
-                                    for key_item in key.split("."):
-                                        parent_obj = original_obj
-                                        original_obj = getattr(original_obj, key_item)
-                                if replace_type == ReplaceType.REPLACE:
-                                    setattr(
-                                        parent_obj,
-                                        original_obj.__name__,
-                                        replace_object,
-                                    )
-                                    text.append(
-                                        f"\treplacing {key} by function {replace_object.__name__}\n"
-                                    )
-                                elif replace_type == ReplaceType.DECORATOR:
-                                    setattr(
-                                        parent_obj,
-                                        original_obj.__name__,
-                                        replace_object(original_obj),
-                                    )
-                                    text.append(
-                                        f"\tdecorate {key}  by {replace_object.__name__}\n"
-                                    )
-                                elif replace_type == ReplaceType.REPLACE_MODULE:
-                                    out = replace_object
-                                    text.append(
-                                        f"\treplace module {name} in {module_name} "
-                                        f"by {replace_object.__name__}\n"
-                                    )
-                    if debug_file:
-                        with open(debug_file, "a") as fd:
-                            fd.write("".join(text))
-        return out
-
-    return new_import
-
-
-def upgrade_import_system(filters, debug_file: Optional[str] = None):
+def upgrade_import_system(
+    func: Callable = None, filters=None, debug_file: Optional[str] = None
+):
     """
     High level upgrade import function, do not allow to pass what to replace,
     because it is builtins.__import__
     :param filters: list of filters, for examples see: tests/test_import_system.py
     :param debug_file: file where to store debug information about replacements
+    :param func: Callable to upgrade
     :return: decorated import system
     """
-    builtins.__import__ = _upgrade_import_system(
-        builtins.__import__, name_filters=filters, debug_file=debug_file
-    )
+    func = func or builtins.__import__
+    return UpgradeImportSystem(
+        filters=filters, debug_file=debug_file
+    ).upgrade_import_system(func=func)
 
 
 def revert_import_system():
@@ -177,13 +76,137 @@ class UpgradeImportSystem:
         self.filters = filters
         self.debug_file = debug_file
         self._original_import = None
+        self.reverse: List[Tuple[Any, Any, Any]] = []
 
     def __enter__(self):
         self._original_import = builtins.__import__
-        builtins.__import__ = _upgrade_import_system(
-            builtins.__import__, name_filters=self.filters, debug_file=self.debug_file
-        )
+        self.reverse = []
+        builtins.__import__ = self.upgrade_import_system(builtins.__import__)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         builtins.__import__ = self._original_import
+        for parent_obj, _, _ in self.reverse:
+            reload(parent_obj)
+        self.reverse = []
+
+    def upgrade_import_system(self, func: Callable = None) -> Any:
+        """
+        Internal function what replace import function by decorated one, what is able to do replaces
+        inside them
+        :param func: buildin.__import__ is original purpose
+        :param name_filters: list of filters with replacements
+        :param debug_file: file where to store debug information about replacements
+        :return: called import function
+        """
+
+        @functools.wraps(func)
+        def new_import(*args, **kwargs):
+
+            out = func(*args, **kwargs)
+            name = list(args)[0]
+
+            for filter_item in self.filters:
+                one_filter = filter_item[0]
+                additional_filters = filter_item[1]
+                if re.search(one_filter, name):
+                    mod = inspect.getmodule(inspect.stack()[1][0])
+                    fromlist = ()
+                    if len(args) > 3:
+                        fromlist = list(args)[3]
+                    module_name = getattr(mod, "__name__", "")
+                    module_file = getattr(mod, "__file__", "")
+                    item = {
+                        "module_object": out,
+                        "who": mod,
+                        "who_name": module_name,
+                        "who_filename": module_file,
+                        "fromlist": fromlist,
+                    }
+
+                    if all(
+                        [re.search(v, item[k]) for k, v in additional_filters.items()]
+                    ):
+                        text = list()
+                        text.append(
+                            f"{module_name} ({module_file})-> {name} ({fromlist})\n"
+                        )
+                        if len(filter_item) > 2:
+                            for key, replacement in filter_item[2].items():
+                                replace_type = replacement[0]
+                                replace_object = replacement[1]
+                                original_obj = out
+                                parent_obj = out
+                                # avoid multiple replacing, just in case of module,
+                                # because python import system has check
+                                # so in case of module it has to be replaced everytime.
+                                if (
+                                    key in replace_dict.get(name, {})
+                                    and replace_type is not ReplaceType.REPLACE_MODULE
+                                ):
+                                    text.append(
+                                        f"\t{key} in module {name} already replaced: "
+                                        f"{one_filter} -> {key}  by {replacement}\n"
+                                    )
+                                else:
+                                    if name not in replace_dict:
+                                        replace_dict[name] = {
+                                            key: [one_filter, key, replacement]
+                                        }
+                                    else:
+                                        replace_dict[name][key] = [
+                                            one_filter,
+                                            key,
+                                            replacement,
+                                        ]
+                                    # traverse into
+                                    if len(key) > 0:
+                                        for key_item in key.split("."):
+                                            parent_obj = original_obj
+                                            original_obj = getattr(
+                                                original_obj, key_item
+                                            )
+                                    if replace_type == ReplaceType.REPLACE:
+                                        setattr(
+                                            parent_obj,
+                                            original_obj.__name__,
+                                            replace_object,
+                                        )
+                                        self.reverse.append(
+                                            (parent_obj, original_obj, replace_object)
+                                        )
+                                        text.append(
+                                            f"\treplacing {key} "
+                                            f"by function {replace_object.__name__}\n"
+                                        )
+                                    elif replace_type == ReplaceType.DECORATOR:
+                                        setattr(
+                                            parent_obj,
+                                            original_obj.__name__,
+                                            replace_object(original_obj),
+                                        )
+                                        self.reverse.append(
+                                            (
+                                                parent_obj,
+                                                original_obj,
+                                                replace_object(original_obj),
+                                            )
+                                        )
+                                        text.append(
+                                            f"\tdecorate {key}  by {replace_object.__name__}\n"
+                                        )
+                                    elif replace_type == ReplaceType.REPLACE_MODULE:
+                                        out = replace_object
+                                        self.reverse.append(
+                                            (parent_obj, original_obj, replace_object)
+                                        )
+                                        text.append(
+                                            f"\treplace module {name} in {module_name} "
+                                            f"by {replace_object.__name__}\n"
+                                        )
+                        if self.debug_file:
+                            with open(self.debug_file, "a") as fd:
+                                fd.write("".join(text))
+            return out
+
+        return new_import

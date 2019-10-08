@@ -4,13 +4,9 @@ import sys
 import unittest
 
 import requre
-from requre.utils import STORAGE
 from requre.helpers.tempfile import TempFile
-from requre.import_system import (
-    ReplaceType,
-    _upgrade_import_system,
-    upgrade_import_system,
-)
+from requre.import_system import ReplaceType, upgrade_import_system
+from requre.utils import STORAGE
 
 SELECTOR = os.path.basename(__file__).rsplit(".", 1)[0]
 
@@ -37,8 +33,8 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 {"mktemp": [ReplaceType.REPLACE, lambda: "a"]},
             )
         ]
-        builtins.__import__ = _upgrade_import_system(
-            builtins.__import__, name_filters=HANDLE_MODULE_LIST, debug_file=debug_file
+        builtins.__import__ = upgrade_import_system(
+            filters=HANDLE_MODULE_LIST, debug_file=debug_file
         )
         import tempfile
 
@@ -61,9 +57,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 {"mktemp": [ReplaceType.REPLACE, lambda: "b"]},
             )
         ]
-        builtins.__import__ = _upgrade_import_system(
-            builtins.__import__, name_filters=HANDLE_MODULE_LIST
-        )
+        builtins.__import__ = upgrade_import_system(filters=HANDLE_MODULE_LIST)
         from tempfile import mktemp
 
         self.assertNotIn("/tmp", mktemp())
@@ -85,7 +79,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 },
             )
         ]
-        upgrade_import_system(HANDLE_MODULE_LIST)
+        builtins.__import__ = upgrade_import_system(filters=HANDLE_MODULE_LIST)
         import tempfile
 
         self.assertIn("decorated", tempfile.mktemp())
@@ -104,9 +98,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
                 {"": [ReplaceType.REPLACE_MODULE, TempFile]},
             )
         ]
-        builtins.__import__ = _upgrade_import_system(
-            builtins.__import__, name_filters=HANDLE_MODULE_LIST
-        )
+        builtins.__import__ = upgrade_import_system(filters=HANDLE_MODULE_LIST)
         import tempfile
 
         tmpfile = tempfile.mktemp()
