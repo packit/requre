@@ -27,7 +27,7 @@ import inspect
 import re
 from enum import Enum
 from importlib import reload
-from typing import Callable, Optional, Any, List, Dict
+from typing import Optional, Dict
 
 from requre.utils import Replacement
 
@@ -45,27 +45,14 @@ class ReplaceType(Enum):
     REPLACE_MODULE = 3
 
 
-def upgrade_import_system(
-    func: Callable = None, filters=None, debug_file: Optional[str] = None
-):
+def upgrade_import_system(filters=None, debug_file: Optional[str] = None) -> None:
     """
-    High level upgrade import function, do not allow to pass what to replace,
-    because it is builtins.__import__
+    High level upgrade import function.
+
     :param filters: list of filters, for examples see: tests/test_import_system.py
     :param debug_file: file where to store debug information about replacements
-    :param func: Callable to upgrade
-    :return: decorated import system
     """
-    func_to_upgrade = func or builtins.__import__
-
-    upgraded_import_system = UpgradeImportSystem(
-        filters=filters, debug_file=debug_file
-    ).upgrade_import_system(func=func_to_upgrade)
-
-    if not func:
-        builtins.__import__ = upgraded_import_system
-
-    return upgraded_import_system
+    UpgradeImportSystem(filters=filters, debug_file=debug_file).upgrade_import_system()
 
 
 class UpgradeImportSystem:
@@ -73,31 +60,25 @@ class UpgradeImportSystem:
         self.filters = filters
         self.debug_file = debug_file
         self._original_import = None
-        self.replace_dict: Dict[str, List[Replacement]] = {}
+        self.replace_dict: Dict[str, Dict[str, Replacement]] = {}
 
     def __enter__(self):
         self._original_import = builtins.__import__
         self.replace_dict.clear()
-        builtins.__import__ = self.upgrade_import_system(builtins.__import__)
+        self.upgrade_import_system()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         builtins.__import__ = self._original_import
-        for name, replacements in self.replace_dict.items():
-            for replacement in replacements:
+        for key_with_replacements in self.replace_dict.values():
+            for replacement in key_with_replacements.values():
                 reload(replacement.parent)
         self.replace_dict.clear()
 
-    def upgrade_import_system(self, func: Callable = None) -> Any:
-        """
-        Internal function what replace import function by decorated one, what is able to do replaces
-        inside them
-        :param func: buildin.__import__ is original purpose
-        :param name_filters: list of filters with replacements
-        :param debug_file: file where to store debug information about replacements
-        :return: called import function
-        """
+    def upgrade_import_system(self):
+        self._upgrade_import_system(builtins.__import__)
 
+    def _upgrade_import_system(self, func):
         @functools.wraps(func)
         def new_import(*args, **kwargs):
 
@@ -139,8 +120,7 @@ class UpgradeImportSystem:
                                 # because python import system has check
                                 # so in case of module it has to be replaced everytime.
                                 if (
-                                    name in self.replace_dict
-                                    and self.replace_dict[name].key == key
+                                    key in self.replace_dict.get(name, {})
                                     and replace_type is not ReplaceType.REPLACE_MODULE
                                 ):
                                     text.append(
@@ -148,7 +128,6 @@ class UpgradeImportSystem:
                                         f"{one_filter} -> {key}  by {replacement}\n"
                                     )
                                 else:
-
                                     # traverse into
                                     if len(key) > 0:
                                         for key_item in key.split("."):
@@ -157,16 +136,15 @@ class UpgradeImportSystem:
                                                 original_obj, key_item
                                             )
 
-                                    self.replace_dict.setdefault(name, [])
-                                    self.replace_dict[name].append(
-                                        Replacement(
-                                            name=name,
-                                            key=key,
-                                            one_filter=one_filter,
-                                            replacement=replacement,
-                                            parent=parent_obj,
-                                        )
+                                    self.replace_dict.setdefault(name, {})
+                                    self.replace_dict[name][key] = Replacement(
+                                        name=name,
+                                        key=key,
+                                        one_filter=one_filter,
+                                        replacement=replacement,
+                                        parent=parent_obj,
                                     )
+
                                     if replace_type == ReplaceType.REPLACE:
                                         setattr(
                                             parent_obj,
@@ -197,4 +175,4 @@ class UpgradeImportSystem:
                                 fd.write("".join(text))
             return out
 
-        return new_import
+        builtins.__import__ = new_import
