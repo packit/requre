@@ -27,10 +27,9 @@ import inspect
 import re
 from enum import Enum
 from importlib import reload
-from typing import Callable, Optional, Any, Tuple, List
+from typing import Callable, Optional, Any, List, Dict
 
-ORIGIN_IMPORT = builtins.__import__
-replace_dict: dict = {}
+from requre.utils import Replacement
 
 
 class ReplaceType(Enum):
@@ -63,32 +62,25 @@ def upgrade_import_system(
     ).upgrade_import_system(func=func)
 
 
-def revert_import_system():
-    """
-    Revert import system back to original nondecorated function
-    :return: None
-    """
-    builtins.__import__ = ORIGIN_IMPORT
-
-
 class UpgradeImportSystem:
     def __init__(self, filters, debug_file: Optional[str] = None) -> None:
         self.filters = filters
         self.debug_file = debug_file
         self._original_import = None
-        self.reverse: List[Tuple[Any, Any, Any]] = []
+        self.replace_dict: Dict[str, List[Replacement]] = {}
 
     def __enter__(self):
         self._original_import = builtins.__import__
-        self.reverse = []
+        self.replace_dict.clear()
         builtins.__import__ = self.upgrade_import_system(builtins.__import__)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         builtins.__import__ = self._original_import
-        for parent_obj, _, _ in self.reverse:
-            reload(parent_obj)
-        self.reverse = []
+        for name, replacements in self.replace_dict.items():
+            for replacement in replacements:
+                reload(replacement.parent)
+        self.replace_dict.clear()
 
     def upgrade_import_system(self, func: Callable = None) -> Any:
         """
@@ -141,7 +133,8 @@ class UpgradeImportSystem:
                                 # because python import system has check
                                 # so in case of module it has to be replaced everytime.
                                 if (
-                                    key in replace_dict.get(name, {})
+                                    name in self.replace_dict
+                                    and self.replace_dict[name].key == key
                                     and replace_type is not ReplaceType.REPLACE_MODULE
                                 ):
                                     text.append(
@@ -149,16 +142,7 @@ class UpgradeImportSystem:
                                         f"{one_filter} -> {key}  by {replacement}\n"
                                     )
                                 else:
-                                    if name not in replace_dict:
-                                        replace_dict[name] = {
-                                            key: [one_filter, key, replacement]
-                                        }
-                                    else:
-                                        replace_dict[name][key] = [
-                                            one_filter,
-                                            key,
-                                            replacement,
-                                        ]
+
                                     # traverse into
                                     if len(key) > 0:
                                         for key_item in key.split("."):
@@ -166,14 +150,22 @@ class UpgradeImportSystem:
                                             original_obj = getattr(
                                                 original_obj, key_item
                                             )
+
+                                    self.replace_dict.setdefault(name, [])
+                                    self.replace_dict[name].append(
+                                        Replacement(
+                                            name=name,
+                                            key=key,
+                                            one_filter=one_filter,
+                                            replacement=replacement,
+                                            parent=parent_obj,
+                                        )
+                                    )
                                     if replace_type == ReplaceType.REPLACE:
                                         setattr(
                                             parent_obj,
                                             original_obj.__name__,
                                             replace_object,
-                                        )
-                                        self.reverse.append(
-                                            (parent_obj, original_obj, replace_object)
                                         )
                                         text.append(
                                             f"\treplacing {key} "
@@ -185,21 +177,11 @@ class UpgradeImportSystem:
                                             original_obj.__name__,
                                             replace_object(original_obj),
                                         )
-                                        self.reverse.append(
-                                            (
-                                                parent_obj,
-                                                original_obj,
-                                                replace_object(original_obj),
-                                            )
-                                        )
                                         text.append(
                                             f"\tdecorate {key}  by {replace_object.__name__}\n"
                                         )
                                     elif replace_type == ReplaceType.REPLACE_MODULE:
                                         out = replace_object
-                                        self.reverse.append(
-                                            (parent_obj, original_obj, replace_object)
-                                        )
                                         text.append(
                                             f"\treplace module {name} in {module_name} "
                                             f"by {replace_object.__name__}\n"
