@@ -5,10 +5,12 @@
       jobs:
         - requre-pre-commit
         - requre-tests
+        - requre-reverse-dep-ogr-tests
     gate:
       jobs:
         - requre-pre-commit
         - requre-tests
+        - requre-reverse-dep-ogr-tests
 
 - job:
     name: requre-parent
@@ -31,3 +33,9 @@
     parent: requre-parent
     description: Run tests
     run: files/zuul-tests.yaml
+
+- job:
+    name: requre-reverse-dep-ogr-tests
+    parent: requre-parent
+    description: Run tests
+    run: files/zuul-reverse-dep-ogr.yaml
