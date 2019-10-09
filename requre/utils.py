@@ -88,3 +88,12 @@ def run_command(cmd, error_message=None, cwd=None, fail=True, output=False):
     if not output:
         return success
     return shell.stdout
+
+
+class Replacement:
+    def __init__(self, name, key, parent, one_filter, replacement) -> None:
+        self.name = name
+        self.key = key
+        self.parent = parent
+        self.filter = one_filter
+        self.replacement = replacement
