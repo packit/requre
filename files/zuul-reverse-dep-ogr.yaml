@@ -1,5 +1,5 @@
 ---
-- name: This is a recipe for how to run packit tests
+- name: Check if we are not breaking ogr
   hosts: all
   tasks:
   - include_tasks: tasks/zuul-project-setup.yaml
