@@ -8,7 +8,7 @@
     - ansible
     state: present
   become: true
-- name: Install requre from {{ project_dir }}
+- name: Install flexmock
   pip:
     name: flexmock
   become: true
