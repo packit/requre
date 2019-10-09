@@ -8,6 +8,10 @@
     - ansible
     state: present
   become: true
+- name: Install requre from {{ project_dir }}
+  pip:
+    name: flexmock
+  become: true
 - name: Checkout ogr
   git:
     clone: yes
