@@ -27,7 +27,7 @@ import inspect
 import re
 from enum import Enum
 from importlib import reload
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from requre.utils import Replacement
 
@@ -55,9 +55,19 @@ def upgrade_import_system(filters=None, debug_file: Optional[str] = None) -> Non
     UpgradeImportSystem(filters=filters, debug_file=debug_file).upgrade_import_system()
 
 
+def decorate(where, what, decorator, who_name=None) -> "UpgradeImportSystem":
+    upgraded_import_system = UpgradeImportSystem()
+    upgraded_import_system.decorate(
+        where=where, what=what, decorator=decorator, who_name=who_name
+    )
+    return upgraded_import_system
+
+
 class UpgradeImportSystem:
-    def __init__(self, filters, debug_file: Optional[str] = None) -> None:
-        self.filters = filters
+    def __init__(
+        self, filters: Optional[List] = None, debug_file: Optional[str] = None
+    ) -> None:
+        self.filters = filters or []
         self.debug_file = debug_file
         self._original_import = None
         self.replace_dict: Dict[str, Dict[str, Replacement]] = {}
@@ -74,6 +84,15 @@ class UpgradeImportSystem:
             for replacement in key_with_replacements.values():
                 reload(replacement.parent)
         self.replace_dict.clear()
+
+    def decorate(self, where, what, decorator, who_name=None) -> "UpgradeImportSystem":
+        who_options = {}
+        if who_name:
+            who_options["who_name"] = who_name
+        self.filters.append(
+            (where, who_options, {what: [ReplaceType.DECORATOR, decorator]})
+        )
+        return self
 
     def upgrade_import_system(self):
         self._upgrade_import_system(builtins.__import__)
