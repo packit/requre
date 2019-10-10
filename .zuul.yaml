@@ -6,11 +6,13 @@
         - requre-pre-commit
         - requre-tests
         - requre-reverse-dep-ogr-tests
+        - requre-reverse-dep-packit-tests
     gate:
       jobs:
         - requre-pre-commit
         - requre-tests
         - requre-reverse-dep-ogr-tests
+        - requre-reverse-dep-packit-tests
 
 - job:
     name: requre-parent
@@ -37,5 +39,11 @@
 - job:
     name: requre-reverse-dep-ogr-tests
     parent: requre-parent
-    description: Run tests
+    description: Run ogr tests
     run: files/zuul-reverse-dep-ogr.yaml
+
+- job:
+    name: requre-reverse-dep-packit-tests
+    parent: requre-parent
+    description: Run packit tests
+    run: files/zuul-reverse-dep-packit.yaml
