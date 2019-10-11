@@ -3,7 +3,6 @@ import shutil
 import tempfile
 import unittest
 
-from requre.helpers.files import StoreFiles
 from requre.storage import PersistentObjectStorage
 
 
@@ -18,11 +17,11 @@ class BaseClass(unittest.TestCase):
         PersistentObjectStorage().storage_file = self.response_file
         PersistentObjectStorage().dump_after_store = True
         PersistentObjectStorage()._is_write_mode = True
-        StoreFiles.counter = 0
 
     def tearDown(self) -> None:
         pass
         super().tearDown()
+        return None
         shutil.rmtree(self.response_dir)
         if self.file_name:
             os.remove(self.file_name)
