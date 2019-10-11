@@ -10,7 +10,7 @@ SELECTOR = os.path.basename(__file__).rsplit(".", 1)[0]
 class ContextManager(unittest.TestCase):
     def test_no_filter(self):
         old_imports = builtins.__import__
-        with UpgradeImportSystem(filters=[]):
+        with UpgradeImportSystem().upgrade():
             import tempfile
 
             self.assertNotIn("decorated", tempfile.mktemp())
@@ -19,19 +19,17 @@ class ContextManager(unittest.TestCase):
 
     def test_filter(self):
         old_imports = builtins.__import__
-        with UpgradeImportSystem(
-            filters=[
-                (
-                    "^tempfile$",
-                    {"who_name": SELECTOR},
-                    {
-                        "mktemp": [
-                            ReplaceType.DECORATOR,
-                            lambda x: lambda: f"decorated {x()}",
-                        ]
-                    },
-                )
-            ]
+        with UpgradeImportSystem().upgrade(
+            (
+                "^tempfile$",
+                {"who_name": SELECTOR},
+                {
+                    "mktemp": [
+                        ReplaceType.DECORATOR,
+                        lambda x: lambda: f"decorated {x()}",
+                    ]
+                },
+            )
         ):
             assert old_imports != builtins.__import__
             import tempfile
