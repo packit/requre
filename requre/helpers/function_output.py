@@ -21,19 +21,21 @@
 # SOFTWARE.
 
 import functools
-import inspect
 from typing import Callable, Any
 
 from requre.utils import get_if_recording, STORAGE, run_command
+from requre.objects import ObjectStorage
 
 
 def store_function_output(func: Callable) -> Any:
+    fn_keys = ["store_function_output"]
+
     @functools.wraps(func)
     def recorded_function(*args, **kwargs):
         if not get_if_recording():
             return func(*args, **kwargs)
         else:
-            keys = [inspect.getmodule(func).__name__, func.__name__]
+            keys = ObjectStorage._get_base_keys(func) + fn_keys
             # removed extension because using tempfiles
             # + [x for x in args if isinstance(int, str)] + [f"{k}={v}" for k, v in kwargs.items()]
 
