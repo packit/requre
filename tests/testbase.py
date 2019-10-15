@@ -21,7 +21,6 @@ class BaseClass(unittest.TestCase):
     def tearDown(self) -> None:
         pass
         super().tearDown()
-        return None
         shutil.rmtree(self.response_dir)
         if self.file_name:
             os.remove(self.file_name)

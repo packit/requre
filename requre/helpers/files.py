@@ -123,34 +123,30 @@ class StoreFiles:
 
         @functools.wraps(func)
         def store_files_int(*args, **kwargs):
+            def int_dec_fn(pathname_arg, keys_arg):
+                if isinstance(pathname_arg, str):
+                    if STORAGE.is_write_mode:
+                        if os.path.exists(pathname_arg):
+                            cls._copy_logic(
+                                STORAGE, pathname=pathname_arg, keys=keys_arg
+                            )
+                    else:
+                        try:
+                            cls._copy_logic(
+                                STORAGE, pathname=pathname_arg, keys=keys_arg
+                            )
+                        except PersistentStorageException:
+                            pass
+
             class_test_id_list = [cls.__name__, cls._test_identifier()]
             if not get_if_recording():
                 return func(*args, **kwargs)
             else:
                 output = store_function_output(func)(*args, **kwargs)
                 for position in range(len(args)):
-                    arg = args[position]
-                    if isinstance(arg, str):
-                        keys = class_test_id_list + [position]
-                        if STORAGE.is_write_mode:
-                            if os.path.exists(arg):
-                                cls._copy_logic(STORAGE, pathname=arg, keys=keys)
-                        else:
-                            try:
-                                cls._copy_logic(STORAGE, pathname=arg, keys=keys)
-                            except PersistentStorageException:
-                                pass
+                    int_dec_fn(args[position], class_test_id_list + [position])
                 for k, v in kwargs.items():
-                    if isinstance(v, str):
-                        keys = class_test_id_list + [k]
-                        if STORAGE.is_write_mode:
-                            if os.path.exists(v):
-                                cls._copy_logic(STORAGE, pathname=v, keys=keys)
-                        else:
-                            try:
-                                cls._copy_logic(STORAGE, pathname=v, keys=keys)
-                            except PersistentStorageException:
-                                pass
+                    int_dec_fn(v, class_test_id_list + [k])
             return output
 
         return store_files_int

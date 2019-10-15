@@ -32,8 +32,6 @@ class FileStorage(Base):
         self.create_dir_content(
             filename=filename, target_dir=self.temp_dir, content="ciao"
         )
-        print(PersistentObjectStorage().storage_object)
-
         tar_data = PersistentObjectStorage().storage_object["X"]["file"]["tar"][
             "StoreFiles"
         ]["storage_test.yaml"]["target_dir"][0]
