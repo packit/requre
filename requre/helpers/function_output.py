@@ -35,7 +35,7 @@ def store_function_output(func: Callable) -> Any:
         if not get_if_recording():
             return func(*args, **kwargs)
         else:
-            keys = ObjectStorage._get_base_keys(func) + fn_keys
+            keys = ObjectStorage.get_base_keys(func) + fn_keys
             # removed extension because using tempfiles
             # + [x for x in args if isinstance(int, str)] + [f"{k}={v}" for k, v in kwargs.items()]
 

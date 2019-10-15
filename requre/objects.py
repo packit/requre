@@ -54,7 +54,7 @@ class ObjectStorage:
         self.store_keys = store_keys
 
     @staticmethod
-    def _get_base_keys(func: Callable) -> List[Any]:
+    def get_base_keys(func: Callable) -> List[Any]:
         output: List[str] = list()
         # callers module list, to be able to separate requests for various services in one file
         caller_list: List[str] = list()
@@ -107,7 +107,7 @@ class ObjectStorage:
         :return: output of called func
         """
         keys = (
-            cls._get_base_keys(func)
+            cls.get_base_keys(func)
             + [x for x in args if isinstance(int, str)]
             + [f"{k}:{v}" for k, v in kwargs.items()]
         )
@@ -123,7 +123,7 @@ class ObjectStorage:
         :param kwargs: parameters of original function
         :return: output of called func
         """
-        keys = cls._get_base_keys(func)
+        keys = cls.get_base_keys(func)
         return cls.execute(keys, func, *args, **kwargs)
 
     @classmethod
@@ -156,7 +156,7 @@ class ObjectStorage:
         def internal(func: Callable):
             @functools.wraps(func)
             def internal_internal(*args, **kwargs):
-                keys = cls._get_base_keys(func)
+                keys = cls.get_base_keys(func)
                 for item in item_list:
                     if isinstance(item, int):
                         keys.append(args[item])
