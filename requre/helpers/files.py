@@ -24,55 +24,74 @@
 import functools
 import logging
 import os
-import shutil
 from typing import Callable, Any, Dict
+import tarfile
+from io import BytesIO
 
 from requre.helpers.function_output import store_function_output
-from requre.storage import PersistentObjectStorage, StorageCounter
-from requre.utils import run_command, get_if_recording, STORAGE
+from requre.storage import PersistentObjectStorage
+from requre.utils import get_if_recording, STORAGE
+from requre.exceptions import PersistentStorageException
 
 logger = logging.getLogger(__name__)
 
 
-class StoreFiles(StorageCounter):
+class StoreFiles:
     dir_suffix = "file_storage"
+    tar_compression = "xz"
+    basic_ps_keys = ["X", "file", "tar"]
 
     @classmethod
-    def _get_data_dir(cls):
-        cls.reset_counter_if_changed()
-        additional = f"{cls.storage_file()}.{cls.dir_suffix}"
-        output = os.path.join(cls.storage_dir(), additional)
-        os.makedirs(output, mode=0o777, exist_ok=True)
-        logger.debug(f"Use data name: ${output}")
-        return output
+    def _test_identifier(cls):
+        return os.path.basename(STORAGE.storage_file)
 
     @classmethod
-    def _next_directory_name(cls):
-        return os.path.join(cls._get_data_dir(), str(cls.next()))
-
-    @staticmethod
     def _copy_logic(
-        pers_storage: PersistentObjectStorage, source: str, destination: str
+        cls, pers_storage: PersistentObjectStorage, pathname: str, keys: list
     ) -> None:
         """
-        Internal function. Copy files to or back from persistent STORAGE location
+        Internal function. Copy files to or back from persisten storage
+        It will  create tar archive with tar_compression and stores it to Persistent Storage
         """
-        logger.debug(f"Copy files {source} -> {destination}")
+        logger.debug(f"Copy files {pathname} -> {keys}")
         logger.debug(f"Persistent Storage write mode: {pers_storage.is_write_mode}")
+        original_cwd = os.getcwd()
         if pers_storage.is_write_mode:
-            if os.path.isdir(source):
-                os.makedirs(destination)
-                run_command(cmd=["cp", "-drT", source, destination])
-            else:
-                run_command(cmd=["cp", "-d", source, destination])
+            try:
+                artifact_name = os.path.basename(pathname)
+                artifact_path = os.path.dirname(pathname)
+                os.chdir(artifact_path)
+                with BytesIO() as fileobj:
+                    with tarfile.open(
+                        mode=f"x:{cls.tar_compression}", fileobj=fileobj
+                    ) as tar_store:
+                        tar_store.add(name=artifact_name)
+                    fileobj.seek(0)
+                    pers_storage.store(
+                        keys=cls.basic_ps_keys + keys, values=fileobj.read()
+                    )
+            finally:
+                os.chdir(original_cwd)
         else:
-            if os.path.isdir(destination):
-                if os.path.exists(source):
-                    shutil.rmtree(source)
-                os.makedirs(source)
-                run_command(cmd=["cp", "-drTf", destination, source])
-            else:
-                run_command(cmd=["cp", "-df", destination, source])
+            value = pers_storage.read(keys=cls.basic_ps_keys + keys)
+            with BytesIO(value) as fileobj:
+                with tarfile.open(
+                    mode=f"r:{cls.tar_compression}", fileobj=fileobj
+                ) as tar_store:
+                    tarinfo_1st_member = tar_store.getmembers()[0]
+                    if tarinfo_1st_member.isfile():
+                        with open(pathname, mode="wb") as output_file:
+                            output_file.write(
+                                tar_store.extractfile(tarinfo_1st_member).read()
+                            )
+                    else:
+                        for tar_item in tar_store.getmembers():
+                            # we have to modify path of files to remove topdir
+                            if len(tar_item.name.split(os.path.sep, 1)) > 1:
+                                tar_item.name = tar_item.name.split(os.path.sep, 1)[1]
+                            else:
+                                tar_item.name = "."
+                            tar_store.extract(tar_item, path=pathname)
 
     @classmethod
     def return_value(cls, func: Callable) -> Any:
@@ -86,10 +105,12 @@ class StoreFiles(StorageCounter):
             if not get_if_recording():
                 return func(*args, **kwargs)
             else:
-                current_dir = cls._next_directory_name()
-                os.makedirs(cls._get_data_dir(), exist_ok=True)
                 output = store_function_output(func)(*args, **kwargs)
-                cls._copy_logic(STORAGE, output, current_dir)
+                cls._copy_logic(
+                    STORAGE,
+                    pathname=output,
+                    keys=[cls.__name__, cls._test_identifier()],
+                )
             return output
 
         return store_files_int
@@ -102,32 +123,27 @@ class StoreFiles(StorageCounter):
 
         @functools.wraps(func)
         def store_files_int(*args, **kwargs):
+            def int_dec_fn(pathname_arg, keys_arg):
+                if not isinstance(pathname_arg, str):
+                    return
+                if STORAGE.is_write_mode:
+                    if os.path.exists(pathname_arg):
+                        cls._copy_logic(STORAGE, pathname=pathname_arg, keys=keys_arg)
+                else:
+                    try:
+                        cls._copy_logic(STORAGE, pathname=pathname_arg, keys=keys_arg)
+                    except PersistentStorageException:
+                        pass
+
+            class_test_id_list = [cls.__name__, cls._test_identifier()]
             if not get_if_recording():
                 return func(*args, **kwargs)
             else:
-                current_dir = cls._next_directory_name()
-                os.makedirs(current_dir, exist_ok=True)
                 output = store_function_output(func)(*args, **kwargs)
-                if STORAGE.is_write_mode:
-                    for position in range(len(args)):
-                        arg = args[position]
-                        if not isinstance(arg, str):
-                            continue
-                        if os.path.exists(arg):
-                            current_path = os.path.join(current_dir, str(position))
-                            cls._copy_logic(STORAGE, arg, current_path)
-                    for k, v in kwargs.items():
-                        if os.path.exists(v):
-                            current_path = os.path.join(current_dir, k)
-                            cls._copy_logic(STORAGE, v, current_path)
-                else:
-                    for item in os.listdir(current_dir):
-                        current_path = os.path.join(current_dir, item)
-                        if item.isdigit():
-                            arg = args[int(item)]
-                        else:
-                            arg = kwargs[item]
-                        cls._copy_logic(STORAGE, arg, current_path)
+                for position in range(len(args)):
+                    int_dec_fn(args[position], class_test_id_list + [position])
+                for k, v in kwargs.items():
+                    int_dec_fn(v, class_test_id_list + [k])
             return output
 
         return store_files_int
@@ -144,6 +160,7 @@ class StoreFiles(StorageCounter):
         def store_files_int(func):
             @functools.wraps(func)
             def store_files_int_int(*args, **kwargs):
+                class_test_id_list = [cls.__name__, cls._test_identifier()]
                 if not get_if_recording():
                     return func(*args, **kwargs)
                 else:
@@ -153,8 +170,9 @@ class StoreFiles(StorageCounter):
                             param = kwargs[key]
                         else:
                             param = args[position]
-                        current_path = cls._next_directory_name()
-                        cls._copy_logic(STORAGE, param, current_path)
+                        cls._copy_logic(
+                            STORAGE, pathname=param, keys=class_test_id_list + [key]
+                        )
                 return output
 
             return store_files_int_int
