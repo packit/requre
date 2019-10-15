@@ -28,6 +28,7 @@ import yaml
 
 from .exceptions import PersistentStorageException
 from .singleton import SingletonMeta
+from .constants import VERSION_REQURE_FILE
 
 
 class PersistentObjectStorage(metaclass=SingletonMeta):
@@ -40,6 +41,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     storage_file: file for reading and writing data in storage_object
     """
 
+    internal_object_key = "_requre"
+    version_key = "version_storage_file"
+
     def __init__(self) -> None:
         # call dump() after store() is called
         self.dump_after_store = False
@@ -51,6 +55,35 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         storage_file_from_env = os.getenv("RESPONSE_FILE")
         if storage_file_from_env:
             self.storage_file = storage_file_from_env
+
+    @property
+    def requre_internal_object(self):
+        """
+        Placeholder to store some custom configuration, or store custom data,
+        eg. version of storage file, or some versions of packages
+
+        :return: dict
+        """
+        return self.storage_object.get(self.internal_object_key, {})
+
+    @requre_internal_object.setter
+    def requre_internal_object(self, key_dict: dict):
+        if self.internal_object_key not in self.storage_object:
+            self.storage_object[self.internal_object_key] = {}
+        for k, v in key_dict.items():
+            self.storage_object[self.internal_object_key][k] = v
+
+    @property
+    def storage_file_version(self):
+        """
+        Get version of persistent storage file
+        :return: int
+        """
+        return self.requre_internal_object.get(self.version_key, 0)
+
+    @storage_file_version.setter
+    def storage_file_version(self, value: int):
+        self.requre_internal_object = {self.version_key: value}
 
     @property
     def storage_file(self):
@@ -152,6 +185,8 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         if self.is_write_mode:
             if self.is_flushed:
                 return None
+            # dump current version of storage file to storage file
+            self.storage_file_version = VERSION_REQURE_FILE
             with open(self.storage_file, "w") as yaml_file:
                 yaml.dump(self.storage_object, yaml_file, default_flow_style=False)
             self.is_flushed = True
