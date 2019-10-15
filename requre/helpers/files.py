@@ -124,19 +124,16 @@ class StoreFiles:
         @functools.wraps(func)
         def store_files_int(*args, **kwargs):
             def int_dec_fn(pathname_arg, keys_arg):
-                if isinstance(pathname_arg, str):
-                    if STORAGE.is_write_mode:
-                        if os.path.exists(pathname_arg):
-                            cls._copy_logic(
-                                STORAGE, pathname=pathname_arg, keys=keys_arg
-                            )
-                    else:
-                        try:
-                            cls._copy_logic(
-                                STORAGE, pathname=pathname_arg, keys=keys_arg
-                            )
-                        except PersistentStorageException:
-                            pass
+                if not isinstance(pathname_arg, str):
+                    return
+                if STORAGE.is_write_mode:
+                    if os.path.exists(pathname_arg):
+                        cls._copy_logic(STORAGE, pathname=pathname_arg, keys=keys_arg)
+                else:
+                    try:
+                        cls._copy_logic(STORAGE, pathname=pathname_arg, keys=keys_arg)
+                    except PersistentStorageException:
+                        pass
 
             class_test_id_list = [cls.__name__, cls._test_identifier()]
             if not get_if_recording():
