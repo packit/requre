@@ -278,7 +278,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
         """
 
         UpgradeImportSystem().replace_module(
-            where="^tempfile$", what=TempFile, who_name=SELECTOR
+            where="^tempfile$", replacement=TempFile, who_name=SELECTOR
         )
 
         import tempfile
@@ -303,7 +303,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
         """
 
         with UpgradeImportSystem().replace_module(
-            where="^tempfile$", what=TempFile, who_name=SELECTOR
+            where="^tempfile$", replacement=TempFile, who_name=SELECTOR
         ):
             import tempfile
 
@@ -326,7 +326,7 @@ class TestUpgradeImportSystem(unittest.TestCase):
         Test also own implementation of static tempfile module via class
         """
 
-        replace_module(where="^tempfile$", what=TempFile, who_name=SELECTOR)
+        replace_module(where="^tempfile$", replacement=TempFile, who_name=SELECTOR)
         import tempfile
 
         tmpfile = tempfile.mktemp()
@@ -348,7 +348,9 @@ class TestUpgradeImportSystem(unittest.TestCase):
         Test also own implementation of static tempfile module via class
         """
 
-        with replace_module(where="^tempfile$", what=TempFile, who_name=SELECTOR):
+        with replace_module(
+            where="^tempfile$", replacement=TempFile, who_name=SELECTOR
+        ):
             import tempfile
 
             tmpfile = tempfile.mktemp()

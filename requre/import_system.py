@@ -27,7 +27,8 @@ import inspect
 import re
 from enum import Enum
 from importlib import reload
-from typing import Optional, Dict, Any, Callable, List, Tuple
+from types import ModuleType
+from typing import Optional, Dict, Any, Callable, List, Tuple, Union
 
 from requre.utils import Replacement
 
@@ -54,6 +55,7 @@ def upgrade_import_system(
     :param filters: list of filters, for examples see: tests/test_import_system.py
     :param debug_file: file where to store debug information about replacements
     """
+    filters = filters or []
     return UpgradeImportSystem(debug_file=debug_file).upgrade(*filters)
 
 
@@ -61,9 +63,19 @@ def decorate(
     where: str,
     what: str,
     decorator: Callable,
-    who_name: str = None,
+    who_name: Union[str, List[str]] = None,
     debug_file: Optional[str] = None,
 ) -> "UpgradeImportSystem":
+    """
+    Decorate the function when importing.
+
+    :param where: which module(s) is(/are) affected
+    :param what: what will be decorated
+    :param decorator: decorator that will be used
+    :param who_name: where is the import change applied
+    :param debug_file: file where to store debug information about replacements
+    :return: UpgradeImportSystem
+    """
     upgraded_import_system = UpgradeImportSystem(debug_file=debug_file)
     upgraded_import_system.decorate(
         where=where, what=what, decorator=decorator, who_name=who_name
@@ -72,10 +84,24 @@ def decorate(
 
 
 def replace_module(
-    where: str, what: Any, who_name: str = None, debug_file: Optional[str] = None
+    where: str,
+    replacement: Any,
+    who_name: Union[str, List[str]] = None,
+    debug_file: Optional[str] = None,
 ) -> "UpgradeImportSystem":
+    """
+    Replace the module when importing.
+
+    :param where: which module(s) is(/are) affected
+    :param replacement: what will be used instead
+    :param who_name: where is the import change applied
+    :param debug_file: file where to store debug information about replacements
+    :return: UpgradeImportSystem
+    """
     upgraded_import_system = UpgradeImportSystem(debug_file=debug_file)
-    upgraded_import_system.replace_module(where=where, what=what, who_name=who_name)
+    upgraded_import_system.replace_module(
+        where=where, replacement=replacement, who_name=who_name
+    )
     return upgraded_import_system
 
 
@@ -83,9 +109,19 @@ def replace(
     where: str,
     what: str,
     replacement: Any,
-    who_name: str = None,
+    who_name: Union[str, List[str]] = None,
     debug_file: Optional[str] = None,
 ) -> "UpgradeImportSystem":
+    """
+    Replace the module when importing.
+
+    :param where: which module(s) is(/are) affected
+    :param what: what will be replaced
+    :param replacement: what will be used instead
+    :param who_name: where is the import change applied
+    :param debug_file: file where to store debug information about replacements
+    :return: UpgradeImportSystem
+    """
     upgraded_import_system = UpgradeImportSystem(debug_file=debug_file)
     upgraded_import_system.replace(
         where=where, what=what, who_name=who_name, replacement=replacement
@@ -100,47 +136,116 @@ class UpgradeImportSystem:
         self._original_import = builtins.__import__
         self.replace_dict: Dict[str, Dict[str, Replacement]] = {}
 
-    def __enter__(self):
+    def __enter__(self) -> "UpgradeImportSystem":
         self.replace_dict.clear()
         self.upgrade()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.revert()
+
+    def revert(self) -> "UpgradeImportSystem":
+        """
+        Revert the changes to the import system.
+
+        :return: self (chaining is supported)
+        """
         builtins.__import__ = self._original_import
         for key_with_replacements in self.replace_dict.values():
             for replacement in key_with_replacements.values():
-                reload(replacement.parent)
+                if isinstance(replacement.parent, ModuleType):
+                    reload(replacement.parent)
         self.replace_dict.clear()
+        return self
 
     def decorate(
-        self, where: str, what: str, decorator: Callable, who_name: str = None
+        self,
+        where: str,
+        what: str,
+        decorator: Callable,
+        who_name: Union[str, List[str]] = None,
     ) -> "UpgradeImportSystem":
-        who_options = {}
-        if who_name:
-            who_options["who_name"] = who_name
+        """
+        Decorate the function when importing.
 
-        self.upgrade((where, who_options, {what: [ReplaceType.DECORATOR, decorator]}))
+        :param where: which module(s) is(/are) affected
+        :param what: what will be decorated
+        :param decorator: decorator that will be used
+        :param who_name: where is the import change applied
+        :return: self (chaining is supported)
+        """
+        if not who_name:
+            self.upgrade((where, {}, {what: [ReplaceType.DECORATOR, decorator]}))
+            return self
+
+        who_name = who_name if isinstance(who_name, list) else [who_name]
+        for who in who_name:
+            self.upgrade(
+                (where, {"who_name": who}, {what: [ReplaceType.DECORATOR, decorator]})
+            )
         return self
 
     def replace_module(
-        self, where: str, what: Any, who_name: str = None
+        self, where: str, replacement: Any, who_name: Union[str, List[str]] = None
     ) -> "UpgradeImportSystem":
-        who_options = {}
-        if who_name:
-            who_options["who_name"] = who_name
-        self.upgrade((where, who_options, {"": [ReplaceType.REPLACE_MODULE, what]}))
+        """
+        Replace the module when importing.
+
+        :param where: which module(s) is(/are) affected
+        :param replacement: what will be used instead
+        :param who_name: where is the import change applied
+        :return: self (chaining is supported)
+        """
+        if not who_name:
+            self.upgrade((where, {}, {"": [ReplaceType.REPLACE_MODULE, replacement]}))
+            return self
+
+        who_name = who_name if isinstance(who_name, list) else [who_name]
+        for who in who_name:
+            self.upgrade(
+                (
+                    where,
+                    {"who_name": who},
+                    {"": [ReplaceType.REPLACE_MODULE, replacement]},
+                )
+            )
         return self
 
     def replace(
-        self, where: str, what: str, replacement: Any, who_name: str = None
+        self,
+        where: str,
+        what: str,
+        replacement: Any,
+        who_name: Union[str, List[str]] = None,
     ) -> "UpgradeImportSystem":
-        who_options = {}
-        if who_name:
-            who_options["who_name"] = who_name
-        self.upgrade((where, who_options, {what: [ReplaceType.REPLACE, replacement]}))
+        """
+        Replace the module when importing.
+
+        :param where: which module(s) is(/are) affected
+        :param what: what will be replaced
+        :param replacement: what will be used instead
+        :param who_name: where is the import change applied
+        :return: self (chaining is supported)
+        """
+
+        if not who_name:
+            self.upgrade((where, {}, {what: [ReplaceType.REPLACE, replacement]}))
+            return self
+
+        who_name = who_name if isinstance(who_name, list) else [who_name]
+        for who in who_name:
+            self.upgrade(
+                (where, {"who_name": who}, {what: [ReplaceType.REPLACE, replacement]})
+            )
         return self
 
     def upgrade(self, *filters):
+        """
+        Apply the upgrade to import system in internal-tuple format.
+
+        :param filters: for examples see: tests/test_import_system.py
+        :return: self (chaining is supported)
+        """
 
         for filter in filters:
             self.filters.append(filter)
