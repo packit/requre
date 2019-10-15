@@ -14,7 +14,9 @@ install:
 	pip3 install --user .
 
 clean:
-	 git clean -fd
+	git clean -fd
+	find . -name __pycache__ -exec rm -r {} \;
+	find . -name \*.pyc -exec rm {} \;
 
 check:
 	PYTHONPATH=$(CURDIR) PYTHONDONTWRITEBYTECODE=1 python3 -m pytest --verbose --showlocals $(TESTS_TARGET)
