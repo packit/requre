@@ -129,6 +129,22 @@ def replace(
     return upgraded_import_system
 
 
+def log_imports(
+    what: str, who_name: Union[str, List[str]] = None, debug_file: Optional[str] = None
+) -> "UpgradeImportSystem":
+    """
+    Log the imports.
+
+    :param what: which module(s) is(/are) affected
+    :param who_name: where is the import logged
+    :param debug_file: file where to store debug information about replacements
+    :return: UpgradeImportSystem
+    """
+    upgraded_import_system = UpgradeImportSystem(debug_file=debug_file)
+    upgraded_import_system.log_imports(what=what, who_name=who_name)
+    return upgraded_import_system
+
+
 class UpgradeImportSystem:
     def __init__(self, debug_file: Optional[str] = None) -> None:
         self.filters: List[Tuple] = []
@@ -237,6 +253,25 @@ class UpgradeImportSystem:
             self.upgrade(
                 (where, {"who_name": who}, {what: [ReplaceType.REPLACE, replacement]})
             )
+        return self
+
+    def log_imports(
+        self, what: str, who_name: Union[str, List[str]] = None
+    ) -> "UpgradeImportSystem":
+        """
+        Log the imports.
+
+        :param what: which module(s) is(/are) affected
+        :param who_name: where is the import logged
+        :return: self (chaining is supported)
+        """
+        if not who_name:
+            self.upgrade((what, {}))
+            return self
+
+        who_name = who_name if isinstance(who_name, list) else [who_name]
+        for who in who_name:
+            self.upgrade((what, {"who_name": who}))
         return self
 
     def upgrade(self, *filters):
