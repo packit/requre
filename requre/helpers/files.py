@@ -29,7 +29,7 @@ import tarfile
 from io import BytesIO
 
 from requre.helpers.function_output import store_function_output
-from requre.storage import PersistentObjectStorage
+from requre.storage import PersistentObjectStorage, DataMiner
 from requre.utils import get_if_recording, STORAGE
 from requre.exceptions import PersistentStorageException
 
@@ -70,6 +70,8 @@ class StoreFiles:
                     pers_storage.store(
                         keys=cls.basic_ps_keys + keys, values=fileobj.read()
                     )
+                    # it is file operation, latency will be based on copying, so reset it to 0
+                    DataMiner().metadata = {DataMiner.LATENCY_KEY: 0}
             finally:
                 os.chdir(original_cwd)
         else:

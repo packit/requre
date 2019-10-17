@@ -27,7 +27,7 @@ import logging
 import pickle
 from typing import Optional, Callable, Any, List
 
-from requre.storage import PersistentObjectStorage
+from requre.storage import PersistentObjectStorage, DataMiner, original_time
 from requre.utils import STORAGE
 
 
@@ -86,14 +86,18 @@ class ObjectStorage:
         :return: output of called func
         """
         logger = logging.getLogger(cls.__name__)
-        rrstorage = cls(store_keys=keys)
-        if rrstorage.persistent_storage.is_write_mode:
+        object_storage = cls(store_keys=keys)
+        if object_storage.persistent_storage.is_write_mode:
+            time_before = original_time()
             response = func(*args, **kwargs)
-            rrstorage.write(response)
+            time_after = original_time()
+            object_storage.write(response)
+            # overwrite default latency by more precise latency for function call
+            DataMiner().metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
             logger.debug(f"WRITE Keys: {keys} -> {response}")
             return response
         else:
-            response = rrstorage.read()
+            response = object_storage.read()
             logger.debug(f"READ  Keys: {keys} -> {response}")
             return response
 
@@ -148,7 +152,6 @@ class ObjectStorage:
         Class method for what should be used as decorator of import replacing system
         This use list of selection of *args or **kwargs as arguments of function as keys
 
-        :param func: Callable object
         :param item_list: list of values of *args nums,  **kwargs names to use as keys
         :return: output of func
         """

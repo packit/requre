@@ -2,9 +2,10 @@ import os
 import unittest
 import tempfile
 import shutil
+import time
 from requre.utils import run_command
 from requre.exceptions import PersistentStorageException
-from requre.constants import ENV_REPLACEMENT_FILE, ENV_STORAGE_FILE
+from requre.constants import ENV_REPLACEMENT_FILE, ENV_STORAGE_FILE, ENV_APPLY_LATENCY
 
 
 CMD_RELATIVE = f"""python3 {os.path.join(os.path.dirname(os.path.dirname(__file__)),
@@ -150,3 +151,60 @@ class SuperUser(NormalUser):
         output = run_command(cmd=f"{CMD_RELATIVE} --system verify", output=True)
         self.assertIn("Python patched", output)
         self.assertIn("/usr/lib/python", output)
+
+
+class Latency(unittest.TestCase):
+    test_command = f"python3 {DATA_DIR}/e2e_latency_test.py"
+
+    def setUp(self) -> None:
+        run_command(cmd=f"{CMD_RELATIVE} clean", fail=False)
+        run_command(cmd=f"{CMD_RELATIVE} apply")
+        self.storage_file = tempfile.mktemp()
+
+    def tearDown(self) -> None:
+        run_command(cmd=f"{CMD_RELATIVE} clean", fail=False)
+        os.remove(self.storage_file)
+
+    def test_not_enabled(self):
+        """
+        Check if Latency is not applied if not enabled via env var
+        """
+        envs = (
+            f"{ENV_STORAGE_FILE}={self.storage_file} "
+            f"{ENV_REPLACEMENT_FILE}={DATA_DIR}/e2e_latency_replacements.py "
+            f"{ENV_APPLY_LATENCY}=''"
+        )
+        cmd = f"""bash -c '{envs} {self.test_command}'"""
+        self.assertFalse(os.path.exists(self.storage_file))
+        before = time.time()
+        run_command(cmd=cmd, output=True)
+        after = time.time()
+        self.assertAlmostEqual(2, after - before, delta=1)
+
+        self.assertTrue(os.path.exists(self.storage_file))
+        before = time.time()
+        run_command(cmd=cmd, output=True)
+        after = time.time()
+        self.assertAlmostEqual(0, after - before, delta=1)
+
+    def test_enabled(self):
+        """
+        Check if it is really waiting for function call, when latency is enabled
+        """
+        envs = (
+            f"{ENV_STORAGE_FILE}={self.storage_file} "
+            f"{ENV_REPLACEMENT_FILE}={DATA_DIR}/e2e_latency_replacements.py "
+            f"{ENV_APPLY_LATENCY}=YES"
+        )
+        cmd = f"""bash -c '{envs} {self.test_command}'"""
+        self.assertFalse(os.path.exists(self.storage_file))
+        before = time.time()
+        run_command(cmd=cmd, output=True)
+        after = time.time()
+        self.assertAlmostEqual(2, after - before, delta=1)
+
+        self.assertTrue(os.path.exists(self.storage_file))
+        before = time.time()
+        run_command(cmd=cmd, output=True)
+        after = time.time()
+        self.assertAlmostEqual(2, after - before, delta=1)
