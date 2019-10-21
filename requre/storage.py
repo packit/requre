@@ -111,7 +111,7 @@ class DataMiner(metaclass=SingletonMeta):
             self.current_time = current_time
         return diff
 
-    def dump(self, level, key, values, metadata: Optional[Dict] = None):
+    def dump(self, level, key, values, metadata: Dict):
         """
         Store values in proper format to level[key] item
 
@@ -264,7 +264,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 output.append(item)
         return output
 
-    def store(self, keys: List, values: Any, metadata: Optional[Dict] = None) -> None:
+    def store(self, keys: List, values: Any, metadata: Dict) -> None:
         """
         Stores data to dictionary object based on keys values it will create structure
         if structure does not exist

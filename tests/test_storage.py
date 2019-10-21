@@ -15,8 +15,8 @@ class Base(BaseClass):
         STORAGE.dump_after_store = False
 
     def store_keys_example(self):
-        STORAGE.store(self.keys, values="c")
-        STORAGE.store(self.keys, values="d")
+        STORAGE.store(self.keys, values="c", metadata={})
+        STORAGE.store(self.keys, values="d", metadata={})
 
     def test_simple(self):
         self.store_keys_example()
@@ -79,8 +79,8 @@ class TestStoreTypes(BaseClass):
         self.assertEqual(DataTypes.List, DataMiner().data_type)
 
     def test_list_data(self):
-        STORAGE.store(keys=self.keys, values="x")
-        STORAGE.store(keys=self.keys, values="y")
+        STORAGE.store(keys=self.keys, values="x", metadata={})
+        STORAGE.store(keys=self.keys, values="y", metadata={})
         self.assertEqual(2, len(STORAGE.storage_object["a"]["b"]))
         self.assertEqual("x", STORAGE.read(keys=self.keys))
         self.assertEqual(1, len(STORAGE.storage_object["a"]["b"]))
@@ -89,8 +89,8 @@ class TestStoreTypes(BaseClass):
 
     def test_dict_data(self):
         DataMiner().data_type = DataTypes.Dict
-        STORAGE.store(keys=self.keys, values="x")
-        STORAGE.store(keys=self.keys, values="y")
+        STORAGE.store(keys=self.keys, values="x", metadata={})
+        STORAGE.store(keys=self.keys, values="y", metadata={})
         self.assertEqual(2, len(STORAGE.storage_object["a"]["b"]))
         self.assertEqual("y", STORAGE.read(keys=self.keys))
         self.assertEqual(2, len(STORAGE.storage_object["a"]["b"]))
@@ -108,7 +108,7 @@ class Metadata(BaseClass):
     def test_metadata(self):
         delta = 0.05
 
-        STORAGE.store(keys=self.keys, values="x")
+        STORAGE.store(keys=self.keys, values="x", metadata={})
         self.assertAlmostEqual(
             0, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
@@ -116,13 +116,13 @@ class Metadata(BaseClass):
         DataMiner().data.metadata = {"random": "data"}
 
         time.sleep(0.1)
-        STORAGE.store(keys=self.keys, values="y")
+        STORAGE.store(keys=self.keys, values="y", metadata={})
         self.assertAlmostEqual(
             0.1, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
 
         time.sleep(0.2)
-        STORAGE.store(keys=self.keys, values="z")
+        STORAGE.store(keys=self.keys, values="z", metadata={})
         self.assertAlmostEqual(
             0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
@@ -162,9 +162,9 @@ class Latency(BaseClass):
     def test_not_applied(self):
         DataMiner().use_latency = False
         delta = 0.05
-        STORAGE.store(keys=self.keys, values="x")
+        STORAGE.store(keys=self.keys, values="x", metadata={})
         time.sleep(0.2)
-        STORAGE.store(keys=self.keys, values="y")
+        STORAGE.store(keys=self.keys, values="y", metadata={})
         self.assertAlmostEqual(
             0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
@@ -181,9 +181,9 @@ class Latency(BaseClass):
 
     def test_applied(self):
         delta = 0.05
-        STORAGE.store(keys=self.keys, values="x")
+        STORAGE.store(keys=self.keys, values="x", metadata={})
         time.sleep(0.2)
-        STORAGE.store(keys=self.keys, values="y")
+        STORAGE.store(keys=self.keys, values="y", metadata={})
         self.assertAlmostEqual(
             0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
