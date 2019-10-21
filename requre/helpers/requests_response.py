@@ -24,7 +24,7 @@
 import datetime
 import json
 from io import BytesIO
-from typing import Any
+from typing import Any, Optional, Dict
 
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
@@ -39,8 +39,8 @@ class RequestResponseHandling(ObjectStorage):
     __store_indicator = "__store_indicator"
     __implicit_encoding = "UTF-8"
 
-    def write(self, response: Response) -> Response:
-        super().write(response)
+    def write(self, response: Response, metadata: Optional[Dict] = None) -> Response:
+        super().write(response, metadata)
         if getattr(response, "next"):
             self.write(getattr(response, "next"))
         return response

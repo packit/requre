@@ -21,14 +21,156 @@
 # SOFTWARE.
 
 import os
+import time
 from _collections_abc import Hashable
 from typing import Dict, List, Any, Optional
 
+from enum import Enum
 import yaml
 
 from .exceptions import PersistentStorageException
 from .singleton import SingletonMeta
-from .constants import VERSION_REQURE_FILE
+from .constants import VERSION_REQURE_FILE, ENV_STORAGE_FILE
+
+# use this sleep to avoid decorating original time function used internally
+original_sleep = time.sleep
+original_time = time.time
+
+
+class DataStructure:
+    """
+    Object model for storing data to persistent storage
+    """
+
+    OUTPUT_KEY = "output"
+    METADATA_KEY = "metadata"
+
+    def __init__(self, output: Any):
+        self.output = output
+        self._metadata: dict = dict()
+
+    @property
+    def metadata(self):
+        """
+        Medatata for item in storage
+        """
+        return self._metadata
+
+    @metadata.setter
+    def metadata(self, values: dict):
+        for k, v in values.items():
+            self._metadata[k] = v
+
+    def dump(self):
+        """
+        Dump object to serializable format
+
+        :return dict
+        """
+        return {self.METADATA_KEY: self.metadata, self.OUTPUT_KEY: self.output}
+
+    @classmethod
+    def create_from_dict(cls, dict_repr: dict):
+        """
+        Create Object representation from dict
+
+        :return DataStructure
+        """
+        data = cls(dict_repr[cls.OUTPUT_KEY])
+        data.metadata = dict_repr[cls.METADATA_KEY]
+        return data
+
+
+class DataTypes(Enum):
+    List = 1
+    Dict = 2
+
+
+class DataMiner(metaclass=SingletonMeta):
+    """
+    Intermediate class used for proper formatting and keeping backward
+    compatibility with requre storage version files
+    """
+
+    current_time = original_time()
+    data: DataStructure
+    data_type: DataTypes = DataTypes.List
+    use_latency = False
+    LATENCY_KEY = "latency"
+
+    def get_latency(self, regenerate=True) -> float:
+        """
+        Returns latency from last store event
+
+        :param regenerate: if False, then it will not be changed, just displayed
+        :return: float
+        """
+        current_time = original_time()
+        diff = current_time - self.current_time
+        if regenerate:
+            self.current_time = current_time
+        return diff
+
+    def dump(self, level, key, values, metadata: Dict):
+        """
+        Store values in proper format to level[key] item
+
+        :param level: parent dict object
+        :param key: item in dict
+        :param values: what to strore (return value of function)
+        :param metadata: store metadata to object from upper level
+        :return: None
+        """
+        ds = DataStructure(values)
+        if metadata:
+            ds.metadata = metadata
+        if self.LATENCY_KEY not in ds.metadata:
+            ds.metadata = {self.LATENCY_KEY: self.get_latency()}
+        self.data = ds
+        item = ds.dump()
+        if self.data_type == DataTypes.List:
+            if PersistentObjectStorage().storage_file_version <= 1:
+                # Backward compatibility for requre before using DataStructure
+                item = values
+            level.setdefault(key, [])
+            level[key].append(item)
+        elif self.data_type == DataTypes.Dict:
+            level[key] = item
+
+    def load(self, level):
+        """
+        Get data from storage_object and trasform it to DataStructure object.
+
+        :param level: where data are stored
+        :return: output of function
+        """
+        data = None
+        if self.data_type == DataTypes.List:
+            if len(level) == 0:
+                raise PersistentStorageException(
+                    "No responses left. Try to regenerate response file "
+                    f"({PersistentObjectStorage().storage_file})."
+                )
+            if PersistentObjectStorage().storage_file_version <= 1:
+                # Backward compatibility for requre before using DataStructure
+                data = DataStructure(level[0])
+            else:
+                data = DataStructure.create_from_dict(level[0])
+            del level[0]
+        elif self.data_type == DataTypes.Dict:
+            data = DataStructure.create_from_dict(level)
+        self.data = data
+        if self.use_latency:
+            original_sleep(data.metadata.get(self.LATENCY_KEY, 0))
+        return data.output
+
+    @property
+    def metadata(self):
+        return self.data.metadata
+
+    @metadata.setter
+    def metadata(self, value):
+        self.data.metadata = value
 
 
 class PersistentObjectStorage(metaclass=SingletonMeta):
@@ -51,13 +193,12 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         self.is_flushed = True
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
-
-        storage_file_from_env = os.getenv("RESPONSE_FILE")
+        storage_file_from_env = os.getenv(ENV_STORAGE_FILE)
         if storage_file_from_env:
             self.storage_file = storage_file_from_env
 
     @property
-    def requre_internal_object(self):
+    def metadata(self):
         """
         Placeholder to store some custom configuration, or store custom data,
         eg. version of storage file, or some versions of packages
@@ -66,12 +207,13 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         """
         return self.storage_object.get(self.internal_object_key, {})
 
-    @requre_internal_object.setter
-    def requre_internal_object(self, key_dict: dict):
+    @metadata.setter
+    def metadata(self, key_dict: dict):
         if self.internal_object_key not in self.storage_object:
             self.storage_object[self.internal_object_key] = {}
         for k, v in key_dict.items():
             self.storage_object[self.internal_object_key][k] = v
+        self.is_flushed = False
 
     @property
     def storage_file_version(self):
@@ -79,11 +221,18 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         Get version of persistent storage file
         :return: int
         """
-        return self.requre_internal_object.get(self.version_key, 0)
+        return self.metadata.get(self.version_key, 0)
 
     @storage_file_version.setter
     def storage_file_version(self, value: int):
-        self.requre_internal_object = {self.version_key: value}
+        self.metadata = {self.version_key: value}
+
+    def _set_storage_file_version_if_not_set(self):
+        """
+        Set storage file version if not already set to latest version.
+        """
+        if self.metadata.get(self.version_key) is None:
+            self.storage_file_version = VERSION_REQURE_FILE
 
     @property
     def storage_file(self):
@@ -115,7 +264,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 output.append(item)
         return output
 
-    def store(self, keys: List, values: Any) -> None:
+    def store(self, keys: List, values: Any, metadata: Dict) -> None:
         """
         Stores data to dictionary object based on keys values it will create structure
         if structure does not exist
@@ -126,7 +275,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         :param values: It could be whatever type what is used in original object handling
         :return: None
         """
-
+        self._set_storage_file_version_if_not_set()
         current_level = self.storage_object
         hashable_keys = self.transform_hashable(keys)
         for item_num in range(len(hashable_keys)):
@@ -135,9 +284,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 if not current_level.get(item):
                     current_level[item] = {}
             else:
-                current_level.setdefault(item, [])
-                current_level[item].append(values)
-
+                DataMiner().dump(
+                    level=current_level, key=item, values=values, metadata=metadata
+                )
             current_level = current_level[item]
         self.is_flushed = False
 
@@ -164,14 +313,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 )
 
             current_level = current_level[item]
-
-        if len(current_level) == 0:
-            raise PersistentStorageException(
-                "No responses left. Try to regenerate response files."
-            )
-
-        result = current_level[0]
-        del current_level[0]
+        result = DataMiner().load(level=current_level)
         return result
 
     def dump(self) -> None:
@@ -183,10 +325,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         :return: None
         """
         if self.is_write_mode:
+            self._set_storage_file_version_if_not_set()
             if self.is_flushed:
                 return None
-            # dump current version of storage file to storage file
-            self.storage_file_version = VERSION_REQURE_FILE
             with open(self.storage_file, "w") as yaml_file:
                 yaml.dump(self.storage_object, yaml_file, default_flow_style=False)
             self.is_flushed = True

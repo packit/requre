@@ -25,9 +25,9 @@ import functools
 import inspect
 import logging
 import pickle
-from typing import Optional, Callable, Any, List
+from typing import Optional, Callable, Any, List, Dict
 
-from requre.storage import PersistentObjectStorage
+from requre.storage import PersistentObjectStorage, DataMiner, original_time
 from requre.utils import STORAGE
 
 
@@ -86,14 +86,17 @@ class ObjectStorage:
         :return: output of called func
         """
         logger = logging.getLogger(cls.__name__)
-        rrstorage = cls(store_keys=keys)
-        if rrstorage.persistent_storage.is_write_mode:
+        object_storage = cls(store_keys=keys)
+        if object_storage.persistent_storage.is_write_mode:
+            time_before = original_time()
             response = func(*args, **kwargs)
-            rrstorage.write(response)
+            time_after = original_time()
+            metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
+            object_storage.write(response, metadata)
             logger.debug(f"WRITE Keys: {keys} -> {response}")
             return response
         else:
-            response = rrstorage.read()
+            response = object_storage.read()
             logger.debug(f"READ  Keys: {keys} -> {response}")
             return response
 
@@ -148,7 +151,6 @@ class ObjectStorage:
         Class method for what should be used as decorator of import replacing system
         This use list of selection of *args or **kwargs as arguments of function as keys
 
-        :param func: Callable object
         :param item_list: list of values of *args nums,  **kwargs names to use as keys
         :return: output of func
         """
@@ -184,16 +186,19 @@ class ObjectStorage:
 
         return internal
 
-    def write(self, obj: Any) -> Any:
+    def write(self, obj: Any, metadata: Optional[Dict] = None) -> Any:
         """
         Write the object representation to storage
         Internally it will use self.to_serializable()
         method to get serializable object representation
 
         :param obj: some object
+        :param metadata: store metedata to object
         :return: same obj
         """
-        self.persistent_storage.store(self.store_keys, self.to_serializable(obj))
+        self.persistent_storage.store(
+            self.store_keys, self.to_serializable(obj), metadata=metadata
+        )
         return obj
 
     def read(self):

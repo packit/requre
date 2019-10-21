@@ -5,14 +5,17 @@ import sys
 import shutil
 import click
 import importlib.util
+import atexit
 
 from requre.import_system import upgrade_import_system
 from requre.utils import STORAGE
+from requre.storage import DataMiner
 from requre.constants import (
     ENV_REPLACEMENT_FILE,
     ENV_STORAGE_FILE,
     ENV_DEBUG,
     REPLACE_DEFAULT_KEY,
+    ENV_APPLY_LATENCY,
 )
 
 """
@@ -33,7 +36,9 @@ when tool is installed call python code with enviroment variables:
         It is important to have there set variable FILTERS what will
         be used as replacements list for upgrade_import_system function.
         For more details see doc: https://github.com/packit-service/requre/
- DEBUG  if set, print debugging information, fi requre is applied
+ DEBUG - if set, print debugging information, fi requre is applied
+ LATENCY - apply latency waits for test, to have simiar test timing
+        It is important when using some async/messaging calls
 """
 
 FILE_NAME = "sitecustomize.py"
@@ -54,6 +59,7 @@ def apply_fn():
     storage_file = os.getenv(ENV_STORAGE_FILE)
     # file name of replaces for updated import system
     replacement_file = os.getenv(ENV_REPLACEMENT_FILE)
+    if_latency = os.getenv(ENV_APPLY_LATENCY)
     debug_print(
         f"You have patched version of your python by requre project "
         f"(python {sys.version_info.major}.{sys.version_info.minor}, {__file__}) "
@@ -69,7 +75,13 @@ def apply_fn():
                 f"{replacement_file} has to exist to work properly "
                 f"(python file with replacements definition)"
             )
+        if if_latency:
+            debug_print("Use latency for function calls")
+            DataMiner().use_latency = True
         STORAGE.storage_file = storage_file
+        # register dump command, when python finish
+        atexit.register(STORAGE.dump)
+
         spec = importlib.util.spec_from_file_location("replacements", replacement_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)

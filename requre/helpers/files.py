@@ -29,7 +29,7 @@ import tarfile
 from io import BytesIO
 
 from requre.helpers.function_output import store_function_output
-from requre.storage import PersistentObjectStorage
+from requre.storage import PersistentObjectStorage, DataMiner
 from requre.utils import get_if_recording, STORAGE
 from requre.exceptions import PersistentStorageException
 
@@ -67,8 +67,11 @@ class StoreFiles:
                     ) as tar_store:
                         tar_store.add(name=artifact_name)
                     fileobj.seek(0)
+                    metadata = {DataMiner.LATENCY_KEY: 0}
                     pers_storage.store(
-                        keys=cls.basic_ps_keys + keys, values=fileobj.read()
+                        keys=cls.basic_ps_keys + keys,
+                        values=fileobj.read(),
+                        metadata=metadata,
                     )
             finally:
                 os.chdir(original_cwd)

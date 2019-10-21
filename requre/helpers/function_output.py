@@ -25,6 +25,7 @@ from typing import Callable, Any
 
 from requre.utils import get_if_recording, STORAGE, run_command
 from requre.objects import ObjectStorage
+from requre.storage import DataMiner, original_time
 
 
 def store_function_output(func: Callable) -> Any:
@@ -40,9 +41,11 @@ def store_function_output(func: Callable) -> Any:
             # + [x for x in args if isinstance(int, str)] + [f"{k}={v}" for k, v in kwargs.items()]
 
             if STORAGE.is_write_mode:
+                time_before = original_time()
                 output = func(*args, **kwargs)
-                STORAGE.store(keys, output)
-
+                time_after = original_time()
+                metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
+                STORAGE.store(keys, output, metadata)
             else:
                 output = STORAGE.read(keys)
             return output

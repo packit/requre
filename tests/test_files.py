@@ -34,7 +34,7 @@ class FileStorage(Base):
         )
         tar_data = PersistentObjectStorage().storage_object["X"]["file"]["tar"][
             "StoreFiles"
-        ]["storage_test.yaml"]["target_dir"][0]
+        ]["storage_test.yaml"]["target_dir"][0]["output"]
         with BytesIO(tar_data) as tar_byte:
             with tarfile.open(mode="r:xz", fileobj=tar_byte) as tar_archive:
                 self.assertIn(filename, [x.name for x in tar_archive.getmembers()][-1])
