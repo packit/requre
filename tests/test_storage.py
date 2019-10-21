@@ -44,29 +44,29 @@ class Versioning(BaseClass):
         """
         Check if storage is able to read and write version to persistent storage file
         """
-        self.assertEqual({}, STORAGE.requre_internal_object)
+        self.assertEqual({}, STORAGE.metadata)
         self.assertEqual(0, STORAGE.storage_file_version)
-        self.assertEqual(None, STORAGE.requre_internal_object.get(STORAGE.version_key))
+        self.assertEqual(None, STORAGE.metadata.get(STORAGE.version_key))
         self.assertFalse(os.path.exists(self.response_file))
 
     def test_no_version_after_dump(self):
         STORAGE.dump()
         STORAGE.storage_object = {}
-        self.assertEqual({}, STORAGE.requre_internal_object)
+        self.assertEqual({}, STORAGE.metadata)
         self.assertEqual(0, STORAGE.storage_file_version)
 
     def test_current_version(self):
         STORAGE.dump()
         self.assertTrue(os.path.exists(self.response_file))
         self.assertEqual(VERSION_REQURE_FILE, STORAGE.storage_file_version)
-        self.assertNotEqual({}, STORAGE.requre_internal_object)
+        self.assertNotEqual({}, STORAGE.metadata)
 
     def test_current_version_after_load(self):
         STORAGE.dump()
         STORAGE.load()
         self.assertEqual(VERSION_REQURE_FILE, STORAGE.storage_file_version)
-        self.assertNotEqual({}, STORAGE.requre_internal_object)
-        self.assertIn("version_storage_file", STORAGE.requre_internal_object)
+        self.assertNotEqual({}, STORAGE.metadata)
+        self.assertIn("version_storage_file", STORAGE.metadata)
 
 
 class TestStoreTypes(BaseClass):

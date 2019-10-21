@@ -25,7 +25,7 @@ import functools
 import inspect
 import logging
 import pickle
-from typing import Optional, Callable, Any, List
+from typing import Optional, Callable, Any, List, Dict
 
 from requre.storage import PersistentObjectStorage, DataMiner, original_time
 from requre.utils import STORAGE
@@ -91,9 +91,8 @@ class ObjectStorage:
             time_before = original_time()
             response = func(*args, **kwargs)
             time_after = original_time()
-            object_storage.write(response)
-            # overwrite default latency by more precise latency for function call
-            DataMiner().metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
+            metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
+            object_storage.write(response, metadata)
             logger.debug(f"WRITE Keys: {keys} -> {response}")
             return response
         else:
@@ -187,16 +186,19 @@ class ObjectStorage:
 
         return internal
 
-    def write(self, obj: Any) -> Any:
+    def write(self, obj: Any, metadata: Optional[Dict] = None) -> Any:
         """
         Write the object representation to storage
         Internally it will use self.to_serializable()
         method to get serializable object representation
 
         :param obj: some object
+        :param metadata: store metedata to object
         :return: same obj
         """
-        self.persistent_storage.store(self.store_keys, self.to_serializable(obj))
+        self.persistent_storage.store(
+            self.store_keys, self.to_serializable(obj), metadata=metadata
+        )
         return obj
 
     def read(self):

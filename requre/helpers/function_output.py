@@ -44,8 +44,8 @@ def store_function_output(func: Callable) -> Any:
                 time_before = original_time()
                 output = func(*args, **kwargs)
                 time_after = original_time()
-                STORAGE.store(keys, output)
-                DataMiner().metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
+                metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
+                STORAGE.store(keys, output, metadata)
             else:
                 output = STORAGE.read(keys)
             return output

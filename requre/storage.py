@@ -111,17 +111,21 @@ class DataMiner(metaclass=SingletonMeta):
             self.current_time = current_time
         return diff
 
-    def dump(self, level, key, values):
+    def dump(self, level, key, values, metadata: Optional[Dict] = None):
         """
         Store values in proper format to level[key] item
 
         :param level: parent dict object
         :param key: item in dict
         :param values: what to strore (return value of function)
+        :param metadata: store metadata to object from upper level
         :return: None
         """
         ds = DataStructure(values)
-        ds.metadata = {self.LATENCY_KEY: self.get_latency()}
+        if metadata:
+            ds.metadata = metadata
+        if self.LATENCY_KEY not in ds.metadata:
+            ds.metadata = {self.LATENCY_KEY: self.get_latency()}
         self.data = ds
         item = ds.dump()
         if self.data_type == DataTypes.List:
@@ -194,7 +198,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
             self.storage_file = storage_file_from_env
 
     @property
-    def requre_internal_object(self):
+    def metadata(self):
         """
         Placeholder to store some custom configuration, or store custom data,
         eg. version of storage file, or some versions of packages
@@ -203,8 +207,8 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         """
         return self.storage_object.get(self.internal_object_key, {})
 
-    @requre_internal_object.setter
-    def requre_internal_object(self, key_dict: dict):
+    @metadata.setter
+    def metadata(self, key_dict: dict):
         if self.internal_object_key not in self.storage_object:
             self.storage_object[self.internal_object_key] = {}
         for k, v in key_dict.items():
@@ -217,17 +221,17 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         Get version of persistent storage file
         :return: int
         """
-        return self.requre_internal_object.get(self.version_key, 0)
+        return self.metadata.get(self.version_key, 0)
 
     @storage_file_version.setter
     def storage_file_version(self, value: int):
-        self.requre_internal_object = {self.version_key: value}
+        self.metadata = {self.version_key: value}
 
     def _set_storage_file_version_if_not_set(self):
         """
         Set storage file version if not already set to latest version.
         """
-        if self.requre_internal_object.get(self.version_key) is None:
+        if self.metadata.get(self.version_key) is None:
             self.storage_file_version = VERSION_REQURE_FILE
 
     @property
@@ -260,7 +264,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 output.append(item)
         return output
 
-    def store(self, keys: List, values: Any) -> None:
+    def store(self, keys: List, values: Any, metadata: Optional[Dict] = None) -> None:
         """
         Stores data to dictionary object based on keys values it will create structure
         if structure does not exist
@@ -280,7 +284,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 if not current_level.get(item):
                     current_level[item] = {}
             else:
-                DataMiner().dump(level=current_level, key=item, values=values)
+                DataMiner().dump(
+                    level=current_level, key=item, values=values, metadata=metadata
+                )
             current_level = current_level[item]
         self.is_flushed = False
 
