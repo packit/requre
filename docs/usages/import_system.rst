@@ -13,14 +13,14 @@ system and storage file.
     In case file does not exists, it will use write mode
     In case file exists, it will use read mode for Storage
 - REPLACEMENT_FILE
-    Replacement file  path for import system.
+    Replacement file path for import system.
     It is important to have there set variable ``FILTERS`` what will
     be used as replacements list for upgrade_import_system function.
-    For more information what ``FILTERS`` variable should contain is deacribe in `Filter format`_.
+    For more information what ``FILTERS`` variable should contain is described in `Filter format`_.
 - DEBUG
     if set, print debugging information, fi requre is applied
 - LATENCY
-    Apply latency waits for test, to have simiar test timing
+    Apply latency waits for test, to have similar test timing
     It is important when using some async/messaging calls
 
 .. _Filter format: ../filter_format.html
@@ -28,7 +28,7 @@ system and storage file.
 Requested replacements
 ______________________
 
-This is explict way how to use requre in your project.
+This is an explicit way of how to use requre in your project.
 The best way how to use it in your integration tests.
 You have full control of PersistentStorage and you have
 store whatever you want.

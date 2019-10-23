@@ -4,9 +4,9 @@ Filters
 
 Plain
 -----
-Filter is base representation of mechanism of
+Filter is based representation of the mechanism of
 replacing modules, functions or decorating functions.
-It is list of tuples or triples.
+It is a list of tuples or triples.
 
 eg.
 
@@ -38,15 +38,15 @@ Additional filters
 ___________________________________________________
 ``{"who_name": "your_module"}``
 
-Is dict of various stored values, what can be used as additional
+Is ``dict`` of various stored values, what can be used as additional
 filters.
 
 - ``who``
     Module object which imports the selected module (It is most generic,
     but you should use it very carefully)
 - ``who_name``
-    Name of module which imports the selected module.
-    This is the best option how use additional filters.
+    Name of the module which imports the selected module.
+    This is the best option of how to use additional filters.
     It also allows to use regular expressions
 - ``who_filename``
     File path to module which imports the selected module
@@ -68,34 +68,32 @@ ___________________
         ]
     }
 
-It is most complex part of this triple. It allows to say:
+It is the most complex part of this triple. It allows to say:
 
 - What to replace
 - Which method of replacements to use
 - What will replaces/decorates it
 
-Could be also empty. Usefull in case using logging to file.
+Could be also empty. Useful in case using logging to file.
 It could help you to find which modules are imported by which ones.
 
 - What to replace: ``Session.send``
-    There is used ``"."`` syntax to deep dive into object/module
-    model. In this example it means in full sense decodate ``send``
+    There is used ``"."`` syntax to deep dive into object/module model. In this example, it means in full sense decorate ``send``
     method of ``Session`` class in ``requests`` module
-- Types of replacemens: ``ReplaceType.DECORATOR``
-    Type of how to handle last parameter, how to apply it to selected
-    object. They are defined in ``ReplaceType`` class in ``requre/import_system.py`` file
+- Types of replacements: ``ReplaceType.DECORATOR``
+    Type of how to handle the last parameter, how to apply it to the selected object. They are defined in ``ReplaceType`` class in ``requre/import_system.py`` file
 
     - DECORATOR
         Decorate original function.
-        As **what** it will decorate original object. Decorators should be
-        childen of base object class in ``requre/objects.py``.
+        As **what** it will decorate the original object. Decorators should be
+        children of base object class in ``requre/objects.py``.
         And requre defines some useful for you in ``requre/helpers`` directory
     - REPLACE
         Replace object by another one. Typically you can replace
         original implementation by your own, (eg. ``lambda x: print(x)``
-        what will replace original function by new definition
+        what will replace the original function by new definition
     - REPLACE_MODULE
-        Replace whole module by another implementation. It replaces whole
+        Replace the whole module by another implementation. It replaces whole
         module by another one (eg. ``requre`` implements tempfile  module as
         class in helpers to avoid random names for calls
 - Object to be used: ``RequestResponseHandling.decorator(item_list=[])``
@@ -104,7 +102,7 @@ It could help you to find which modules are imported by which ones.
 Filter object model
 -------------------
 It is wrapper for Plain format, and allows to write it via objects,
-instead of writing complex structure.
+instead of writing complex structures.
 This have various features described bellow
 
 Replacements
@@ -126,7 +124,7 @@ Example with ``module_replace``
 
 Reverting
 _________
-Requre supports reverting import system back to previous state,
+Requre supports reverting import system to previous state,
 when used with ``with`` statement
 
 - Without reverting
@@ -142,7 +140,7 @@ when used with ``with`` statement
     tmpfile = tempfile.mktemp()
 
 - With reverting
-    when used ``with`` statement import system is returened to previous state
+    when used ``with`` statement import system is returned to previous state
 
 .. code-block:: python3
 

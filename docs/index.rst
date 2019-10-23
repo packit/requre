@@ -11,7 +11,7 @@ Is Library for storing output of various function and methods to
 persistent storage and be able to replay the stored output to functions
 back.
 
-Although **Requre** is python library it also provides command line tool
+Although **Requre** is python library it also provides command-line tool
 to include itself to python interpreter to be able to run transparently
 
 

@@ -20,9 +20,9 @@ Github master
 Requre as transparent tool
 ----------------------------------
 
-You can use requre as trasparent tool for your **Functional** or
+You can use requre as transparent tool for your **Functional** or
 **E2E** testing. In case you would like to do, you have to install
-handler to your python interpreter.
+a handler to your python interpreter.
 
 .. code-block::
 
@@ -39,13 +39,13 @@ handler to your python interpreter.
       clean
       verify
 
-You can import it to your user's or to system python to ``site-packages``
+You can import it to your user's or system python to ``site-packages``
 
 .. code-block::
 
     $ requre-patch apply
     Applying import patch to python (file: /home/user/.local/lib/python3.7/site-packages/sitecustomize.py)
 
-To use it in transparent way see: `Trasparent Usage`_.
+To use it in a transparent way see: `Transparent Usage`_.
 
-.. _Trasparent Usage: usages/import_system.html#transparent-replacements
+.. _Transparent Usage: usages/import_system.html#transparent-replacements
