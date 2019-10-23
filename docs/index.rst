@@ -24,6 +24,7 @@ Content
    installation
    filter_format
    usages/index
+   modules
 
 
 Indices and tables
