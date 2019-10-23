@@ -10,7 +10,7 @@ It is a list of tuples or triples.
 
 eg.
 
-.. code-block:: python3
+.. code-block:: python
 
     [
         (
@@ -59,7 +59,7 @@ filters.
 
 Customization rules
 ___________________
-.. code-block:: python3
+.. code-block:: python
 
     {
         "Session.send": [
@@ -114,7 +114,7 @@ There are three functions/methods that can be used
 
 Example with ``module_replace``
 
-.. code-block:: python3
+.. code-block:: python
 
     with replace_module(
         where="^tempfile$", what=TempFile, who_name=SELECTOR
@@ -130,7 +130,7 @@ when used with ``with`` statement
 - Without reverting
     Usage without reverting back
 
-.. code-block:: python3
+.. code-block:: python
 
     replace_module(
         where="^tempfile$", what=TempFile, who_name=SELECTOR
@@ -142,7 +142,7 @@ when used with ``with`` statement
 - With reverting
     when used ``with`` statement import system is returned to previous state
 
-.. code-block:: python3
+.. code-block:: python
 
     with replace_module(
         where="^tempfile$", what=TempFile, who_name=SELECTOR
@@ -153,7 +153,7 @@ when used with ``with`` statement
 Chaining of operations
 ______________________
 
-.. code-block:: python3
+.. code-block:: python
 
     with replace_module(where="^tempfile$", what=TempFile, who_name=SELECTOR).replace_module(
         where="^tempfile2$", what=TempFile2, who_name=SELECTOR
@@ -165,7 +165,7 @@ The real replacement is done in the function/method call -
 if we want to postpone the replacement, we need a little bit
 different syntax (trigger in the end):
 
-.. code-block:: python3
+.. code-block:: python
 
     with add_replace_module(where="^tempfile$", what=TempFile, who_name=SELECTOR).add_replace_module(
         where="^tempfile2$", what=TempFile2, who_name=SELECTOR
@@ -176,7 +176,7 @@ different syntax (trigger in the end):
 Example in packit project
 _________________________
 
-.. code-block:: python3
+.. code-block:: python
 
     upgrade_import_system(debug_file="modules.out").decorate(
         where="download_helper",
@@ -213,7 +213,7 @@ Paste ``requre`` code as ``__init__.py`` in your eg. ``pytest`` tests
 
 .. _Ogr project: https://github.com/packit-service/ogr/blob/master/tests/integration/__init__.py
 
-.. code-block:: python3
+.. code-block:: python
 
     from requre.helpers.requests_response import RequestResponseHandling
     from requre.import_system import upgrade_import_system

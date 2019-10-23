@@ -24,7 +24,7 @@ You can use requre as transparent tool for your **Functional** or
 **E2E** testing. In case you would like to do, you have to install
 a handler to your python interpreter.
 
-.. code-block::
+.. code-block:: bash
 
     $ requre-patch
     Usage: requre-patch [OPTIONS] COMMAND [ARGS]...
@@ -41,7 +41,7 @@ a handler to your python interpreter.
 
 You can import it to your user's or system python to ``site-packages``
 
-.. code-block::
+.. code-block:: bash
 
     $ requre-patch apply
     Applying import patch to python (file: /home/user/.local/lib/python3.7/site-packages/sitecustomize.py)
