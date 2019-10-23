@@ -165,46 +165,33 @@ class Latency(unittest.TestCase):
         run_command(cmd=f"{CMD_RELATIVE} clean", fail=False)
         os.remove(self.storage_file)
 
-    def test_not_enabled(self):
-        """
-        Check if Latency is not applied if not enabled via env var
-        """
-        envs = (
-            f"{ENV_STORAGE_FILE}={self.storage_file} "
-            f"{ENV_REPLACEMENT_FILE}={DATA_DIR}/e2e_latency_replacements.py "
-            f"{ENV_APPLY_LATENCY}=''"
-        )
-        cmd = f"""bash -c '{envs} {self.test_command}'"""
-        self.assertFalse(os.path.exists(self.storage_file))
-        before = time.time()
-        run_command(cmd=cmd, output=True)
-        after = time.time()
-        self.assertAlmostEqual(2, after - before, delta=1)
-
-        self.assertTrue(os.path.exists(self.storage_file))
-        before = time.time()
-        run_command(cmd=cmd, output=True)
-        after = time.time()
-        self.assertAlmostEqual(0, after - before, delta=1)
-
-    def test_enabled(self):
+    def check(self, replacements, apply_latency, latency, delta):
         """
         Check if it is really waiting for function call, when latency is enabled
         """
         envs = (
             f"{ENV_STORAGE_FILE}={self.storage_file} "
-            f"{ENV_REPLACEMENT_FILE}={DATA_DIR}/e2e_latency_replacements.py "
-            f"{ENV_APPLY_LATENCY}=YES"
+            f"{ENV_REPLACEMENT_FILE}={DATA_DIR}/{replacements} "
+            f"{ENV_APPLY_LATENCY}={apply_latency}"
         )
         cmd = f"""bash -c '{envs} {self.test_command}'"""
         self.assertFalse(os.path.exists(self.storage_file))
         before = time.time()
         run_command(cmd=cmd, output=True)
         after = time.time()
-        self.assertAlmostEqual(2, after - before, delta=1)
+        self.assertAlmostEqual(2, after - before, delta=delta)
 
         self.assertTrue(os.path.exists(self.storage_file))
         before = time.time()
         run_command(cmd=cmd, output=True)
         after = time.time()
-        self.assertAlmostEqual(2, after - before, delta=1)
+        self.assertAlmostEqual(latency, after - before, delta=delta)
+
+    def test_not_enabled(self):
+        self.check("e2e_latency_replacements.py", "", 0, 1)
+
+    def test_enabled_plain(self):
+        self.check("e2e_latency_replacements.py", "YES", 2, 1)
+
+    def test_enabled_object_model(self):
+        self.check("e2e_latency_replacements_object.py", "YES", 2, 1)
