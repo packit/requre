@@ -7,7 +7,7 @@ import click
 import importlib.util
 import atexit
 
-from requre.import_system import upgrade_import_system
+from requre.import_system import upgrade_import_system, UpgradeImportSystem
 from requre.utils import STORAGE
 from requre.storage import DataMiner
 from requre.constants import (
@@ -86,8 +86,21 @@ def apply_fn():
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         if hasattr(module, REPLACE_DEFAULT_KEY):
-            debug_print(f"Replaces: {getattr(module,REPLACE_DEFAULT_KEY)}")
-            upgrade_import_system(filters=getattr(module, REPLACE_DEFAULT_KEY))
+            replacement = getattr(module, REPLACE_DEFAULT_KEY)
+            debug_print(f"Replaces: {replacement}")
+            if isinstance(replacement, UpgradeImportSystem):
+                debug_print(
+                    f"{REPLACE_DEFAULT_KEY} is {UpgradeImportSystem.__name__} object"
+                )
+            elif isinstance(replacement, list):
+                debug_print(
+                    f"{REPLACE_DEFAULT_KEY} is list of replacements, apply upgrading"
+                )
+                upgrade_import_system(filters=replacement)
+            else:
+                raise ValueError(
+                    f"Bad type of {REPLACE_DEFAULT_KEY}, see documentation"
+                )
         else:
             raise AttributeError(
                 f"in {replacement_file} there is not defined '{REPLACE_DEFAULT_KEY}' variable"
