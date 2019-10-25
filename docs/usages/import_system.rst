@@ -17,6 +17,9 @@ system and storage file.
     It is important to have there set variable ``FILTERS`` what will
     be used as replacements list for upgrade_import_system function.
     For more information what ``FILTERS`` variable should contain is described in `Filter format`_.
+- REPLACEMENT_VAR
+    Overrides default value of variable in REPLACEMENT_FILE
+    what will be used as replacement variable.
 - DEBUG
     if set, print debugging information, fi requre is applied
 - LATENCY
