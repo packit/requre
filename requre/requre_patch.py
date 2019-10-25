@@ -6,6 +6,7 @@ import shutil
 import click
 import importlib.util
 import atexit
+from typing import Any
 
 from requre.import_system import upgrade_import_system, UpgradeImportSystem
 from requre.utils import STORAGE
@@ -52,6 +53,19 @@ def debug_print(*args):
         print("REQURE DEBUG:", *args, file=sys.__stderr__)
 
 
+def raise_error(ret_code: int, msg: Any):
+    """
+    When installed as sitecustomization.py, exceptions are not propagated to main process
+    process, ends successfully, although it contains traceback/
+
+    :param ret_code: return code to return
+    :param msg: message to write to stderr
+    :return: None
+    """
+    print(msg)
+    os._exit(ret_code)
+
+
 def apply_fn():
     """
     This function is used when installed as  sitecustomize.py script
@@ -83,9 +97,6 @@ def apply_fn():
             debug_print("Use latency for function calls")
             DataMiner().use_latency = True
         STORAGE.storage_file = storage_file
-        # register dump command, when python finish
-        atexit.register(STORAGE.dump)
-
         spec = importlib.util.spec_from_file_location("replacements", replacement_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -102,13 +113,14 @@ def apply_fn():
                 )
                 upgrade_import_system(filters=replacement)
             else:
-                raise ValueError(
-                    f"Bad type of {replacement_var}, see documentation"
-                )
+                raise_error(126, f"Bad type of {replacement_var}, see documentation")
         else:
-            raise AttributeError(
-                f"in {replacement_file} there is not defined '{replacement_var}' variable"
+            raise_error(
+                125,
+                f"in {replacement_file} there is not defined '{replacement_var}' variable",
             )
+        # register dump command, when python finish
+        atexit.register(STORAGE.dump)
 
 
 def get_current_python_version():
