@@ -5,7 +5,12 @@ import shutil
 import time
 from requre.utils import run_command
 from requre.exceptions import PersistentStorageException
-from requre.constants import ENV_REPLACEMENT_FILE, ENV_STORAGE_FILE, ENV_APPLY_LATENCY
+from requre.constants import (
+    ENV_REPLACEMENT_FILE,
+    ENV_STORAGE_FILE,
+    ENV_APPLY_LATENCY,
+    ENV_REPLACEMENT_NAME,
+)
 
 
 CMD_RELATIVE = f"""python3 {os.path.join(os.path.dirname(os.path.dirname(__file__)),
@@ -195,3 +200,40 @@ class Latency(unittest.TestCase):
 
     def test_enabled_object_model(self):
         self.check("e2e_latency_replacements_object.py", "YES", 2, 1)
+
+
+class ReplacementVariable(unittest.TestCase):
+    test_command = f"python3 {DATA_DIR}/e2e_test.py"
+
+    def setUp(self) -> None:
+        run_command(cmd=f"{CMD_RELATIVE} clean", fail=False)
+        run_command(cmd=f"{CMD_RELATIVE} apply")
+        self.storage_file = os.path.join(tempfile.mktemp(), "storage_e2e.yaml")
+
+    def tearDown(self) -> None:
+        run_command(cmd=f"{CMD_RELATIVE} clean", fail=False)
+        if os.path.exists(self.storage_file):
+            os.remove(self.storage_file)
+        tmpdir = os.path.join("/tmp", os.path.basename(self.storage_file))
+        if os.path.exists(tmpdir):
+            shutil.rmtree(tmpdir)
+
+    def testSupport(self):
+        envs = (
+            f"{ENV_STORAGE_FILE}={self.storage_file}"
+            f" {ENV_REPLACEMENT_FILE}={DATA_DIR}/e2e_test_replacements_special.py"
+            f" {ENV_REPLACEMENT_NAME}=special"
+        )
+        cmd = f"""bash -c '{envs} {self.test_command}'"""
+        output = run_command(cmd=cmd, output=True)
+        self.assertIn("static_tmp_1", output)
+        self.assertIn("storage_e2e", output)
+
+    def testException(self):
+        envs = (
+            f"{ENV_STORAGE_FILE}={self.storage_file}"
+            f" {ENV_REPLACEMENT_FILE}={DATA_DIR}/e2e_test_replacements_special.py"
+            f" {ENV_REPLACEMENT_NAME}=nonsense"
+        )
+        cmd = f"""bash -c '{envs} {self.test_command}'"""
+        self.assertRaises(PersistentStorageException, run_command, cmd=cmd, output=True)

@@ -6,6 +6,7 @@ import shutil
 import click
 import importlib.util
 import atexit
+from typing import Any
 
 from requre.import_system import upgrade_import_system, UpgradeImportSystem
 from requre.utils import STORAGE
@@ -16,6 +17,7 @@ from requre.constants import (
     ENV_DEBUG,
     REPLACE_DEFAULT_KEY,
     ENV_APPLY_LATENCY,
+    ENV_REPLACEMENT_NAME,
 )
 
 """
@@ -36,6 +38,8 @@ when tool is installed call python code with enviroment variables:
         It is important to have there set variable FILTERS what will
         be used as replacements list for upgrade_import_system function.
         For more details see doc: https://github.com/packit-service/requre/
+ REPLACEMENT_VAR - Overrides default value of variable in REPLACEMENT_FILE
+        what will be used as replacement variable.
  DEBUG - if set, print debugging information, fi requre is applied
  LATENCY - apply latency waits for test, to have simiar test timing
         It is important when using some async/messaging calls
@@ -49,6 +53,19 @@ def debug_print(*args):
         print("REQURE DEBUG:", *args, file=sys.__stderr__)
 
 
+def raise_error(ret_code: int, msg: Any):
+    """
+    When installed as sitecustomization.py, exceptions are not propagated to main process
+    process, ends successfully, although it contains traceback/
+
+    :param ret_code: return code to return
+    :param msg: message to write to stderr
+    :return: None
+    """
+    print(msg)
+    os._exit(ret_code)
+
+
 def apply_fn():
     """
     This function is used when installed as  sitecustomize.py script
@@ -60,6 +77,7 @@ def apply_fn():
     # file name of replaces for updated import system
     replacement_file = os.getenv(ENV_REPLACEMENT_FILE)
     if_latency = os.getenv(ENV_APPLY_LATENCY)
+    replacement_var = os.getenv(ENV_REPLACEMENT_NAME, REPLACE_DEFAULT_KEY)
     debug_print(
         f"You have patched version of your python by requre project "
         f"(python {sys.version_info.major}.{sys.version_info.minor}, {__file__}) "
@@ -79,32 +97,30 @@ def apply_fn():
             debug_print("Use latency for function calls")
             DataMiner().use_latency = True
         STORAGE.storage_file = storage_file
-        # register dump command, when python finish
-        atexit.register(STORAGE.dump)
-
         spec = importlib.util.spec_from_file_location("replacements", replacement_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        if hasattr(module, REPLACE_DEFAULT_KEY):
-            replacement = getattr(module, REPLACE_DEFAULT_KEY)
+        if hasattr(module, replacement_var):
+            replacement = getattr(module, replacement_var)
             debug_print(f"Replaces: {replacement}")
             if isinstance(replacement, UpgradeImportSystem):
                 debug_print(
-                    f"{REPLACE_DEFAULT_KEY} is {UpgradeImportSystem.__name__} object"
+                    f"{replacement_var} is {UpgradeImportSystem.__name__} object"
                 )
             elif isinstance(replacement, list):
                 debug_print(
-                    f"{REPLACE_DEFAULT_KEY} is list of replacements, apply upgrading"
+                    f"{replacement_var} is list of replacements, apply upgrading"
                 )
                 upgrade_import_system(filters=replacement)
             else:
-                raise ValueError(
-                    f"Bad type of {REPLACE_DEFAULT_KEY}, see documentation"
-                )
+                raise_error(126, f"Bad type of {replacement_var}, see documentation")
         else:
-            raise AttributeError(
-                f"in {replacement_file} there is not defined '{REPLACE_DEFAULT_KEY}' variable"
+            raise_error(
+                125,
+                f"in {replacement_file} there is not defined '{replacement_var}' variable",
             )
+        # register dump command, when python finish
+        atexit.register(STORAGE.dump)
 
 
 def get_current_python_version():
