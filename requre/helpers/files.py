@@ -28,7 +28,7 @@ from typing import Callable, Any, Dict
 import tarfile
 from io import BytesIO
 
-from requre.helpers.function_output import store_function_output
+from requre.helpers.simple_object import Simple
 from requre.storage import PersistentObjectStorage, DataMiner
 from requre.utils import get_if_recording, STORAGE
 from requre.exceptions import PersistentStorageException
@@ -108,7 +108,7 @@ class StoreFiles:
             if not get_if_recording():
                 return func(*args, **kwargs)
             else:
-                output = store_function_output(func)(*args, **kwargs)
+                output = Simple.decorator_plain(func)(*args, **kwargs)
                 cls._copy_logic(
                     STORAGE,
                     pathname=output,
@@ -142,7 +142,7 @@ class StoreFiles:
             if not get_if_recording():
                 return func(*args, **kwargs)
             else:
-                output = store_function_output(func)(*args, **kwargs)
+                output = Simple.decorator_plain(func)(*args, **kwargs)
                 for position in range(len(args)):
                     int_dec_fn(args[position], class_test_id_list + [position])
                 for k, v in kwargs.items():
@@ -167,7 +167,7 @@ class StoreFiles:
                 if not get_if_recording():
                     return func(*args, **kwargs)
                 else:
-                    output = store_function_output(func)(*args, **kwargs)
+                    output = Simple.decorator_plain(func)(*args, **kwargs)
                     for key, position in files_params.items():
                         if key in kwargs:
                             param = kwargs[key]

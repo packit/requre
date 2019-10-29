@@ -59,7 +59,10 @@ class ObjectStorage:
         # callers module list, to be able to separate requests for various services in one file
         caller_list: List[str] = list()
         for currnetframe in inspect.stack():
-            module_name = inspect.getmodule(currnetframe[0]).__name__
+            if inspect.getmodule(currnetframe[0]):
+                module_name = inspect.getmodule(currnetframe[0]).__name__
+            else:
+                continue
             if module_name.startswith("_"):
                 break
             else:
