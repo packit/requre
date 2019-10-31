@@ -1,0 +1,22 @@
+X:
+  file:
+    tar:
+      StoreFiles:
+        tests_requre.openshift_integration.test_fedpkg.FedPkg.test_fedpkg_clone.yaml:
+          target_path:
+          - metadata:
+              latency: 0
+            output: yyy
+_requre:
+  version_storage_file: 2
+unittest.case:
+  tests_requre.openshift_integration.test_fedpkg:
+    requre.helpers.files:
+      requre.helpers.function_output:
+        requre.objects:
+          packit.fedpkg:
+            clone:
+              store_function_output:
+              - metadata:
+                  latency: xxxx
+                output: null
