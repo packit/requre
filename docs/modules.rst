@@ -37,10 +37,10 @@ ____________
     :undoc-members:
 
 
-Generic function output
+Simple Object output
 _______________________
 
-.. automodule:: requre.helpers.function_output
+.. automodule:: requre.helpers.simple_object
     :members:
     :undoc-members:
 
