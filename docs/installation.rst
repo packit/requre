@@ -37,6 +37,7 @@ a handler to your python interpreter.
     Commands:
       apply
       clean
+      purge
       verify
 
 You can import it to your user's or system python to ``site-packages``
