@@ -228,7 +228,7 @@ def purge(replaces, files, dry_run):
         processor = DictProcessing(object_representation)
         for item in replaces:
             click.echo(f"\tTry to apply: {item}")
-            selector_str, key, type_of_value, value = item.rsplit(":", 3)
+            selector_str, key, type_of_value, value = item.split(":", 3)
             selector_list = [] if not selector_str else selector_str.split("%")
             # retype the output object to proper type ()
             value = getattr(builtins, type_of_value)(value)
