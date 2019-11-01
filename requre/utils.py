@@ -24,6 +24,7 @@ import logging
 import shlex
 import subprocess
 from pathlib import Path
+from typing import Optional, Any
 
 from requre.exceptions import PersistentStorageException
 from requre.storage import PersistentObjectStorage
@@ -97,3 +98,38 @@ class Replacement:
         self.parent = parent
         self.filter = one_filter
         self.replacement = replacement
+
+
+class DictProcessing:
+    def __init__(self, requre_dict: dict):
+        self.requre_dict = requre_dict
+
+    def match(self, selector: list, internal_dict: Optional[Any] = None):
+        if internal_dict is None:
+            internal_dict = self.requre_dict
+        if len(selector) == 0:
+            logger.debug(f"all selectors matched")
+            yield internal_dict
+            # add return here, to avoid multiple returns
+            return
+        if not isinstance(internal_dict, dict):
+            return
+        for k, v in internal_dict.items():
+            if selector and selector[0] == k:
+                logger.debug(f"selector {k} matched")
+                yield from self.match(selector=selector[1:], internal_dict=v)
+            else:
+                yield from self.match(selector=selector, internal_dict=v)
+
+    @staticmethod
+    def replace(obj: Any, key: Any, value: Any) -> None:
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k == key:
+                    logger.debug(f"replacing: {obj[key]} by {value}")
+                    obj[key] = value
+                else:
+                    DictProcessing.replace(obj=v, key=key, value=value)
+        if isinstance(obj, list):
+            for item in obj:
+                DictProcessing.replace(obj=item, key=key, value=value)

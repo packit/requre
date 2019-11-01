@@ -7,9 +7,11 @@ import click
 import importlib.util
 import atexit
 from typing import Any
+import yaml
+import builtins
 
 from requre.import_system import upgrade_import_system, UpgradeImportSystem
-from requre.utils import STORAGE
+from requre.utils import STORAGE, DictProcessing
 from requre.storage import DataMiner
 from requre.constants import (
     ENV_REPLACEMENT_FILE,
@@ -204,6 +206,39 @@ def clean(ctx):
         raise click.ClickException(
             f"Patch not applied (file: {ctx.obj[FILE_NAME]}), nothing to do"
         )
+
+
+@requre_base.command()
+@click.option(
+    "--replaces",
+    help="match_string:key:type_of_value:value = Substitution query in format, "
+    "where match_string is in format of selecting dictionary keys:"
+    "selector1%selector2, type_of_value is some object what is serializable "
+    "and part or builtins module (e.g. int)",
+    multiple=True,
+)
+@click.argument("files", nargs=-1, type=click.File("r"))
+@click.option(
+    "--dry-run", is_flag=True, default=False, help="Do not write changes back"
+)
+def purge(replaces, files, dry_run):
+    for one_file in files:
+        click.echo(f"Processing file: {one_file.name}")
+        object_representation = yaml.safe_load(one_file)
+        processor = DictProcessing(object_representation)
+        for item in replaces:
+            click.echo(f"\tTry to apply: {item}")
+            selector_str, key, type_of_value, value = item.rsplit(":", 3)
+            selector_list = [] if not selector_str else selector_str.split("%")
+            # retype the output object to proper type ()
+            value = getattr(builtins, type_of_value)(value)
+            for matched in processor.match(selector=selector_list):
+                click.echo(f"\t\tMatched {selector_list}")
+                processor.replace(obj=matched, key=key, value=value)
+        if not dry_run:
+            click.echo(f"Writing content back to file: {one_file.name}")
+            with open(one_file.name, mode="w") as outfile:
+                outfile.write(yaml.safe_dump(object_representation))
 
 
 if __name__ == "__main__" or not (__file__ and __file__.endswith(FILE_NAME)):
