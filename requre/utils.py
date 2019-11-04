@@ -24,7 +24,7 @@ import logging
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Optional, Any
+from typing import Union, Any
 
 from requre.exceptions import PersistentStorageException
 from requre.storage import PersistentObjectStorage
@@ -104,22 +104,30 @@ class DictProcessing:
     def __init__(self, requre_dict: dict):
         self.requre_dict = requre_dict
 
-    def match(self, selector: list, internal_dict: Optional[Any] = None):
-        if internal_dict is None:
-            internal_dict = self.requre_dict
+    def match(self, selector: list, internal_object: Union[dict, list, None] = None):
+        if internal_object is None:
+            internal_object = self.requre_dict
         if len(selector) == 0:
             logger.debug(f"all selectors matched")
-            yield internal_dict
+            yield internal_object
             # add return here, to avoid multiple returns
             return
-        if not isinstance(internal_dict, dict):
+        if isinstance(internal_object, dict):
+            for k, v in internal_object.items():
+                if v is None:
+                    return
+                if selector and selector[0] == k:
+                    logger.debug(f"selector {k} matched")
+                    yield from self.match(selector=selector[1:], internal_object=v)
+                else:
+                    yield from self.match(selector=selector, internal_object=v)
+        elif isinstance(internal_object, list):
+            for list_item in internal_object:
+                if list_item is None:
+                    return
+                yield from self.match(selector=selector, internal_object=list_item)
+        else:
             return
-        for k, v in internal_dict.items():
-            if selector and selector[0] == k:
-                logger.debug(f"selector {k} matched")
-                yield from self.match(selector=selector[1:], internal_dict=v)
-            else:
-                yield from self.match(selector=selector, internal_dict=v)
 
     @staticmethod
     def replace(obj: Any, key: Any, value: Any) -> None:
