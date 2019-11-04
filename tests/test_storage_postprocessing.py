@@ -16,6 +16,7 @@ class ObjectPostprocessing(unittest.TestCase):
             "str": "anystr",
             "bool": False,
             "list": [1, 2, {"a": "y"}],
+            "list_inside": [{"m": {"n": "o"}}],
             "dict": {"a": "x"},
         }
         self.dp = DictProcessing(self.testDict)
@@ -24,7 +25,16 @@ class ObjectPostprocessing(unittest.TestCase):
         self.assertEqual(1, len(list(self.dp.match([]))))
 
     def testMatchMultiSelector(self):
-        self.assertEqual(2, len(list(self.dp.match(["a"]))))
+        self.assertEqual(3, len(list(self.dp.match(["a"]))))
+
+    def testMatchDeep(self):
+        output = list(self.dp.match(["list_inside", "m"]))
+        self.assertEqual(1, len(output))
+        self.assertEqual({"n": "o"}, output[0])
+
+        output = list(self.dp.match(["n"]))
+        self.assertEqual(1, len(output))
+        self.assertEqual("o", output[0])
 
     def testMatchNoMatch(self):
         self.assertEqual(0, len(list(self.dp.match(["non_sense"]))))
