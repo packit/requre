@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import inspect
 import logging
 import shlex
 import subprocess
@@ -141,3 +141,10 @@ class DictProcessing:
         if isinstance(obj, list):
             for item in obj:
                 DictProcessing.replace(obj=item, key=key, value=value)
+
+
+def get_module_of_previous_context():
+    current_ctx = inspect.currentframe().f_back.f_back
+    frameinfo_args = (current_ctx,) + inspect.getframeinfo(current_ctx, 1)
+    frameinfo = inspect.FrameInfo(*frameinfo_args)
+    return inspect.getmodule(frameinfo[0])

@@ -23,14 +23,13 @@
 
 import builtins
 import functools
-import inspect
 import re
 from enum import Enum
 from importlib import reload
 from types import ModuleType
 from typing import Optional, Dict, Any, Callable, List, Tuple, Union
 
-from requre.utils import Replacement
+from requre.utils import Replacement, get_module_of_previous_context
 
 
 class ReplaceType(Enum):
@@ -297,7 +296,7 @@ class UpgradeImportSystem:
             one_filter = filter_item[0]
             additional_filters = filter_item[1]
             if re.search(one_filter, name):
-                mod = inspect.getmodule(inspect.stack()[1][0])
+                mod = get_module_of_previous_context()
                 fromlist = ()
                 if len(args) > 3:
                     fromlist = list(args)[3]
