@@ -87,13 +87,13 @@ class DataStructure:
 
         :return DataStructure
         """
-        if DataMiner.key not in dict_repr:
+        if DataMiner().key not in dict_repr:
             raise PersistentStorageException(
-                f"Key '{DataMiner.key}' not in the response file. "
+                f"Key '{DataMiner().key}' not in the response file. "
                 f"(Be sure that you generate the response file "
                 f"for this variant.)"
             )
-        value = dict_repr[DataMiner.key]
+        value = dict_repr[DataMiner().key]
         data = cls(value[cls.OUTPUT_KEY])
         data.metadata = value[cls.METADATA_KEY]
         return data
