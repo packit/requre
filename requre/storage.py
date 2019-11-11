@@ -23,14 +23,14 @@
 import os
 import time
 from _collections_abc import Hashable
+from enum import Enum
 from typing import Dict, List, Any, Optional
 
-from enum import Enum
 import yaml
 
+from .constants import VERSION_REQURE_FILE, ENV_STORAGE_FILE
 from .exceptions import PersistentStorageException
 from .singleton import SingletonMeta
-from .constants import VERSION_REQURE_FILE, ENV_STORAGE_FILE
 
 # use this sleep to avoid decorating original time function used internally
 original_sleep = time.sleep
@@ -70,7 +70,7 @@ class DataStructure:
         return {self.METADATA_KEY: self.metadata, self.OUTPUT_KEY: self.output}
 
     @classmethod
-    def create_from_dict(cls, dict_repr: dict):
+    def create_from_value(cls, dict_repr: dict):
         """
         Create Object representation from dict
 
@@ -80,10 +80,29 @@ class DataStructure:
         data.metadata = dict_repr[cls.METADATA_KEY]
         return data
 
+    @classmethod
+    def create_from_dict(cls, dict_repr: dict):
+        """
+        Create Object representation from dict
+
+        :return DataStructure
+        """
+        if DataMiner().key not in dict_repr:
+            raise PersistentStorageException(
+                f"Key '{DataMiner().key}' not in the response file. "
+                f"(Be sure that you generate the response file "
+                f"for this variant.)"
+            )
+        value = dict_repr[DataMiner().key]
+        data = cls(value[cls.OUTPUT_KEY])
+        data.metadata = value[cls.METADATA_KEY]
+        return data
+
 
 class DataTypes(Enum):
     List = 1
-    Dict = 2
+    Value = 2
+    Dict = 3
 
 
 class DataMiner(metaclass=SingletonMeta):
@@ -97,6 +116,7 @@ class DataMiner(metaclass=SingletonMeta):
     data_type: DataTypes = DataTypes.List
     use_latency = False
     LATENCY_KEY = "latency"
+    key: str = "all"
 
     def get_latency(self, regenerate=True) -> float:
         """
@@ -117,7 +137,7 @@ class DataMiner(metaclass=SingletonMeta):
 
         :param level: parent dict object
         :param key: item in dict
-        :param values: what to strore (return value of function)
+        :param values: what to store (return value of function)
         :param metadata: store metadata to object from upper level
         :return: None
         """
@@ -135,6 +155,9 @@ class DataMiner(metaclass=SingletonMeta):
             level.setdefault(key, [])
             level[key].append(item)
         elif self.data_type == DataTypes.Dict:
+            level.setdefault(key, {})
+            level[key][self.key] = item
+        else:
             level[key] = item
 
     def load(self, level):
@@ -155,8 +178,10 @@ class DataMiner(metaclass=SingletonMeta):
                 # Backward compatibility for requre before using DataStructure
                 data = DataStructure(level[0])
             else:
-                data = DataStructure.create_from_dict(level[0])
+                data = DataStructure.create_from_value(level[0])
             del level[0]
+        elif self.data_type == DataTypes.Value:
+            data = DataStructure.create_from_value(level)
         elif self.data_type == DataTypes.Dict:
             data = DataStructure.create_from_dict(level)
         self.data = data

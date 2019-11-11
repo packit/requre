@@ -1,9 +1,10 @@
 import os
 import time
-from requre.utils import STORAGE
+
 from requre.constants import VERSION_REQURE_FILE
 from requre.exceptions import PersistentStorageException
 from requre.storage import DataMiner, DataTypes
+from requre.utils import STORAGE
 from tests.testbase import BaseClass
 
 
@@ -36,7 +37,6 @@ class Base(BaseClass):
 
 class Versioning(BaseClass):
     def setUp(self) -> None:
-
         super().setUp()
         STORAGE.dump_after_store = False
 
@@ -87,8 +87,8 @@ class TestStoreTypes(BaseClass):
         self.assertEqual("y", STORAGE.read(keys=self.keys))
         self.assertEqual(0, len(STORAGE.storage_object["a"]["b"]))
 
-    def test_dict_data(self):
-        DataMiner().data_type = DataTypes.Dict
+    def test_value_data(self):
+        DataMiner().data_type = DataTypes.Value
         STORAGE.store(keys=self.keys, values="x", metadata={})
         STORAGE.store(keys=self.keys, values="y", metadata={})
         self.assertEqual(2, len(STORAGE.storage_object["a"]["b"]))
@@ -96,6 +96,20 @@ class TestStoreTypes(BaseClass):
         self.assertEqual(2, len(STORAGE.storage_object["a"]["b"]))
         self.assertEqual("y", STORAGE.read(keys=self.keys))
         self.assertEqual(2, len(STORAGE.storage_object["a"]["b"]))
+
+    def test_dict_data(self):
+        DataMiner().data_type = DataTypes.Dict
+        DataMiner().key = "first-key"
+        STORAGE.store(keys=self.keys, values="x", metadata={})
+        DataMiner().key = "second-key"
+        STORAGE.store(keys=self.keys, values="y", metadata={})
+
+        self.assertIn("first-key", STORAGE.storage_object["a"]["b"])
+        self.assertIn("second-key", STORAGE.storage_object["a"]["b"])
+
+        self.assertEqual("y", STORAGE.read(keys=self.keys))
+        DataMiner().key = "first-key"
+        self.assertEqual("x", STORAGE.read(keys=self.keys))
 
 
 class Metadata(BaseClass):
