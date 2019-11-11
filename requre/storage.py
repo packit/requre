@@ -23,7 +23,8 @@
 import os
 import time
 from _collections_abc import Hashable
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Callable
+import inspect
 
 from enum import Enum
 import yaml
@@ -86,6 +87,71 @@ class DataTypes(Enum):
     Dict = 2
 
 
+class StorageKeyStrategy(Enum):
+    Full = 1
+    Simple = 2
+    SuperSimple = 3
+    Custom = 4
+    Default = Full
+
+    @staticmethod
+    def __get_base_keys_custom(func: Callable) -> List[Any]:
+        raise NotImplementedError(
+            "You have to redefine this method to use custom store format"
+        )
+
+    @staticmethod
+    def __get_base_keys_full(func: Callable) -> List[Any]:
+        output: List[str] = list()
+        # callers module list, to be able to separate requests for various services in one file
+        caller_list: List[str] = list()
+        for currnetframe in inspect.stack():
+            if inspect.getmodule(currnetframe[0]):
+                module_name = inspect.getmodule(currnetframe[0]).__name__
+                # avoid to store requre.storage to module stack
+                # backward compatibility issue
+                if module_name.startswith("requre.storage"):
+                    continue
+            else:
+                continue
+            if module_name.startswith("_"):
+                break
+            else:
+                if len(caller_list) and caller_list[-1] == module_name:
+                    continue
+                else:
+                    caller_list.append(module_name)
+        output += caller_list[::-1]
+        # module name where function is
+        output.append(inspect.getmodule(func).__name__)
+        # name of function what were used
+        output.append(func.__name__)
+        return output
+
+    @staticmethod
+    def __get_base_keys_simple(func: Callable) -> List[Any]:
+        return [inspect.getmodule(func).__name__, func.__name__]
+
+    @staticmethod
+    def __get_base_keys_super_simple(func: Callable) -> List[Any]:
+        return [func.__name__]
+
+    @classmethod
+    def get_base_keys(cls, func: Callable) -> List[Any]:
+        if DataMiner().storage_key_strategy == cls.SuperSimple:
+            return StorageKeyStrategy.__get_base_keys_super_simple(func)
+        elif DataMiner().storage_key_strategy == cls.Simple:
+            return StorageKeyStrategy.__get_base_keys_simple(func)
+        elif DataMiner().storage_key_strategy == cls.Full:
+            return StorageKeyStrategy.__get_base_keys_full(func)
+        elif DataMiner().storage_key_strategy == cls.Custom:
+            return StorageKeyStrategy.__get_base_keys_custom(func)
+        else:
+            raise PersistentStorageException(
+                "Bad Strategy key, possible old format of storage file"
+            )
+
+
 class DataMiner(metaclass=SingletonMeta):
     """
     Intermediate class used for proper formatting and keeping backward
@@ -97,6 +163,7 @@ class DataMiner(metaclass=SingletonMeta):
     data_type: DataTypes = DataTypes.List
     use_latency = False
     LATENCY_KEY = "latency"
+    storage_key_strategy: StorageKeyStrategy = StorageKeyStrategy.Default
 
     def get_latency(self, regenerate=True) -> float:
         """
@@ -185,6 +252,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
     internal_object_key = "_requre"
     version_key = "version_storage_file"
+    key_inspect_strategy_key = "key_inspect_strategy"
 
     def __init__(self) -> None:
         # call dump() after store() is called
@@ -227,12 +295,16 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     def storage_file_version(self, value: int):
         self.metadata = {self.version_key: value}
 
-    def _set_storage_file_version_if_not_set(self):
+    def _set_storage_metadata_if_not_set(self):
         """
         Set storage file version if not already set to latest version.
         """
         if self.metadata.get(self.version_key) is None:
             self.storage_file_version = VERSION_REQURE_FILE
+        if self.metadata.get(self.key_inspect_strategy_key) is None:
+            self.metadata = {
+                self.key_inspect_strategy_key: DataMiner.storage_key_strategy.value
+            }
 
     @property
     def storage_file(self):
@@ -275,7 +347,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         :param values: It could be whatever type what is used in original object handling
         :return: None
         """
-        self._set_storage_file_version_if_not_set()
+        self._set_storage_metadata_if_not_set()
         current_level = self.storage_object
         hashable_keys = self.transform_hashable(keys)
         for item_num in range(len(hashable_keys)):
@@ -325,7 +397,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         :return: None
         """
         if self.is_write_mode:
-            self._set_storage_file_version_if_not_set()
+            self._set_storage_metadata_if_not_set()
             if self.is_flushed:
                 return None
             with open(self.storage_file, "w") as yaml_file:
@@ -341,6 +413,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         with open(self.storage_file, "r") as yaml_file:
             output = yaml.safe_load(yaml_file)
         self.storage_object = output
+        DataMiner().storage_key_strategy = StorageKeyStrategy(
+            self.metadata.get(self.key_inspect_strategy_key, 1)
+        )
         return output
 
 

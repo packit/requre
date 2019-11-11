@@ -22,12 +22,16 @@
 
 
 import functools
-import inspect
 import logging
 import pickle
 from typing import Optional, Callable, Any, List, Dict
 
-from requre.storage import PersistentObjectStorage, DataMiner, original_time
+from requre.storage import (
+    PersistentObjectStorage,
+    DataMiner,
+    original_time,
+    StorageKeyStrategy,
+)
 from requre.utils import STORAGE
 
 
@@ -55,27 +59,7 @@ class ObjectStorage:
 
     @staticmethod
     def get_base_keys(func: Callable) -> List[Any]:
-        output: List[str] = list()
-        # callers module list, to be able to separate requests for various services in one file
-        caller_list: List[str] = list()
-        for currnetframe in inspect.stack():
-            if inspect.getmodule(currnetframe[0]):
-                module_name = inspect.getmodule(currnetframe[0]).__name__
-            else:
-                continue
-            if module_name.startswith("_"):
-                break
-            else:
-                if len(caller_list) and caller_list[-1] == module_name:
-                    continue
-                else:
-                    caller_list.append(module_name)
-        output += caller_list[::-1]
-        # module name where function is
-        output.append(inspect.getmodule(func).__name__)
-        # name of function what were used
-        output.append(func.__name__)
-        return output
+        return StorageKeyStrategy.get_base_keys(func)
 
     @classmethod
     def execute(cls, keys: list, func: Callable, *args, **kwargs) -> Any:

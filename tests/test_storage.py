@@ -105,7 +105,7 @@ class Metadata(BaseClass):
         super().setUp()
         DataMiner().current_time = time.time()
 
-    def test_metadata(self):
+    def test_latency(self):
         delta = 0.05
 
         STORAGE.store(keys=self.keys, values="x", metadata={})
@@ -146,6 +146,17 @@ class Metadata(BaseClass):
         self.assertAlmostEqual(
             0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
+
+    def test_generic(self):
+        STORAGE.store(keys=self.keys, values="x", metadata={"test_meta": "yes"})
+        STORAGE.metadata = {"rpms": ["package1", "package2"]}
+        STORAGE.dump()
+        STORAGE.storage_object = {}
+        STORAGE.load()
+        STORAGE.read(keys=self.keys)
+        self.assertEqual(DataMiner().metadata["test_meta"], "yes")
+        self.assertEqual(STORAGE.metadata.get(STORAGE.key_inspect_strategy_key), 1)
+        self.assertEqual(STORAGE.metadata.get("rpms"), ["package1", "package2"])
 
 
 class Latency(BaseClass):
