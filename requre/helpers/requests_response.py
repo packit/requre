@@ -24,9 +24,9 @@
 import datetime
 import json
 from io import BytesIO
-from typing import Any, Optional, Dict
+from typing import Any
 
-from requests.models import Response
+from requests.models import Response, PreparedRequest
 from requests.structures import CaseInsensitiveDict
 
 from requre.objects import ObjectStorage
@@ -38,18 +38,13 @@ class RequestResponseHandling(ObjectStorage):
     __response_keys_special = ["raw", "_next", "headers", "elapsed", "_content"]
     __store_indicator = "__store_indicator"
     __implicit_encoding = "UTF-8"
-
-    def write(self, response: Response, metadata: Optional[Dict] = None) -> Response:
-        super().write(response, metadata)
-        if getattr(response, "next"):
-            self.write(getattr(response, "next"))
-        return response
-
-    def read(self):
-        data = super().read()
-        if getattr(data, "next"):
-            data._next = self.read()
-        return data
+    __prep_req_items = [
+        "method",
+        "url",
+        "headers",
+        "body",
+        "_body_position",
+    ]  # "hooks", "_cookies"
 
     def to_serializable(self, response: Response) -> Any:
         output = dict()
@@ -81,8 +76,12 @@ class RequestResponseHandling(ObjectStorage):
                 output[self.__store_indicator] = indicator
             if key == "_next":
                 output[key] = None
-                if getattr(response, "next") is not None:
-                    output[key] = self.store_keys
+                prepared_req = getattr(response, "_next")
+                if prepared_req is not None:
+                    prep_req_dict = {}
+                    for item in self.__prep_req_items:
+                        prep_req_dict[item] = getattr(prepared_req, item)
+                    output[key] = prep_req_dict
         return output
 
     def from_serializable(self, data: Any) -> Response:
@@ -108,5 +107,10 @@ class RequestResponseHandling(ObjectStorage):
                     what_store = what_store.encode(encoding)
                 response._content = what_store  # type: ignore
             if key == "_next":
-                setattr(response, "_next", data[key])
+                if data[key]:
+                    prepared_request = PreparedRequest()
+                    for item in self.__prep_req_items:
+                        setattr(prepared_request, item, data[key][item])
+                    setattr(response, key, prepared_request)
+
         return response
