@@ -12,6 +12,7 @@ from requre.storage import (
     StorageKeysInspect,
     PersistentObjectStorage,
 )
+from requre.utils import StorageMode
 from tests.testbase import BaseClass
 
 
@@ -211,7 +212,7 @@ class Metadata(BaseClass):
         PersistentObjectStorage().dump()
         PersistentObjectStorage().storage_object = {}
         DataMiner().key_stategy_cls = StorageKeysInspectDefault
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         PersistentObjectStorage().load()
         self.assertEqual("x", PersistentObjectStorage()[self.keys])
         self.assertEqual(

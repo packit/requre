@@ -2,7 +2,7 @@ import tempfile
 
 from requre.helpers.simple_object import Simple
 from requre.storage import PersistentObjectStorage
-from requre.utils import run_command
+from requre.utils import run_command, StorageMode
 from tests.testbase import BaseClass
 
 
@@ -22,7 +22,7 @@ class StoreFunctionOutput(BaseClass):
         output = self.run_command_wrapper(cmd=["true"])
         self.assertTrue(output)
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         before = str(PersistentObjectStorage().storage_object)
         output = self.run_command_wrapper(cmd=["true"])
         after = str(PersistentObjectStorage().storage_object)
@@ -41,16 +41,16 @@ class StoreFunctionOutput(BaseClass):
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("ahoj", output)
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         with open(self.file_name, "a") as fd:
             fd.write("cao\n")
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("ahoj", output)
         self.assertNotIn("cao", output)
-        PersistentObjectStorage()._is_write_mode = True
+        PersistentObjectStorage().mode = StorageMode.write
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("cao", output)
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("cao", output)
