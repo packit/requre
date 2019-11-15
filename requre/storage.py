@@ -401,7 +401,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         if self.dump_after_store:
             self.dump()
 
-    def _read(self, keys: List) -> Any:
+    def read(self, keys: List) -> Any:
         """
         Reads data from dictionary object structure based on keys.
         If keys does not exists
@@ -436,7 +436,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         return True
 
     def __getitem__(self, key):
-        return self._read(keys=key)
+        return self.read(keys=key)
 
     def __setitem__(self, key, value):
         self.store(keys=key, values=value, metadata={})

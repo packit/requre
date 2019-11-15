@@ -28,8 +28,8 @@ class Base(BaseClass):
 
     def test_simple(self):
         self.store_keys_example()
-        self.assertEqual("c", PersistentObjectStorage().read(self.keys))
-        self.assertEqual("d", PersistentObjectStorage().read(self.keys))
+        self.assertEqual("c", PersistentObjectStorage()[self.keys])
+        self.assertEqual("d", PersistentObjectStorage()[self.keys])
 
     def test_exception(self):
         self.test_simple()
@@ -100,9 +100,9 @@ class TestStoreTypes(BaseClass):
         PersistentObjectStorage().store(keys=self.keys, values="x", metadata={})
         PersistentObjectStorage().store(keys=self.keys, values="y", metadata={})
         self.assertEqual(2, len(PersistentObjectStorage().storage_object["a"]["b"]))
-        self.assertEqual("x", PersistentObjectStorage().read(keys=self.keys))
+        self.assertEqual("x", PersistentObjectStorage()[self.keys])
         self.assertEqual(1, len(PersistentObjectStorage().storage_object["a"]["b"]))
-        self.assertEqual("y", PersistentObjectStorage().read(keys=self.keys))
+        self.assertEqual("y", PersistentObjectStorage()[self.keys])
         self.assertEqual(0, len(PersistentObjectStorage().storage_object["a"]["b"]))
 
     def test_value_data(self):
@@ -110,9 +110,9 @@ class TestStoreTypes(BaseClass):
         PersistentObjectStorage().store(keys=self.keys, values="x", metadata={})
         PersistentObjectStorage().store(keys=self.keys, values="y", metadata={})
         self.assertEqual(2, len(PersistentObjectStorage().storage_object["a"]["b"]))
-        self.assertEqual("y", PersistentObjectStorage().read(keys=self.keys))
+        self.assertEqual("y", PersistentObjectStorage()[self.keys])
         self.assertEqual(2, len(PersistentObjectStorage().storage_object["a"]["b"]))
-        self.assertEqual("y", PersistentObjectStorage().read(keys=self.keys))
+        self.assertEqual("y", PersistentObjectStorage()[self.keys])
         self.assertEqual(2, len(PersistentObjectStorage().storage_object["a"]["b"]))
 
     def test_dict_data(self):
@@ -125,9 +125,9 @@ class TestStoreTypes(BaseClass):
         self.assertIn("first-key", PersistentObjectStorage().storage_object["a"]["b"])
         self.assertIn("second-key", PersistentObjectStorage().storage_object["a"]["b"])
 
-        self.assertEqual("y", PersistentObjectStorage().read(keys=self.keys))
+        self.assertEqual("y", PersistentObjectStorage()[self.keys])
         DataMiner().key = "first-key"
-        self.assertEqual("x", PersistentObjectStorage().read(keys=self.keys))
+        self.assertEqual("x", PersistentObjectStorage()[self.keys])
 
 
 class Metadata(BaseClass):
@@ -163,23 +163,21 @@ class Metadata(BaseClass):
         self.assertAlmostEqual(
             0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
-
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         self.assertAlmostEqual(
             0, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
         # check custom metadata
         self.assertEqual("data", DataMiner().metadata["random"])
 
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         self.assertAlmostEqual(
             0.1, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
         # check if custom metadata are not everywhere
         self.assertNotIn("random", DataMiner().metadata)
         self.assertIn("latency", DataMiner().metadata)
-
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         self.assertAlmostEqual(
             0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
@@ -192,7 +190,7 @@ class Metadata(BaseClass):
         PersistentObjectStorage().dump()
         PersistentObjectStorage().storage_object = {}
         PersistentObjectStorage().load()
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         self.assertEqual(DataMiner().metadata["test_meta"], "yes")
         self.assertEqual(
             PersistentObjectStorage().metadata.get(
@@ -215,7 +213,7 @@ class Metadata(BaseClass):
         DataMiner().key_stategy_cls = StorageKeysInspectDefault
         PersistentObjectStorage()._is_write_mode = False
         PersistentObjectStorage().load()
-        self.assertEqual("x", PersistentObjectStorage().read(keys=self.keys))
+        self.assertEqual("x", PersistentObjectStorage()[self.keys])
         self.assertEqual(
             PersistentObjectStorage().metadata.get(
                 PersistentObjectStorage().key_inspect_strategy_key
@@ -266,12 +264,12 @@ class Latency(BaseClass):
         )
 
         time_begin = time.time()
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         time_end = time.time()
         self.assertAlmostEqual(0, time_end - time_begin, delta=delta)
 
         time_begin = time.time()
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         time_end = time.time()
         self.assertAlmostEqual(0, time_end - time_begin, delta=delta)
 
@@ -285,11 +283,11 @@ class Latency(BaseClass):
         )
 
         time_begin = time.time()
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         time_end = time.time()
         self.assertAlmostEqual(0, time_end - time_begin, delta=delta)
 
         time_begin = time.time()
-        PersistentObjectStorage().read(keys=self.keys)
+        self.assertIn(self.keys, PersistentObjectStorage())
         time_end = time.time()
         self.assertAlmostEqual(0.2, time_end - time_begin, delta=delta)
