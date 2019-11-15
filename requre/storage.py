@@ -32,6 +32,7 @@ import yaml
 from .constants import VERSION_REQURE_FILE, ENV_STORAGE_FILE
 from .exceptions import PersistentStorageException
 from .singleton import SingletonMeta
+from .utils import StorageMode
 
 # use this sleep to avoid decorating original time function used internally
 original_sleep = time.sleep
@@ -142,11 +143,43 @@ class DataStructure:
         data.metadata = value[cls.METADATA_KEY]
         return data
 
+    @classmethod
+    def create_from_dict_with_list(cls, dict_repr: dict):
+        """
+        Create Object representation from dict with list
+
+        :return DataStructure
+        """
+        if DataMiner().key not in dict_repr:
+            raise PersistentStorageException(
+                f"Key '{DataMiner().key}' not in the response file. "
+                f"(Be sure that you generate the response file "
+                f"for this variant.)"
+            )
+        value = dict_repr[DataMiner().key]
+        return cls.create_from_list(list_repr=value)
+
+    @classmethod
+    def create_from_list(cls, list_repr: list):
+        if len(list_repr) == 0:
+            raise PersistentStorageException(
+                "No responses left. Try to regenerate response file "
+                f"({PersistentObjectStorage().storage_file})."
+            )
+        if PersistentObjectStorage().storage_file_version <= 1:
+            # Backward compatibility for requre before using DataStructure
+            data = DataStructure(list_repr[0])
+        else:
+            data = DataStructure.create_from_value(list_repr[0])
+        del list_repr[0]
+        return data
+
 
 class DataTypes(Enum):
     List = 1
     Value = 2
     Dict = 3
+    DictWithList = 4
 
 
 class DataMiner(metaclass=SingletonMeta):
@@ -193,7 +226,14 @@ class DataMiner(metaclass=SingletonMeta):
             ds.metadata = {self.LATENCY_KEY: self.get_latency()}
         self.data = ds
         item = ds.dump()
-        if self.data_type == DataTypes.List:
+        if self.data_type == DataTypes.Dict:
+            level.setdefault(key, {})
+            level[key][self.key] = item
+        elif self.data_type == DataTypes.DictWithList:
+            level.setdefault(key, {})
+            level[key].setdefault(self.key, [])
+            level[key][self.key].append(item)
+        elif self.data_type in [DataTypes.List, DataTypes.DictWithList]:
             if PersistentObjectStorage().storage_file_version <= 1:
                 # Backward compatibility for requre before using DataStructure
                 item = values
@@ -214,21 +254,13 @@ class DataMiner(metaclass=SingletonMeta):
         """
         data = None
         if self.data_type == DataTypes.List:
-            if len(level) == 0:
-                raise PersistentStorageException(
-                    "No responses left. Try to regenerate response file "
-                    f"({PersistentObjectStorage().storage_file})."
-                )
-            if PersistentObjectStorage().storage_file_version <= 1:
-                # Backward compatibility for requre before using DataStructure
-                data = DataStructure(level[0])
-            else:
-                data = DataStructure.create_from_value(level[0])
-            del level[0]
+            data = DataStructure.create_from_list(level)
         elif self.data_type == DataTypes.Value:
             data = DataStructure.create_from_value(level)
         elif self.data_type == DataTypes.Dict:
             data = DataStructure.create_from_dict(level)
+        elif self.data_type == DataTypes.DictWithList:
+            data = DataStructure.create_from_dict_with_list(level)
         self.data = data
         if self.use_latency:
             original_sleep(data.metadata.get(self.LATENCY_KEY, 0))
@@ -260,7 +292,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     def __init__(self) -> None:
         # call dump() after store() is called
         self.dump_after_store = False
-        self._is_write_mode: bool = False
+        self.mode: StorageMode = StorageMode.read
         self.is_flushed = True
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
@@ -294,7 +326,11 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         """
         return self.metadata.get(self.version_key, 0)
 
-    @storage_file_version.setter
+    @property
+    def is_recording(self):
+        return self.mode in [StorageMode.write, StorageMode.read_write]
+
+    @storage_file_version.setter  # type: ignore
     def storage_file_version(self, value: int):
         self.metadata = {self.version_key: value}
 
@@ -316,16 +352,13 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     @storage_file.setter
     def storage_file(self, value):
         self._storage_file = value
-        self._is_write_mode = not os.path.exists(self._storage_file)
-        if self.is_write_mode:
+
+        if not os.path.exists(self._storage_file):
+            self.mode = StorageMode.write
             self.is_flushed = False
             self.storage_object = {}
         else:
             self.storage_object = self.load()
-
-    @property
-    def is_write_mode(self):
-        return self._is_write_mode
 
     @staticmethod
     def transform_hashable(keys: List) -> List:
@@ -368,7 +401,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         if self.dump_after_store:
             self.dump()
 
-    def read(self, keys: List) -> Any:
+    def _read(self, keys: List) -> Any:
         """
         Reads data from dictionary object structure based on keys.
         If keys does not exists
@@ -391,6 +424,40 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         result = DataMiner().load(level=current_level)
         return result
 
+    def __contains__(self, item) -> bool:
+        current_level = self.storage_object
+        hashable_keys = self.transform_hashable(item)
+        for item in hashable_keys:
+            if item not in current_level:
+                return False
+            current_level = current_level[item]
+        if DataMiner.data_type in [DataTypes.Dict, DataTypes.DictWithList]:
+            return DataMiner.key in current_level
+        return True
+
+    def __getitem__(self, key):
+        return self._read(keys=key)
+
+    def __setitem__(self, key, value):
+        self.store(keys=key, values=value, metadata={})
+
+    def __delitem__(self, key):
+        current_level = self.storage_object
+        hashable_keys = self.transform_hashable(key)
+        last_level = None
+        for item in hashable_keys:
+            if item not in current_level:
+                raise PersistentStorageException(
+                    f"Key not found in the persistent storage: {key}"
+                )
+            last_level = current_level
+            current_level = current_level[item]
+
+        if DataMiner.data_type == DataTypes.Dict:
+            del current_level[DataMiner.key]
+        else:
+            del last_level[key[-1]]
+
     def dump(self) -> None:
         """
         Explicitly stores content of storage_object to storage_file path
@@ -399,7 +466,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
         :return: None
         """
-        if self.is_write_mode:
+        if self.is_recording:
             self._set_storage_metadata_if_not_set()
             if self.is_flushed:
                 return None

@@ -23,22 +23,19 @@ import inspect
 import logging
 import shlex
 import subprocess
+from enum import Enum
 from pathlib import Path
 from typing import Union, Any
 
 from requre.exceptions import PersistentStorageException
-from requre.storage import PersistentObjectStorage
 
 logger = logging.getLogger(__name__)
 
-STORAGE = PersistentObjectStorage()
 
-
-def get_if_recording() -> bool:
-    """
-    True if storage file is set, means that it is requested to use storage.
-    """
-    return bool(STORAGE.storage_file)
+class StorageMode(Enum):
+    read = 0
+    write = 1
+    read_write = 2
 
 
 def run_command(cmd, error_message=None, cwd=None, fail=True, output=False):

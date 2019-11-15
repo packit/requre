@@ -26,8 +26,8 @@ import logging
 import pickle
 from typing import Optional, Callable, Any, List, Dict
 
-from .storage import PersistentObjectStorage, DataMiner, original_time
-from .utils import STORAGE
+from requre.storage import PersistentObjectStorage, DataMiner, original_time, DataTypes
+from requre.utils import StorageMode
 
 
 class ObjectStorage:
@@ -40,7 +40,7 @@ class ObjectStorage:
     in case object is not serializable well. Use this class very carefully.
     """
 
-    persistent_storage = STORAGE
+    persistent_storage = PersistentObjectStorage()
     __response_keys: list = list()
     object_type = object
 
@@ -69,7 +69,24 @@ class ObjectStorage:
         """
         logger = logging.getLogger(cls.__name__)
         object_storage = cls(store_keys=keys)
-        if object_storage.persistent_storage.is_write_mode:
+
+        if object_storage.store_keys in object_storage.persistent_storage:
+            logger.debug(
+                f"{object_storage.store_keys} found in the persistent storage."
+            )
+
+        if (
+            object_storage.persistent_storage.mode == StorageMode.write
+            or (
+                object_storage.persistent_storage.mode == StorageMode.read_write
+                and DataMiner.data_type == DataTypes.Dict
+                and object_storage.store_keys not in object_storage.persistent_storage
+            )
+            or (
+                object_storage.persistent_storage.mode == StorageMode.read_write
+                and DataTypes.DictWithList
+            )
+        ):
             time_before = original_time()
             response = func(*args, **kwargs)
             time_after = original_time()
@@ -77,6 +94,7 @@ class ObjectStorage:
             object_storage.write(response, metadata)
             logger.debug(f"WRITE Keys: {keys} -> {response}")
             return response
+
         else:
             response = object_storage.read()
             logger.debug(f"READ  Keys: {keys} -> {response}")
@@ -190,7 +208,7 @@ class ObjectStorage:
 
         :return: proper object
         """
-        data = self.persistent_storage.read(self.store_keys)
+        data = self.persistent_storage[self.store_keys]
         obj = self.from_serializable(data)
         return obj
 
