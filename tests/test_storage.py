@@ -3,8 +3,15 @@ import time
 
 from requre.constants import VERSION_REQURE_FILE
 from requre.exceptions import PersistentStorageException
-from requre.storage import DataMiner, DataTypes
+from requre.storage import (
+    DataMiner,
+    DataTypes,
+    StorageKeysInspectDefault,
+    StorageKeysInspectSimple,
+    StorageKeysInspect,
+)
 from requre.utils import STORAGE
+from requre.helpers.simple_object import Simple
 from tests.testbase import BaseClass
 
 
@@ -115,11 +122,16 @@ class TestStoreTypes(BaseClass):
 class Metadata(BaseClass):
     keys = ["a", "b"]
 
+    @staticmethod
+    @Simple.decorator_plain
+    def simple_return(value):
+        return value
+
     def setUp(self):
         super().setUp()
         DataMiner().current_time = time.time()
 
-    def test_metadata(self):
+    def test_latency(self):
         delta = 0.05
 
         STORAGE.store(keys=self.keys, values="x", metadata={})
@@ -160,6 +172,57 @@ class Metadata(BaseClass):
         self.assertAlmostEqual(
             0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
         )
+
+    def test_generic(self):
+        STORAGE.store(keys=self.keys, values="x", metadata={"test_meta": "yes"})
+        STORAGE.metadata = {"rpms": ["package1", "package2"]}
+        STORAGE.dump()
+        STORAGE.storage_object = {}
+        STORAGE.load()
+        STORAGE.read(keys=self.keys)
+        self.assertEqual(DataMiner().metadata["test_meta"], "yes")
+        self.assertEqual(
+            STORAGE.metadata.get(STORAGE.key_inspect_strategy_key),
+            StorageKeysInspectDefault.__name__,
+        )
+        self.assertEqual(STORAGE.metadata.get("rpms"), ["package1", "package2"])
+
+    def test_strategy(self):
+        DataMiner().key_stategy_cls = StorageKeysInspectSimple
+        STORAGE.store(keys=self.keys, values="x", metadata={})
+        self.simple_return("ahoj")
+        self.simple_return([1, 2, 3])
+
+        STORAGE.dump()
+        STORAGE.storage_object = {}
+        DataMiner().key_stategy_cls = StorageKeysInspectDefault
+        STORAGE._is_write_mode = False
+        STORAGE.load()
+        self.assertEqual("x", STORAGE.read(keys=self.keys))
+        self.assertEqual(
+            STORAGE.metadata.get(STORAGE.key_inspect_strategy_key),
+            StorageKeysInspectSimple.__name__,
+        )
+        self.assertEqual(StorageKeysInspectSimple, DataMiner().key_stategy_cls)
+
+    def test_strategy_proper(self):
+        self.test_strategy()
+        STORAGE.load()
+        print(STORAGE.storage_object)
+        self.assertEqual("ahoj", self.simple_return("nonsense"))
+        self.assertEqual([1, 2, 3], self.simple_return("nonsense"))
+
+    def test_strategy_API_cls(self):
+        self.test_strategy()
+        STORAGE.load()
+        DataMiner().key_stategy_cls = StorageKeysInspect
+        self.assertRaises(NotImplementedError, self.simple_return, "nonsense")
+
+    def test_strategy_default_cls(self):
+        self.test_strategy()
+        STORAGE.load()
+        DataMiner().key_stategy_cls = StorageKeysInspectDefault
+        self.assertRaises(PersistentStorageException, self.simple_return, "nonsense")
 
 
 class Latency(BaseClass):

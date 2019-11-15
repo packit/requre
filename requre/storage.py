@@ -24,7 +24,8 @@ import os
 import time
 from _collections_abc import Hashable
 from enum import Enum
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Callable
+import inspect
 
 import yaml
 
@@ -35,6 +36,49 @@ from .singleton import SingletonMeta
 # use this sleep to avoid decorating original time function used internally
 original_sleep = time.sleep
 original_time = time.time
+
+
+class StorageKeysInspect:
+    @staticmethod
+    def get_base_keys(func: Callable) -> List[Any]:
+        raise NotImplementedError("Use child classes")
+
+
+class StorageKeysInspectFull(StorageKeysInspect):
+    @staticmethod
+    def get_base_keys(func: Callable) -> List[Any]:
+        output: List[str] = list()
+        # callers module list, to be able to separate requests for various services in one file
+        caller_list: List[str] = list()
+        for currnetframe in inspect.stack():
+            if not inspect.getmodule(currnetframe[0]):
+                continue
+            module_name = inspect.getmodule(currnetframe[0]).__name__
+            if module_name.startswith("_"):
+                break
+            # avoid to store requre.storage to module stack
+            # backward compatibility issue
+            if module_name.startswith("requre.storage"):
+                continue
+            if len(caller_list) and caller_list[-1] == module_name:
+                continue
+            else:
+                caller_list.append(module_name)
+        output += caller_list[::-1]
+        # module name where function is
+        output.append(inspect.getmodule(func).__name__)
+        # name of function what were used
+        output.append(func.__name__)
+        return output
+
+
+class StorageKeysInspectSimple(StorageKeysInspect):
+    @staticmethod
+    def get_base_keys(func: Callable) -> List[Any]:
+        return [inspect.getmodule(func).__name__, func.__name__]
+
+
+StorageKeysInspectDefault = StorageKeysInspectFull
 
 
 class DataStructure:
@@ -117,6 +161,7 @@ class DataMiner(metaclass=SingletonMeta):
     use_latency = False
     LATENCY_KEY = "latency"
     key: str = "all"
+    key_stategy_cls = StorageKeysInspectDefault
 
     def get_latency(self, regenerate=True) -> float:
         """
@@ -210,6 +255,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
     internal_object_key = "_requre"
     version_key = "version_storage_file"
+    key_inspect_strategy_key = "key_strategy"
 
     def __init__(self) -> None:
         # call dump() after store() is called
@@ -252,12 +298,16 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     def storage_file_version(self, value: int):
         self.metadata = {self.version_key: value}
 
-    def _set_storage_file_version_if_not_set(self):
+    def _set_storage_metadata_if_not_set(self):
         """
         Set storage file version if not already set to latest version.
         """
         if self.metadata.get(self.version_key) is None:
             self.storage_file_version = VERSION_REQURE_FILE
+        if self.metadata.get(self.key_inspect_strategy_key) is None:
+            self.metadata = {
+                self.key_inspect_strategy_key: DataMiner().key_stategy_cls.__name__
+            }
 
     @property
     def storage_file(self):
@@ -300,7 +350,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         :param values: It could be whatever type what is used in original object handling
         :return: None
         """
-        self._set_storage_file_version_if_not_set()
+        self._set_storage_metadata_if_not_set()
         current_level = self.storage_object
         hashable_keys = self.transform_hashable(keys)
         for item_num in range(len(hashable_keys)):
@@ -350,7 +400,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         :return: None
         """
         if self.is_write_mode:
-            self._set_storage_file_version_if_not_set()
+            self._set_storage_metadata_if_not_set()
             if self.is_flushed:
                 return None
             with open(self.storage_file, "w") as yaml_file:
@@ -366,6 +416,12 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         with open(self.storage_file, "r") as yaml_file:
             output = yaml.safe_load(yaml_file)
         self.storage_object = output
+        # set proper storage strategy if stored in file
+        if self.metadata.get(self.key_inspect_strategy_key):
+            print(self.metadata.get(self.key_inspect_strategy_key))
+            DataMiner().key_stategy_cls = globals()[
+                self.metadata.get(self.key_inspect_strategy_key)
+            ]
         return output
 
 
