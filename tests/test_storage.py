@@ -130,6 +130,22 @@ class TestStoreTypes(BaseClass):
         DataMiner().key = "first-key"
         self.assertEqual("x", PersistentObjectStorage()[self.keys])
 
+    def test_dict_with_list_data(self):
+        DataMiner().data_type = DataTypes.DictWithList
+        DataMiner().key = "first-key"
+        PersistentObjectStorage().store(keys=self.keys, values="x", metadata={})
+        DataMiner().key = "second-key"
+        PersistentObjectStorage().store(keys=self.keys, values="y", metadata={})
+        PersistentObjectStorage().store(keys=self.keys, values="z", metadata={})
+
+        self.assertIn("first-key", PersistentObjectStorage().storage_object["a"]["b"])
+        self.assertIn("second-key", PersistentObjectStorage().storage_object["a"]["b"])
+
+        self.assertEqual("y", PersistentObjectStorage()[self.keys])
+        self.assertEqual("z", PersistentObjectStorage()[self.keys])
+        DataMiner().key = "first-key"
+        self.assertEqual("x", PersistentObjectStorage()[self.keys])
+
 
 class Metadata(BaseClass):
     keys = ["a", "b"]
