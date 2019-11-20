@@ -31,7 +31,6 @@ from typing import Callable, Any, Dict
 from requre.exceptions import PersistentStorageException
 from requre.helpers.simple_object import Simple
 from requre.storage import PersistentObjectStorage, DataMiner
-from requre.utils import StorageMode
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +55,7 @@ class StoreFiles:
         logger.debug(f"Copy files {pathname} -> {keys}")
         logger.debug(f"Persistent Storage mode: {pers_storage.mode}")
         original_cwd = os.getcwd()
-        if pers_storage.mode in [StorageMode.read_write, StorageMode.write]:
+        if pers_storage.do_store(keys=cls.basic_ps_keys + keys):
             try:
                 artifact_name = os.path.basename(pathname)
                 artifact_path = os.path.dirname(pathname)
@@ -105,15 +104,12 @@ class StoreFiles:
 
         @functools.wraps(func)
         def store_files_int(*args, **kwargs):
-            if not PersistentObjectStorage().is_recording:
-                return func(*args, **kwargs)
-            else:
-                output = Simple.decorator_plain(func)(*args, **kwargs)
-                cls._copy_logic(
-                    PersistentObjectStorage(),
-                    pathname=output,
-                    keys=[cls.__name__, cls._test_identifier()],
-                )
+            output = Simple.decorator_plain(func)(*args, **kwargs)
+            cls._copy_logic(
+                PersistentObjectStorage(),
+                pathname=output,
+                keys=[cls.__name__, cls._test_identifier()],
+            )
             return output
 
         return store_files_int
@@ -129,7 +125,9 @@ class StoreFiles:
             def int_dec_fn(pathname_arg, keys_arg):
                 if not isinstance(pathname_arg, str):
                     return
-                if PersistentObjectStorage().is_recording:
+                if PersistentObjectStorage().do_store(
+                    keys=StoreFiles.basic_ps_keys + keys_arg
+                ):
                     if os.path.exists(pathname_arg):
                         cls._copy_logic(
                             PersistentObjectStorage(),
@@ -147,14 +145,11 @@ class StoreFiles:
                         pass
 
             class_test_id_list = [cls.__name__, cls._test_identifier()]
-            if not PersistentObjectStorage().is_recording:
-                return func(*args, **kwargs)
-            else:
-                output = Simple.decorator_plain(func)(*args, **kwargs)
-                for position in range(len(args)):
-                    int_dec_fn(args[position], class_test_id_list + [position])
-                for k, v in kwargs.items():
-                    int_dec_fn(v, class_test_id_list + [k])
+            output = Simple.decorator_plain(func)(*args, **kwargs)
+            for position in range(len(args)):
+                int_dec_fn(args[position], class_test_id_list + [position])
+            for k, v in kwargs.items():
+                int_dec_fn(v, class_test_id_list + [k])
             return output
 
         return store_files_int
@@ -172,20 +167,17 @@ class StoreFiles:
             @functools.wraps(func)
             def store_files_int_int(*args, **kwargs):
                 class_test_id_list = [cls.__name__, cls._test_identifier()]
-                if not PersistentObjectStorage().is_recording:
-                    return func(*args, **kwargs)
-                else:
-                    output = Simple.decorator_plain(func)(*args, **kwargs)
-                    for key, position in files_params.items():
-                        if key in kwargs:
-                            param = kwargs[key]
-                        else:
-                            param = args[position]
-                        cls._copy_logic(
-                            PersistentObjectStorage(),
-                            pathname=param,
-                            keys=class_test_id_list + [key],
-                        )
+                output = Simple.decorator_plain(func)(*args, **kwargs)
+                for key, position in files_params.items():
+                    if key in kwargs:
+                        param = kwargs[key]
+                    else:
+                        param = args[position]
+                    cls._copy_logic(
+                        PersistentObjectStorage(),
+                        pathname=param,
+                        keys=class_test_id_list + [key],
+                    )
                 return output
 
             return store_files_int_int

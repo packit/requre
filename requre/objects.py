@@ -26,8 +26,9 @@ import logging
 import pickle
 from typing import Optional, Callable, Any, List, Dict
 
-from requre.storage import PersistentObjectStorage, DataMiner, original_time, DataTypes
-from requre.utils import StorageMode
+from requre.storage import PersistentObjectStorage, DataMiner, original_time
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectStorage:
@@ -67,26 +68,10 @@ class ObjectStorage:
         :param kwargs: parameters of original function
         :return: output of called func
         """
-        logger = logging.getLogger(cls.__name__)
+
         object_storage = cls(store_keys=keys)
 
-        if object_storage.store_keys in object_storage.persistent_storage:
-            logger.debug(
-                f"{object_storage.store_keys} found in the persistent storage."
-            )
-
-        if (
-            object_storage.persistent_storage.mode == StorageMode.write
-            or (
-                object_storage.persistent_storage.mode == StorageMode.read_write
-                and DataMiner().data_type == DataTypes.Dict
-                and object_storage.store_keys not in object_storage.persistent_storage
-            )
-            or (
-                object_storage.persistent_storage.mode == StorageMode.read_write
-                and DataMiner().data_type in [DataTypes.DictWithList, DataTypes.List]
-            )
-        ):
+        if object_storage.persistent_storage.do_store(keys):
             time_before = original_time()
             response = func(*args, **kwargs)
             time_after = original_time()

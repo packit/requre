@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import inspect
+import logging
 import os
 import time
 from _collections_abc import Hashable
@@ -37,6 +38,8 @@ from .utils import StorageMode
 # use this sleep to avoid decorating original time function used internally
 original_sleep = time.sleep
 original_time = time.time
+
+logger = logging.getLogger(__name__)
 
 
 class StorageKeysInspect:
@@ -293,7 +296,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     def __init__(self) -> None:
         # call dump() after store() is called
         self.dump_after_store = False
-        self.mode: StorageMode = StorageMode.read
+        self.mode: StorageMode = StorageMode.default
         self.is_flushed = True
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
@@ -327,9 +330,33 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         """
         return self.metadata.get(self.version_key, 0)
 
-    @property
-    def is_recording(self):
-        return self.mode in [StorageMode.write, StorageMode.read_write]
+    def do_store(self, keys):
+
+        if self.mode == StorageMode.read:
+            return False
+
+        elif self.mode == StorageMode.write:
+            return True
+
+        elif self.mode == StorageMode.append:
+            if DataMiner().data_type in [DataTypes.DictWithList, DataTypes.List]:
+                # append possible
+                return True
+
+            if (
+                DataMiner().data_type in [DataTypes.Dict, DataTypes.Value]
+                and keys not in self
+            ):
+                # keys present => we can read the values
+                return True
+            return False
+
+        key_present = keys in self
+        logger.warning(
+            f"No storage-mode set. Checking presence of the keys: {key_present} "
+            f"=> {'read' if key_present else 'store'}"
+        )
+        return not key_present
 
     @storage_file_version.setter  # type: ignore
     def storage_file_version(self, value: int):
@@ -355,10 +382,13 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         self._storage_file = value
 
         if not os.path.exists(self._storage_file):
-            self.mode = StorageMode.write
+            if self.mode == StorageMode.default:
+                self.mode = StorageMode.write
             self.is_flushed = False
             self.storage_object = {}
         else:
+            if self.mode == StorageMode.default:
+                self.mode = StorageMode.read
             self.storage_object = self.load()
 
     @staticmethod
@@ -467,7 +497,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
         :return: None
         """
-        if self.is_recording:
+        if self.mode in [StorageMode.write, StorageMode.append]:
             self._set_storage_metadata_if_not_set()
             if self.is_flushed:
                 return None

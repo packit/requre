@@ -33,9 +33,10 @@ logger = logging.getLogger(__name__)
 
 
 class StorageMode(Enum):
-    read = 0
-    write = 1
-    read_write = 2
+    default = 0
+    read = 1
+    write = 2
+    append = 3
 
 
 def run_command(cmd, error_message=None, cwd=None, fail=True, output=False):
