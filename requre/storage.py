@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import inspect
 import os
 import time
 from _collections_abc import Hashable
 from enum import Enum
 from typing import Dict, List, Any, Optional, Callable
-import inspect
 
 import yaml
 
@@ -431,8 +431,8 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
             if item not in current_level:
                 return False
             current_level = current_level[item]
-        if DataMiner.data_type in [DataTypes.Dict, DataTypes.DictWithList]:
-            return DataMiner.key in current_level
+        if DataMiner().data_type in [DataTypes.Dict, DataTypes.DictWithList]:
+            return DataMiner().key in current_level
         return True
 
     def __getitem__(self, key):
@@ -453,8 +453,8 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
             last_level = current_level
             current_level = current_level[item]
 
-        if DataMiner.data_type == DataTypes.Dict:
-            del current_level[DataMiner.key]
+        if DataMiner().data_type == DataTypes.Dict:
+            del current_level[DataMiner().key]
         else:
             del last_level[key[-1]]
 

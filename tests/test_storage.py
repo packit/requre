@@ -164,7 +164,7 @@ class Metadata(BaseClass):
 
         PersistentObjectStorage().store(keys=self.keys, values="x", metadata={})
         self.assertAlmostEqual(
-            0, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
         # Try to set some custom metadata
         DataMiner().data.metadata = {"random": "data"}
@@ -172,31 +172,31 @@ class Metadata(BaseClass):
         time.sleep(0.1)
         PersistentObjectStorage().store(keys=self.keys, values="y", metadata={})
         self.assertAlmostEqual(
-            0.1, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0.1, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
 
         time.sleep(0.2)
         PersistentObjectStorage().store(keys=self.keys, values="z", metadata={})
         self.assertAlmostEqual(
-            0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0.2, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
         self.assertIn(self.keys, PersistentObjectStorage())
         self.assertAlmostEqual(
-            0, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
         # check custom metadata
         self.assertEqual("data", DataMiner().metadata["random"])
 
         self.assertIn(self.keys, PersistentObjectStorage())
         self.assertAlmostEqual(
-            0.1, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0.1, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
         # check if custom metadata are not everywhere
         self.assertNotIn("random", DataMiner().metadata)
         self.assertIn("latency", DataMiner().metadata)
         self.assertIn(self.keys, PersistentObjectStorage())
         self.assertAlmostEqual(
-            0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0.2, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
 
     def test_generic(self):
@@ -277,7 +277,7 @@ class Latency(BaseClass):
         time.sleep(0.2)
         PersistentObjectStorage().store(keys=self.keys, values="y", metadata={})
         self.assertAlmostEqual(
-            0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0.2, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
 
         time_begin = time.time()
@@ -296,7 +296,7 @@ class Latency(BaseClass):
         time.sleep(0.2)
         PersistentObjectStorage().store(keys=self.keys, values="y", metadata={})
         self.assertAlmostEqual(
-            0.2, DataMiner().metadata[DataMiner.LATENCY_KEY], delta=delta
+            0.2, DataMiner().metadata[DataMiner().LATENCY_KEY], delta=delta
         )
 
         time_begin = time.time()

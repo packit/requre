@@ -79,18 +79,18 @@ class ObjectStorage:
             object_storage.persistent_storage.mode == StorageMode.write
             or (
                 object_storage.persistent_storage.mode == StorageMode.read_write
-                and DataMiner.data_type == DataTypes.Dict
+                and DataMiner().data_type == DataTypes.Dict
                 and object_storage.store_keys not in object_storage.persistent_storage
             )
             or (
                 object_storage.persistent_storage.mode == StorageMode.read_write
-                and DataMiner.data_type in [DataTypes.DictWithList, DataTypes.List]
+                and DataMiner().data_type in [DataTypes.DictWithList, DataTypes.List]
             )
         ):
             time_before = original_time()
             response = func(*args, **kwargs)
             time_after = original_time()
-            metadata = {DataMiner.LATENCY_KEY: time_after - time_before}
+            metadata = {DataMiner().LATENCY_KEY: time_after - time_before}
 
             object_storage.write(response, metadata)
             logger.debug(f"WRITE Keys: {keys} -> {response}")

@@ -67,7 +67,7 @@ class StoreFiles:
                     ) as tar_store:
                         tar_store.add(name=artifact_name)
                     fileobj.seek(0)
-                    metadata = {DataMiner.LATENCY_KEY: 0}
+                    metadata = {DataMiner().LATENCY_KEY: 0}
                     pers_storage.store(
                         keys=cls.basic_ps_keys + keys,
                         values=fileobj.read(),
