@@ -23,7 +23,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 def is_sudo_possible():
     random_file = "/usr/bin/test_superuser"
     try:
-        run_command(f"sudo touch {random_file}")
+        run_command(f"sudo -n touch {random_file}")
     except PersistentStorageException:
         return False
     run_command(f"sudo rm {random_file}")
