@@ -190,7 +190,7 @@ class SessionRecordingWithFileStore(Base):
 
 class DynamicFileStorage(Base):
     @StoreFiles.guess_args
-    def create_file(self, value, target_file):
+    def write_to_file(self, value, target_file):
         with open(target_file, "w") as fd:
             fd.write(value)
 
@@ -199,13 +199,13 @@ class DynamicFileStorage(Base):
         File storage where it try to guess what to store, based on *args and **kwargs values
         """
         self.create_temp_file()
-        self.create_file("ahoj", self.temp_file)
-        self.create_file("cao", self.temp_file)
+        self.write_to_file("ahoj", self.temp_file)
+        self.write_to_file("cao", self.temp_file)
 
         PersistentObjectStorage().dump()
         PersistentObjectStorage().mode = StorageMode.read
         self.create_temp_file()
-        self.create_file("first", self.temp_file)
+        self.write_to_file("ahoj", self.temp_file)
         with open(self.temp_file, "r") as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
@@ -213,7 +213,7 @@ class DynamicFileStorage(Base):
         # mix with positional option
 
         self.create_temp_file()
-        self.create_file("second", self.temp_file)
+        self.write_to_file("cao", self.temp_file)
         with open(self.temp_file, "r") as fd:
             content = fd.read()
             self.assertNotIn("ahoj", content)
