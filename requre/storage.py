@@ -188,13 +188,14 @@ class DataMiner(metaclass=SingletonMeta):
     compatibility with requre storage version files
     """
 
-    current_time = original_time()
-    data: DataStructure
-    data_type: DataTypes = DataTypes.List
-    use_latency = False
-    LATENCY_KEY = "latency"
-    key: str = "all"
-    key_stategy_cls = StorageKeysInspectDefault
+    def __init__(self):
+        self.current_time = original_time()
+        self.data: Optional[DataStructure] = None
+        self.data_type: DataTypes = DataTypes.List
+        self.use_latency = False
+        self.LATENCY_KEY = "latency"
+        self.key: str = "all"
+        self.key_stategy_cls = StorageKeysInspectDefault
 
     def get_latency(self, regenerate=True) -> float:
         """
