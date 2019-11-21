@@ -1,5 +1,6 @@
 from requre.objects import ObjectStorage
 from requre.storage import PersistentObjectStorage
+from requre.utils import StorageMode
 from tests.testbase import BaseClass
 
 
@@ -39,7 +40,7 @@ class StoreAnyRequest(BaseClass):
         """
         obj_before = ObjectStorage.execute_all_keys(OwnClass, 1)
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         obj_after = ObjectStorage.execute_all_keys(OwnClass, 1)
         self.assertEqual(obj_before.num, obj_after.num)
         # all objects are already read, next have to fail
@@ -52,7 +53,7 @@ class StoreAnyRequest(BaseClass):
         decorated_own = ObjectStorage.decorator_all_keys(OwnClass)
         obj_before = decorated_own(1)
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         obj_after = decorated_own(1)
         self.assertEqual(obj_before.num, obj_after.num)
         # all objects are already read, next have to fail

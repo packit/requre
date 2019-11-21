@@ -2,6 +2,7 @@ import importlib
 
 from requre.helpers.requests_response import RequestResponseHandling
 from requre.storage import PersistentObjectStorage
+from requre.utils import StorageMode
 from tests.testbase import BaseClass
 
 
@@ -40,7 +41,7 @@ class StoreAnyRequest(BaseClass):
             self.requests.post, self.domain
         )
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         response_after = RequestResponseHandling.execute_all_keys(
             self.requests.post, self.domain
         )
@@ -61,7 +62,7 @@ class StoreAnyRequest(BaseClass):
         )
         response_before = self.requests.post(self.domain)
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         response_after = self.requests.post(self.domain)
         self.assertEqual(response_before.text, response_after.text)
@@ -75,7 +76,7 @@ class StoreAnyRequest(BaseClass):
             self.requests.post
         )
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         self.assertRaises(Exception, self.requests.post, self.domain, data={"a": "b"})
 
     def testFunctionCustomFields(self):
@@ -91,7 +92,7 @@ class StoreAnyRequest(BaseClass):
             "http://www.google.com", data={"a": "b"}
         )
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         response_after = self.requests.post(self.domain)
         response_google_after = self.requests.post("http://www.google.com")
@@ -109,7 +110,7 @@ class StoreAnyRequest(BaseClass):
         self.requests.post(self.domain, data={"a": "b"})
         response_2 = self.requests.post(self.domain, data={"c": "d"})
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         self.assertRaises(Exception, self.requests.post, self.domain, data={"x": "y"})
         self.assertRaises(KeyError, self.requests.post, self.domain)

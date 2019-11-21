@@ -1,12 +1,13 @@
 import os
+import tarfile
 import tempfile
+from io import BytesIO
 
 from requre.helpers.files import StoreFiles
 from requre.storage import PersistentObjectStorage
-from tests.testbase import BaseClass
-import tarfile
-from io import BytesIO
+from requre.utils import StorageMode
 from tests.test_function_output import StoreFunctionOutput
+from tests.testbase import BaseClass
 
 
 class Base(BaseClass):
@@ -51,7 +52,7 @@ class FileStorage(Base):
         self.create_file_content("cao", target_file=self.temp_file)
 
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         self.create_file_content("first", target_file=self.temp_file)
         with open(self.temp_file, "r") as fd:
@@ -77,7 +78,7 @@ class FileStorage(Base):
         self.create_file_content("cao", self.temp_file)
 
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         self.create_temp_file()
         self.create_file_content("first", self.temp_file)
@@ -112,7 +113,7 @@ class FileStorage(Base):
             self.assertIn("ciao", content)
 
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         self.create_temp_dir()
         self.create_dir_content(
@@ -136,7 +137,7 @@ class FileStorage(Base):
         )
 
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         self.create_temp_dir()
         self.create_dir_content(
@@ -168,7 +169,7 @@ class SessionRecordingWithFileStore(Base):
         self.create_file_content("cao", target_file=self.temp_file)
 
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         before = str(PersistentObjectStorage().storage_object)
 
@@ -189,7 +190,7 @@ class SessionRecordingWithFileStore(Base):
 
 class DynamicFileStorage(Base):
     @StoreFiles.guess_args
-    def create_file(self, value, target_file):
+    def write_to_file(self, value, target_file):
         with open(target_file, "w") as fd:
             fd.write(value)
 
@@ -198,13 +199,13 @@ class DynamicFileStorage(Base):
         File storage where it try to guess what to store, based on *args and **kwargs values
         """
         self.create_temp_file()
-        self.create_file("ahoj", self.temp_file)
-        self.create_file("cao", self.temp_file)
+        self.write_to_file("ahoj", self.temp_file)
+        self.write_to_file("cao", self.temp_file)
 
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
         self.create_temp_file()
-        self.create_file("first", self.temp_file)
+        self.write_to_file("ahoj", self.temp_file)
         with open(self.temp_file, "r") as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
@@ -212,7 +213,7 @@ class DynamicFileStorage(Base):
         # mix with positional option
 
         self.create_temp_file()
-        self.create_file("second", self.temp_file)
+        self.write_to_file("cao", self.temp_file)
         with open(self.temp_file, "r") as fd:
             content = fd.read()
             self.assertNotIn("ahoj", content)
@@ -239,7 +240,7 @@ class StoreOutputFile(Base):
         ofile2 = self.create_file("cao")
 
         PersistentObjectStorage().dump()
-        PersistentObjectStorage()._is_write_mode = False
+        PersistentObjectStorage().mode = StorageMode.read
 
         oofile1 = self.create_file("first")
         with open(ofile1, "r") as fd:

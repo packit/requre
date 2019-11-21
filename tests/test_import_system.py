@@ -6,7 +6,7 @@ import unittest
 from requre import decorate, replace, replace_module
 from requre.helpers.tempfile import TempFile
 from requre.import_system import ReplaceType, upgrade_import_system, UpgradeImportSystem
-from requre.utils import STORAGE
+from requre.storage import PersistentObjectStorage
 
 SELECTOR = str(os.path.basename(__file__).rsplit(".", 1)[0])
 
@@ -261,10 +261,12 @@ class TestUpgradeImportSystem(unittest.TestCase):
         tmpfile = tempfile.mktemp()
         tmpdir = tempfile.mkdtemp()
         self.assertIn(
-            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile
+            f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+            tmpfile,
         )
         self.assertIn(
-            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir
+            f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+            tmpdir,
         )
         self.assertFalse(os.path.exists(tmpfile))
         self.assertTrue(os.path.exists(tmpdir))
@@ -286,10 +288,12 @@ class TestUpgradeImportSystem(unittest.TestCase):
         tmpfile = tempfile.mktemp()
         tmpdir = tempfile.mkdtemp()
         self.assertIn(
-            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile
+            f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+            tmpfile,
         )
         self.assertIn(
-            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir
+            f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+            tmpdir,
         )
         self.assertFalse(os.path.exists(tmpfile))
         self.assertTrue(os.path.exists(tmpdir))
@@ -310,10 +314,12 @@ class TestUpgradeImportSystem(unittest.TestCase):
             tmpfile = tempfile.mktemp()
             tmpdir = tempfile.mkdtemp()
             self.assertIn(
-                f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile
+                f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+                tmpfile,
             )
             self.assertIn(
-                f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir
+                f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+                tmpdir,
             )
             self.assertFalse(os.path.exists(tmpfile))
             self.assertTrue(os.path.exists(tmpdir))
@@ -332,10 +338,12 @@ class TestUpgradeImportSystem(unittest.TestCase):
         tmpfile = tempfile.mktemp()
         tmpdir = tempfile.mkdtemp()
         self.assertIn(
-            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile
+            f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+            tmpfile,
         )
         self.assertIn(
-            f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir
+            f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+            tmpdir,
         )
         self.assertFalse(os.path.exists(tmpfile))
         self.assertTrue(os.path.exists(tmpdir))
@@ -356,10 +364,12 @@ class TestUpgradeImportSystem(unittest.TestCase):
             tmpfile = tempfile.mktemp()
             tmpdir = tempfile.mkdtemp()
             self.assertIn(
-                f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpfile
+                f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+                tmpfile,
             )
             self.assertIn(
-                f"/tmp/{os.path.basename(STORAGE.storage_file)}/static_tmp", tmpdir
+                f"/tmp/{os.path.basename(PersistentObjectStorage().storage_file)}/static_tmp",
+                tmpdir,
             )
             self.assertFalse(os.path.exists(tmpfile))
             self.assertTrue(os.path.exists(tmpdir))
