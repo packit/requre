@@ -1,21 +1,23 @@
 import builtins
 import os
 import sys
-import unittest
 
 from requre import decorate, replace, replace_module
 from requre.helpers.tempfile import TempFile
 from requre.import_system import ReplaceType, upgrade_import_system, UpgradeImportSystem
 from requre.storage import PersistentObjectStorage
+from tests.testbase import BaseClass
 
 SELECTOR = str(os.path.basename(__file__).rsplit(".", 1)[0])
 
 
-class TestUpgradeImportSystem(unittest.TestCase):
+class TestUpgradeImportSystem(BaseClass):
     def setUp(self) -> None:
-        pass
+        super().setUp()
+        self.old_imports = builtins.__import__
 
     def tearDown(self) -> None:
+        builtins.__import__ = self.old_imports
         if "tempfile" in sys.modules:
             del sys.modules["tempfile"]
         super().tearDown()
