@@ -142,7 +142,11 @@ class DictProcessing:
 
 
 def get_module_of_previous_context():
-    current_ctx = inspect.currentframe().f_back.f_back
-    frameinfo_args = (current_ctx,) + inspect.getframeinfo(current_ctx, 1)
-    frameinfo = inspect.FrameInfo(*frameinfo_args)
-    return inspect.getmodule(frameinfo[0])
+    current_ctx = inspect.currentframe()
+    while True:
+        current_ctx = current_ctx.f_back
+        frameinfo_args = (current_ctx,) + inspect.getframeinfo(current_ctx, 1)
+        frameinfo = inspect.FrameInfo(*frameinfo_args)
+        module = inspect.getmodule(frameinfo[0])
+        if module and not module.__name__.startswith("requre"):
+            return module
