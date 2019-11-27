@@ -75,8 +75,15 @@ class ObjectStorage:
             time_before = original_time()
             response = func(*args, **kwargs)
             time_after = original_time()
-            metadata = {DataMiner().LATENCY_KEY: time_after - time_before}
-
+            metadata: Dict = {DataMiner().LATENCY_KEY: time_after - time_before}
+            if DataMiner().store_arg_debug_metadata:
+                args_clean = [f"'{x}'" if isinstance(x, str) else str(x) for x in args]
+                kwargs_clean = [
+                    f"""{k}={f"'{v}'" if isinstance(v, str) else str(v)}"""
+                    for k, v in kwargs.items()
+                ]
+                caller = f"{func.__name__}({', '.join(args_clean + kwargs_clean)})"
+                metadata[DataMiner().METADATA_ARG_DEBUG_KEY] = caller
             object_storage.write(response, metadata)
             logger.debug(f"WRITE Keys: {keys} -> {response}")
             return response
