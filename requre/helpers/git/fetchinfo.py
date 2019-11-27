@@ -21,23 +21,22 @@
 # SOFTWARE.
 
 
-import os
-from typing import Any, Callable
+from typing import Any, Callable, List
 
-from git.refs.head import HEAD
-from git.remote import PushInfo
-from git.repo.base import Repo
+from git.remote import FetchInfo
 from git.util import IterableList
-
+from requre.storage import PersistentObjectStorage
 from requre.objects import ObjectStorage
 from requre.helpers.files import StoreFiles
 
 
-class PushInfoStorageList(ObjectStorage):
-    __ignored = ["_remote"]
-    __response_keys_special = ["local_ref"]
+class FetchInfoStorageList(ObjectStorage):
+    # TODO: improve handling of "ref" item (need deep inspection of git objects and consequences)
+    # it is not mandatory for current packit operations
+    __ignored = ["ref"]
+    __response_keys_special: List[str] = []
     __response_keys = list(
-        set(PushInfo.__slots__) - set(__ignored) - set(__response_keys_special)
+        set(FetchInfo.__slots__) - set(__ignored) - set(__response_keys_special)
     )
 
     object_type = IterableList
@@ -48,26 +47,23 @@ class PushInfoStorageList(ObjectStorage):
             tmp = dict()
             for key in self.__response_keys:
                 tmp[key] = getattr(item, key)
-            for key in self.__response_keys_special:
-                if key == "local_ref":
-                    tmp[key] = [
-                        getattr(item, key).repo.git_dir,
-                        getattr(item, key).path,
-                    ]
             output.append(tmp)
         return output
 
     def from_serializable(self, data: Any) -> Any:
         out = self.object_type("name")
         for item in data:
-            tmp = PushInfo(None, None, None, None)
+            tmp = FetchInfo(None, None, None, None)
             for key in self.__response_keys:
                 setattr(tmp, key, item[key])
-            for key in self.__response_keys_special:
-                if key == "local_ref":
-                    setattr(tmp, key, HEAD(Repo(item[key][0])))
             out.append(tmp)
         return out
+
+
+class RemoteFetch(FetchInfoStorageList):
+    """
+    Use this class for git.remote.Remote.fetch recording
+    """
 
     @classmethod
     def execute(cls, keys: list, func: Callable, *args, **kwargs) -> Any:
@@ -83,7 +79,11 @@ class PushInfoStorageList(ObjectStorage):
 
         output = super().execute(keys, func, *args, **kwargs)
         git_object = args[0]
-        remote_url = git_object.repo.remotes[git_object.name].url
-        if os.path.isdir(remote_url):
-            StoreFiles.explicit_reference(remote_url)
+        git_dir = git_object.repo.git_dir
+        StoreFiles.explicit_reference(git_dir)
+        if not PersistentObjectStorage().do_store(keys):
+            # mimic the code in git for read mode for Remote.fetch
+            # https://github.com/gitpython-developers/GitPython/blob/master/git/remote.py
+            if hasattr(git_object.repo.odb, "update_cache"):
+                git_object.repo.odb.update_cache()
         return output

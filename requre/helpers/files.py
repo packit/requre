@@ -93,7 +93,12 @@ class StoreFiles:
                                 tar_item.name = tar_item.name.split(os.path.sep, 1)[1]
                             else:
                                 tar_item.name = "."
-                            tar_store.extract(tar_item, path=pathname)
+                            try:
+                                tar_store.extract(tar_item, path=pathname)
+                            except IOError:
+                                # rewrite readonly files if necessary
+                                os.remove(os.path.join(pathname, tar_item.name))
+                                tar_store.extract(tar_item, path=pathname)
 
     @classmethod
     def return_value(cls, func: Callable) -> Any:
@@ -183,3 +188,15 @@ class StoreFiles:
             return store_files_int_int
 
         return store_files_int
+
+    @classmethod
+    def explicit_reference(cls, file_param: str, dest_key: str = "default") -> Any:
+        """
+        Method to store explicitly path file_param to persistent storage
+        """
+        class_test_id_list = [cls.__name__, cls._test_identifier()]
+        cls._copy_logic(
+            PersistentObjectStorage(),
+            pathname=file_param,
+            keys=class_test_id_list + [dest_key],
+        )
