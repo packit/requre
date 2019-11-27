@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 
-from typing import Any
+import os
+from typing import Any, Callable
 
 from git.refs.head import HEAD
 from git.remote import PushInfo
@@ -29,6 +30,7 @@ from git.repo.base import Repo
 from git.util import IterableList
 
 from requre.objects import ObjectStorage
+from requre.helpers.files import StoreFiles
 
 
 class PushInfoStorageList(ObjectStorage):
@@ -66,3 +68,21 @@ class PushInfoStorageList(ObjectStorage):
                     setattr(tmp, key, HEAD(Repo(item[key][0])))
             out.append(tmp)
         return out
+
+    @classmethod
+    def execute(cls, keys: list, func: Callable, *args, **kwargs) -> Any:
+        """
+        Class method to store or read object from persistent storage
+        with explicit set of *args, **kwargs parameters to use as keys
+        :param keys: list of keys used as parameter
+        :param func: original function
+        :param args: parameters of original function
+        :param kwargs: parameters of original function
+        :return: output of called func
+        """
+
+        super().execute(keys, func, *args, **kwargs)
+        git_object = args[0]
+        remote_url = git_object.repo.remotes[git_object.name].url
+        if os.path.isdir(remote_url):
+            StoreFiles.explicit_reference(remote_url)
