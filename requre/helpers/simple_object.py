@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Any
+from typing import Any, Optional, Dict
 from requre.objects import ObjectStorage
 
 
@@ -34,4 +34,29 @@ class Simple(ObjectStorage):
         return data
 
     def to_serializable(self, obj: Any) -> Any:
+        return obj
+
+
+class Void(Simple):
+    """
+    Use this object, when don't want to store output data of function.
+    Could be used for debugging purposes, to see caller arguments
+    or output is not important or unable to serialize anyhow.
+    """
+
+    def write(self, obj: Any, metadata: Optional[Dict] = None) -> Any:
+        """
+        Write the object representation to storage
+        Internally it will use self.to_serializable()
+        method to get serializable object representation
+
+        :param obj: some object
+        :param metadata: store metedata to object
+        :return: same obj
+        """
+        self.persistent_storage.store(
+            self.store_keys,
+            f">>>>> Requre output supressed by using {self.__class__.__name__}",
+            metadata=metadata,
+        )
         return obj
