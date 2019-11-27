@@ -77,7 +77,7 @@ class RemoteFetch(FetchInfoStorageList):
         :return: output of called func
         """
 
-        super().execute(keys, func, *args, **kwargs)
+        output = super().execute(keys, func, *args, **kwargs)
         git_object = args[0]
         git_dir = git_object.repo.git_dir
         StoreFiles.explicit_reference(git_dir)
@@ -86,3 +86,4 @@ class RemoteFetch(FetchInfoStorageList):
             # https://github.com/gitpython-developers/GitPython/blob/master/git/remote.py
             if hasattr(git_object.repo.odb, "update_cache"):
                 git_object.repo.odb.update_cache()
+        return output

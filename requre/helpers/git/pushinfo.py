@@ -81,8 +81,9 @@ class PushInfoStorageList(ObjectStorage):
         :return: output of called func
         """
 
-        super().execute(keys, func, *args, **kwargs)
+        output = super().execute(keys, func, *args, **kwargs)
         git_object = args[0]
         remote_url = git_object.repo.remotes[git_object.name].url
         if os.path.isdir(remote_url):
             StoreFiles.explicit_reference(remote_url)
+        return output
