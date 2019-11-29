@@ -25,9 +25,10 @@ import shlex
 import subprocess
 from enum import Enum
 from pathlib import Path
-from typing import Union, Any
+from typing import Union, Any, Optional, Dict, List
 
 from requre.exceptions import PersistentStorageException
+from requre.constants import METATADA_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +140,32 @@ class DictProcessing:
         if isinstance(obj, list):
             for item in obj:
                 DictProcessing.replace(obj=item, key=key, value=value)
+
+    def simplify(
+        self, internal_object: Optional[Dict] = None, ignore_list: Optional[List] = None
+    ):
+        if ignore_list is None:
+            ignore_list = []
+        if internal_object is None:
+            internal_object = self.requre_dict
+        if isinstance(internal_object, dict):
+            if len(internal_object.keys()) == 1:
+                key = list(internal_object.keys())[0]
+                if key in [METATADA_KEY] + ignore_list:
+                    return
+                if isinstance(internal_object[key], dict):
+                    value = internal_object.pop(key)
+                    print(
+                        f"Removing key: {key}  and continue with {list(value.keys())}"
+                    )
+                    for k, v in value.items():
+                        internal_object[k] = v
+                        self.simplify(
+                            internal_object=internal_object, ignore_list=ignore_list
+                        )
+            else:
+                for v in internal_object.values():
+                    self.simplify(internal_object=v, ignore_list=ignore_list)
 
 
 def get_module_of_previous_context():
