@@ -308,3 +308,61 @@ class Latency(BaseClass):
         PersistentObjectStorage().read(self.keys)
         time_end = time.time()
         self.assertAlmostEqual(0.2, time_end - time_begin, delta=delta)
+
+
+class KeySkipping(BaseClass):
+    """
+    Check fault tolerancy of intermediate keys
+    """
+
+    keys = ["a", "b", "c", "d"]
+
+    def setUp(self):
+        super().setUp()
+        PersistentObjectStorage().store(keys=self.keys, values="x", metadata={})
+
+    def tearDown(self):
+        DataMiner().read_key_exact = False
+
+    def test_all_match(self):
+        output = PersistentObjectStorage().read(self.keys)
+        self.assertEqual("x", output)
+
+    def test_key_1_inserted(self):
+        output = PersistentObjectStorage().read(self.keys[:1] + ["y"] + self.keys[1:])
+        self.assertEqual("x", output)
+
+    def test_key_0_inserted(self):
+        output = PersistentObjectStorage().read(["y"] + self.keys)
+        self.assertEqual("x", output)
+
+    def test_key_inserted_2_before(self):
+        output = PersistentObjectStorage().read(self.keys[:-2] + ["y"] + self.keys[-2:])
+        self.assertEqual("x", output)
+
+    def test_key_inserted_last(self):
+        self.assertRaises(
+            PersistentStorageException,
+            PersistentObjectStorage().read,
+            self.keys + ["y"],
+        )
+
+    def test_key_inserted_1_before(self):
+        self.assertRaises(
+            PersistentStorageException,
+            PersistentObjectStorage().read,
+            self.keys[:-1] + ["y"] + self.keys[-1:],
+        )
+
+    def test_key_exact_miner(self):
+        DataMiner().read_key_exact = True
+        output = PersistentObjectStorage().read(self.keys)
+        self.assertEqual("x", output)
+
+    def test_key_exact_miner_exception(self):
+        DataMiner().read_key_exact = True
+        self.assertRaises(
+            PersistentStorageException,
+            PersistentObjectStorage().read,
+            ["y"] + self.keys,
+        )

@@ -30,7 +30,12 @@ from typing import Dict, List, Any, Optional, Callable
 
 import yaml
 
-from .constants import VERSION_REQURE_FILE, ENV_STORAGE_FILE
+from .constants import (
+    VERSION_REQURE_FILE,
+    ENV_STORAGE_FILE,
+    KEY_MINIMAL_MATCH,
+    METATADA_KEY,
+)
 from .exceptions import PersistentStorageException
 from .singleton import SingletonMeta
 from .utils import StorageMode
@@ -201,6 +206,7 @@ class DataMiner(metaclass=SingletonMeta):
         self.key_stategy_cls = StorageKeysInspectDefault
         self.store_arg_debug_metadata = False
         self.METADATA_ARG_DEBUG_KEY = "log_call_function"
+        self.read_key_exact = False
 
     def get_latency(self, regenerate=True) -> float:
         """
@@ -291,7 +297,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     storage_file: file for reading and writing data in storage_object
     """
 
-    internal_object_key = "_requre"
+    internal_object_key = METATADA_KEY
     version_key = "version_storage_file"
     key_inspect_strategy_key = "key_strategy"
 
@@ -446,14 +452,27 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         """
         current_level = self.storage_object
         hashable_keys = self.transform_hashable(keys)
-        for item in hashable_keys:
-
+        debug_keys: List[str] = []
+        list_len = len(hashable_keys)
+        for item_num in range(list_len):
+            item = hashable_keys[item_num]
             if item not in current_level:
-                raise PersistentStorageException(
-                    f"Keys not in storage:{self.storage_file} {hashable_keys}"
-                )
+                # it matched last 2 items
+                if DataMiner().read_key_exact or (
+                    not DataMiner().read_key_exact
+                    and item_num + KEY_MINIMAL_MATCH >= list_len
+                ):
+                    raise PersistentStorageException(
+                        f"Keys not in storage:{self.storage_file}"
+                        f" Matched: {debug_keys},"
+                        f" Missing: {hashable_keys[item_num:]}"
+                    )
+                else:
+                    debug_keys.append(f"MISSING {item}")
 
-            current_level = current_level[item]
+            else:
+                debug_keys.append(item)
+                current_level = current_level[item]
         result = DataMiner().load(level=current_level)
         return result
 

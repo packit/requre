@@ -221,7 +221,13 @@ def clean(ctx):
 @click.option(
     "--dry-run", is_flag=True, default=False, help="Do not write changes back"
 )
-def purge(replaces, files, dry_run):
+@click.option(
+    "--simplify",
+    is_flag=True,
+    default=False,
+    help="Simplify dict structure if possible (experimental feature)",
+)
+def purge(replaces, files, dry_run, simplify):
     for one_file in files:
         click.echo(f"Processing file: {one_file.name}")
         object_representation = yaml.safe_load(one_file)
@@ -235,6 +241,8 @@ def purge(replaces, files, dry_run):
             for matched in processor.match(selector=selector_list):
                 click.echo(f"\t\tMatched {selector_list}")
                 processor.replace(obj=matched, key=key, value=value)
+        if simplify:
+            processor.simplify()
         if not dry_run:
             click.echo(f"Writing content back to file: {one_file.name}")
             with open(one_file.name, mode="w") as outfile:
