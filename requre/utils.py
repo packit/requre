@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Union, Any, Optional, Dict, List
 
 from requre.exceptions import PersistentStorageException
-from requre.constants import METATADA_KEY
+from requre.constants import METATADA_KEY, KEY_MINIMAL_MATCH
 
 logger = logging.getLogger(__name__)
 
@@ -140,6 +140,18 @@ class DictProcessing:
         if isinstance(obj, list):
             for item in obj:
                 DictProcessing.replace(obj=item, key=key, value=value)
+
+    def minimal_match(self, dict_obj: Dict):
+        tmp_dict = dict_obj
+        for cntr in range(KEY_MINIMAL_MATCH):
+            if not isinstance(tmp_dict, dict) or len(tmp_dict.keys()) != 1:
+                return False
+            key = list(tmp_dict.keys())[0]
+            value = tmp_dict[key]
+            tmp_dict = value
+        if isinstance(tmp_dict, list):
+            tmp_dict[0]
+            ...
 
     def simplify(
         self, internal_object: Optional[Dict] = None, ignore_list: Optional[List] = None
