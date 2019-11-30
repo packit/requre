@@ -12,7 +12,7 @@ from requre.storage import (
     StorageKeysInspect,
     PersistentObjectStorage,
 )
-from requre.utils import StorageMode
+from requre.utils import StorageMode, DictProcessing
 from tests.testbase import BaseClass
 
 
@@ -365,4 +365,26 @@ class KeySkipping(BaseClass):
             PersistentStorageException,
             PersistentObjectStorage().read,
             ["y"] + self.keys,
+        )
+
+
+class Simplify(BaseClass):
+    """
+    Check simplifying of keys
+    """
+
+    keys = ["a", "b", "c", "d", "e"]
+    metadata = {"latency": 0}
+
+    def setUp(self):
+        super().setUp()
+        PersistentObjectStorage().store(
+            keys=self.keys, values="x", metadata=self.metadata
+        )
+
+    def test(self):
+        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor.simplify()
+        self.assertIn(
+            "'a': {'d': {'e': [", str(PersistentObjectStorage().storage_object)
         )

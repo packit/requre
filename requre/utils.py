@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Union, Any, Optional, Dict, List
 
 from requre.exceptions import PersistentStorageException
-from requre.constants import METATADA_KEY
+from requre.constants import METATADA_KEY, KEY_MINIMAL_MATCH
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +141,26 @@ class DictProcessing:
             for item in obj:
                 DictProcessing.replace(obj=item, key=key, value=value)
 
+    @staticmethod
+    def minimal_match(dict_obj: Dict):
+        tmp_dict = dict_obj
+        for cntr in range(KEY_MINIMAL_MATCH):
+            if not isinstance(tmp_dict, dict) or len(tmp_dict.keys()) != 1:
+                return False
+            key = list(tmp_dict.keys())[0]
+            value = tmp_dict[key]
+            tmp_dict = value
+        if isinstance(tmp_dict, list):
+            first_item = tmp_dict[0]
+            if isinstance(first_item, dict) and "latency" in first_item.get(
+                "metadata", {}
+            ):
+                return True
+            else:
+                return False
+        # FIXME: solve situation for other types than list type
+        return False
+
     def simplify(
         self, internal_object: Optional[Dict] = None, ignore_list: Optional[List] = None
     ):
@@ -152,6 +172,8 @@ class DictProcessing:
             if len(internal_object.keys()) == 1:
                 key = list(internal_object.keys())[0]
                 if key in [METATADA_KEY] + ignore_list:
+                    return
+                if self.minimal_match(internal_object):
                     return
                 if isinstance(internal_object[key], dict):
                     value = internal_object.pop(key)
