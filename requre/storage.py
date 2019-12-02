@@ -468,6 +468,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                     # it is important if simplify used.
                     if matched_calls and item == matched_calls[-1]:
                         debug_keys.append(f"DUPLICATE {item}")
+                        continue
                     raise PersistentStorageException(
                         f"Keys not in storage:{self.storage_file}"
                         f" Matched: {debug_keys},"
