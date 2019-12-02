@@ -462,13 +462,17 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                     not DataMiner().read_key_exact
                     and item_num + KEY_MINIMAL_MATCH >= list_len
                 ):
+                    # if not matched, but consider if it is not same key as previous
+                    # it is important if simplify used.
+                    if debug_keys and item == debug_keys[-1]:
+                        debug_keys.append(f"DUPLICATE {item}")
                     raise PersistentStorageException(
                         f"Keys not in storage:{self.storage_file}"
                         f" Matched: {debug_keys},"
                         f" Missing: {hashable_keys[item_num:]}"
                     )
                 else:
-                    debug_keys.append(f"MISSING {item}")
+                    debug_keys.append(f"SKIP {item}")
 
             else:
                 debug_keys.append(item)
