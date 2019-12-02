@@ -454,6 +454,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         current_level = self.storage_object
         hashable_keys = self.transform_hashable(keys)
         debug_keys: List[str] = []
+        matched_calls: List[str] = []
         list_len = len(hashable_keys)
         for item_num in range(list_len):
             item = hashable_keys[item_num]
@@ -465,7 +466,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 ):
                     # if not matched, but consider if it is not same key as previous
                     # it is important if simplify used.
-                    if debug_keys and item == debug_keys[-1]:
+                    if matched_calls and item == matched_calls[-1]:
                         debug_keys.append(f"DUPLICATE {item}")
                     raise PersistentStorageException(
                         f"Keys not in storage:{self.storage_file}"
@@ -477,6 +478,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
             else:
                 debug_keys.append(item)
+                matched_calls.append(item)
                 current_level = current_level[item]
         result = DataMiner().load(level=current_level)
         return result
