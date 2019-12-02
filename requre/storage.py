@@ -459,13 +459,12 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         debug_keys: List[str] = []
         matched_calls: List[str] = []
         list_len = len(hashable_keys)
-        for item_num in range(list_len):
-            item = hashable_keys[item_num]
+        for index, item in enumerate(hashable_keys):
             if item not in current_level:
                 # it matched last 2 items
                 if DataMiner().read_key_exact or (
                     not DataMiner().read_key_exact
-                    and item_num + KEY_MINIMAL_MATCH >= list_len
+                    and index + KEY_MINIMAL_MATCH >= list_len
                 ):
                     # if not matched, but consider if it is not same key as previous
                     # it is important if simplify used.
@@ -475,7 +474,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                     raise PersistentStorageException(
                         f"Keys not in storage:{self.storage_file}"
                         f" Matched: {debug_keys},"
-                        f" Missing: {hashable_keys[item_num:]}"
+                        f" Missing: {hashable_keys[index:]}"
                     )
                 else:
                     debug_keys.append(f"SKIP {item}")

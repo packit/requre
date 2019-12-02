@@ -77,20 +77,17 @@ class DictProcessing:
         if ds == DataTypes.Value:
             if isinstance(tmp_dict, dict):
                 first_item = tmp_dict
-
-        if isinstance(first_item, dict) and DataMiner().LATENCY_KEY in first_item.get(
-            DataStructure.METADATA_KEY, {}
-        ):
-            return True
-        return False
+        return isinstance(
+            first_item, dict
+        ) and DataMiner().LATENCY_KEY in first_item.get(DataStructure.METADATA_KEY, {})
 
     def simplify(
         self, internal_object: Optional[Dict] = None, ignore_list: Optional[List] = None
     ):
-        if ignore_list is None:
-            ignore_list = []
-        if internal_object is None:
-            internal_object = self.requre_dict
+        ignore_list = ignore_list or []
+        internal_object = (
+            self.requre_dict if internal_object is None else internal_object
+        )
         if isinstance(internal_object, dict):
             if len(internal_object.keys()) == 1:
                 key = list(internal_object.keys())[0]
