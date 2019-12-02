@@ -381,6 +381,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
             self.metadata = {
                 self.key_inspect_strategy_key: DataMiner().key_stategy_cls.__name__
             }
+        data_type_name = DataMiner().data_type.__class__.__name__
+        if self.metadata.get(data_type_name) is None:
+            self.metadata = {data_type_name: DataMiner().data_type.value}
 
     @property
     def storage_file(self):

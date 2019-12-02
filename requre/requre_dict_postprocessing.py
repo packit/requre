@@ -1,7 +1,7 @@
 import logging
 from typing import Union, Any, Dict, Optional, List
 from .constants import KEY_MINIMAL_MATCH, METATADA_KEY
-from .storage import DataMiner, DataStructure
+from .storage import DataMiner, DataStructure, DataTypes
 
 logger = logging.getLogger(__name__)
 
@@ -49,25 +49,39 @@ class DictProcessing:
                 DictProcessing.replace(obj=item, key=key, value=value)
 
     @staticmethod
-    def minimal_match(dict_obj: Dict):
+    def minimal_match(dict_obj: Dict, metadata: Dict):
+
         tmp_dict = dict_obj
+        first_item: Dict = {}
+        key_name = DataTypes.__name__
+        ds = DataTypes.List
+        if key_name in metadata:
+            ds = DataTypes(metadata.get(key_name))
         for cntr in range(KEY_MINIMAL_MATCH):
             if not isinstance(tmp_dict, dict) or len(tmp_dict.keys()) != 1:
                 return False
             key = list(tmp_dict.keys())[0]
             value = tmp_dict[key]
             tmp_dict = value
-        if isinstance(tmp_dict, list):
-            first_item = tmp_dict[0]
-            if isinstance(
-                first_item, dict
-            ) and DataMiner().LATENCY_KEY in first_item.get(
-                DataStructure.METADATA_KEY, {}
-            ):
-                return True
-            else:
-                return False
-        # FIXME: solve situation for other types than list type
+        if ds == DataTypes.DictWithList:
+            if isinstance(tmp_dict, dict):
+                tmp_first_item = tmp_dict[list(tmp_dict.keys())[0]]
+                if isinstance(tmp_first_item, list):
+                    first_item = tmp_first_item[0]
+        if ds == DataTypes.Dict:
+            if isinstance(tmp_dict, dict):
+                first_item = tmp_dict[list(tmp_dict.keys())[0]]
+        if ds == DataTypes.List:
+            if isinstance(tmp_dict, list):
+                first_item = tmp_dict[0]
+        if ds == DataTypes.Value:
+            if isinstance(tmp_dict, dict):
+                first_item = tmp_dict
+
+        if isinstance(first_item, dict) and DataMiner().LATENCY_KEY in first_item.get(
+            DataStructure.METADATA_KEY, {}
+        ):
+            return True
         return False
 
     def simplify(
@@ -82,7 +96,7 @@ class DictProcessing:
                 key = list(internal_object.keys())[0]
                 if key in [METATADA_KEY] + ignore_list:
                     return
-                if self.minimal_match(internal_object):
+                if self.minimal_match(internal_object, self.requre_dict[METATADA_KEY]):
                     return
                 if isinstance(internal_object[key], dict):
                     value = internal_object.pop(key)
