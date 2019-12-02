@@ -206,6 +206,7 @@ class DataMiner(metaclass=SingletonMeta):
         self.key_stategy_cls = StorageKeysInspectDefault
         self.store_arg_debug_metadata = False
         self.METADATA_ARG_DEBUG_KEY = "log_call_function"
+        self.METADATA_CALLER_LIST = "module_call_list"
         self.read_key_exact = False
 
     def get_latency(self, regenerate=True) -> float:

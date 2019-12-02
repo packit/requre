@@ -26,7 +26,12 @@ import logging
 import pickle
 from typing import Optional, Callable, Any, List, Dict
 
-from requre.storage import PersistentObjectStorage, DataMiner, original_time
+from requre.storage import (
+    PersistentObjectStorage,
+    DataMiner,
+    original_time,
+    StorageKeysInspectFull,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +80,12 @@ class ObjectStorage:
             time_before = original_time()
             response = func(*args, **kwargs)
             time_after = original_time()
-            metadata: Dict = {DataMiner().LATENCY_KEY: time_after - time_before}
+            metadata: Dict = {
+                DataMiner().LATENCY_KEY: time_after - time_before,
+                DataMiner().METADATA_CALLER_LIST: StorageKeysInspectFull.get_base_keys(
+                    func
+                ),
+            }
             if DataMiner().store_arg_debug_metadata:
                 args_clean = [f"'{x}'" if isinstance(x, str) else str(x) for x in args]
                 kwargs_clean = [
