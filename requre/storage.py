@@ -36,7 +36,7 @@ from .constants import (
     KEY_MINIMAL_MATCH,
     METATADA_KEY,
 )
-from .exceptions import PersistentStorageException
+from .exceptions import ItemNotInStorage, StorageNoResponseLeft
 from .singleton import SingletonMeta
 from .utils import StorageMode
 
@@ -141,7 +141,7 @@ class DataStructure:
         :return DataStructure
         """
         if DataMiner().key not in dict_repr:
-            raise PersistentStorageException(
+            raise ItemNotInStorage(
                 f"Key '{DataMiner().key}' not in the response file. "
                 f"(Be sure that you generate the response file "
                 f"for this variant.)"
@@ -159,7 +159,7 @@ class DataStructure:
         :return DataStructure
         """
         if DataMiner().key not in dict_repr:
-            raise PersistentStorageException(
+            raise ItemNotInStorage(
                 f"Key '{DataMiner().key}' not in the response file. "
                 f"(Be sure that you generate the response file "
                 f"for this variant.)"
@@ -170,7 +170,7 @@ class DataStructure:
     @classmethod
     def create_from_list(cls, list_repr: list):
         if len(list_repr) == 0:
-            raise PersistentStorageException(
+            raise StorageNoResponseLeft(
                 "No responses left. Try to regenerate response file "
                 f"({PersistentObjectStorage().storage_file})."
             )
@@ -440,6 +440,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
         if self.dump_after_store:
             self.dump()
+        logger.debug(f"Storing response to: {self.storage_file}: {hashable_keys}")
 
     def read(self, keys: List) -> Any:
         """
@@ -469,7 +470,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                     if matched_calls and item == matched_calls[-1]:
                         debug_keys.append(f"DUPLICATE {item}")
                         continue
-                    raise PersistentStorageException(
+                    raise ItemNotInStorage(
                         f"Keys not in storage:{self.storage_file}"
                         f" Matched: {debug_keys},"
                         f" Missing: {hashable_keys[item_num:]}"
@@ -481,7 +482,11 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 debug_keys.append(item)
                 matched_calls.append(item)
                 current_level = current_level[item]
-        result = DataMiner().load(level=current_level)
+        try:
+            result = DataMiner().load(level=current_level)
+        except StorageNoResponseLeft as e:
+            raise StorageNoResponseLeft(f"{e.args} (keys: {debug_keys})")
+        logger.debug(f"Reading response from: {self.storage_file}: {debug_keys}")
         return result
 
     def __contains__(self, item) -> bool:
@@ -507,7 +512,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         last_level = None
         for item in hashable_keys:
             if item not in current_level:
-                raise PersistentStorageException(
+                raise ItemNotInStorage(
                     f"Key not found in the persistent storage: {key}"
                 )
             last_level = current_level
@@ -545,7 +550,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         self.storage_object = output
         # set proper storage strategy if stored in file
         if self.metadata.get(self.key_inspect_strategy_key):
-            print(self.metadata.get(self.key_inspect_strategy_key))
+            logger.debug(
+                f"Used key strategy: {self.metadata.get(self.key_inspect_strategy_key)}"
+            )
             DataMiner().key_stategy_cls = globals()[
                 self.metadata.get(self.key_inspect_strategy_key)
             ]
