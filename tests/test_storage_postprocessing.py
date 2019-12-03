@@ -1,8 +1,11 @@
 import os
 import unittest
 from copy import deepcopy
-from requre.utils import run_command, DictProcessing
+from requre.utils import run_command
+from requre.requre_dict_postprocessing import DictProcessing
+from requre.storage import PersistentObjectStorage, DataMiner, DataTypes
 
+from tests.testbase import BaseClass
 
 CMD_TOOL = "requre-patch purge"
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
@@ -102,3 +105,71 @@ class FilePostprocessing(unittest.TestCase):
             self.assertIn("output: yyy", output)
             self.assertNotIn("latency: 0", output)
             self.assertIn("latency: 50", output)
+
+
+class Simplify(BaseClass):
+    """
+    Check simplifying of keys
+    """
+
+    keys = ["a", "b", "c", "d", "e"]
+    metadata = {"latency": 0}
+
+    def tearDown(self):
+        # return it to default type
+        DataMiner().data_type = DataTypes.List
+        super().tearDown()
+
+    def store_key(self):
+        PersistentObjectStorage().store(
+            keys=self.keys, values="x", metadata=self.metadata
+        )
+
+    def testDefault(self):
+        self.store_key()
+        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor.simplify()
+        self.assertIn(
+            "'a': {'d': {'e': [", str(PersistentObjectStorage().storage_object)
+        )
+
+    def testDict(self):
+        DataMiner().data_type = DataTypes.Dict
+        self.store_key()
+        print(PersistentObjectStorage().storage_object)
+        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor.simplify()
+        self.assertIn(
+            "'a': {'d': {'e': {'%s': {'metadata'" % DataMiner().key,
+            str(PersistentObjectStorage().storage_object),
+        )
+
+    def testDictWithList(self):
+        DataMiner().data_type = DataTypes.DictWithList
+        self.store_key()
+        print(PersistentObjectStorage().storage_object)
+        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor.simplify()
+        self.assertIn(
+            "'a': {'d': {'e': {'%s': [" % DataMiner().key,
+            str(PersistentObjectStorage().storage_object),
+        )
+
+    def testValue(self):
+        DataMiner().data_type = DataTypes.Value
+        self.store_key()
+        print(PersistentObjectStorage().storage_object)
+        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor.simplify()
+        self.assertIn(
+            "'a': {'d': {'e': {'metadata'",
+            str(PersistentObjectStorage().storage_object),
+        )
+
+
+"""
+    Value = 2
+    Dict = 3
+    DictWithList = 4
+
+"""
