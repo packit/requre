@@ -12,7 +12,7 @@ from requre.storage import (
     StorageKeysInspect,
     PersistentObjectStorage,
 )
-from requre.utils import StorageMode
+from requre.utils import StorageMode, DictProcessing
 from tests.testbase import BaseClass
 
 
@@ -253,14 +253,10 @@ class Metadata(BaseClass):
         self.assertRaises(NotImplementedError, self.simple_return, "nonsense")
 
     def test_strategy_default_cls(self):
-        """
-        Possible to use data with simple keys by full key strategy
-        """
         self.test_strategy()
         PersistentObjectStorage().load()
-        print(PersistentObjectStorage().storage_object)
         DataMiner().key_stategy_cls = StorageKeysInspectDefault
-        self.assertEqual("ahoj", self.simple_return("nonsense"))
+        self.assertRaises(PersistentStorageException, self.simple_return, "nonsense")
 
 
 class Latency(BaseClass):
@@ -369,4 +365,26 @@ class KeySkipping(BaseClass):
             PersistentStorageException,
             PersistentObjectStorage().read,
             ["y"] + self.keys,
+        )
+
+
+class Simplify(BaseClass):
+    """
+    Check simplifying of keys
+    """
+
+    keys = ["a", "b", "c", "d", "e"]
+    metadata = {"latency": 0}
+
+    def setUp(self):
+        super().setUp()
+        PersistentObjectStorage().store(
+            keys=self.keys, values="x", metadata=self.metadata
+        )
+
+    def test(self):
+        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor.simplify()
+        self.assertIn(
+            "'a': {'d': {'e': [", str(PersistentObjectStorage().storage_object)
         )

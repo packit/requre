@@ -11,7 +11,7 @@ import yaml
 import builtins
 
 from requre.import_system import upgrade_import_system, UpgradeImportSystem
-from requre.requre_dict_postprocessing import DictProcessing
+from requre.utils import DictProcessing
 from requre.storage import DataMiner, PersistentObjectStorage
 from requre.constants import (
     ENV_REPLACEMENT_FILE,
