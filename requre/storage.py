@@ -377,8 +377,8 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
             return False
 
         key_present = keys in self
-        logger.warning(
-            f"No storage-mode set. Checking presence of the keys: {key_present} "
+        logger.debug(
+            f"Default storage-mode set. Checking presence of the keys: {key_present} "
             f"=> {'read' if key_present else 'store'}"
         )
         return not key_present
@@ -415,8 +415,6 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
             self.is_flushed = False
             self.storage_object = {}
         else:
-            if self.mode == StorageMode.default:
-                self.mode = StorageMode.read
             self.storage_object = self.load()
 
     @staticmethod
