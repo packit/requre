@@ -87,6 +87,22 @@ class StorageKeysInspectSimple(StorageKeysInspect):
         return [inspect.getmodule(func).__name__, func.__name__]
 
 
+class StorageKeysInspectUnique(StorageKeysInspect):
+    @staticmethod
+    def get_base_keys(func: Callable) -> List[Any]:
+        return StorageKeysInspectUnique._get_unique_keys(
+            StorageKeysInspectFull.get_base_keys(func)
+        )
+
+    @staticmethod
+    def _get_unique_keys(keys):
+        output: List = []
+        for item in reversed(keys):
+            if item not in output:
+                output.append(item)
+        return list(reversed(output))
+
+
 StorageKeysInspectDefault = StorageKeysInspectFull
 
 
