@@ -11,6 +11,7 @@ from requre.storage import (
     StorageKeysInspectSimple,
     StorageKeysInspect,
     PersistentObjectStorage,
+    StorageKeysInspectUnique,
 )
 from requre.utils import StorageMode
 from tests.testbase import BaseClass
@@ -257,6 +258,12 @@ class Metadata(BaseClass):
         PersistentObjectStorage().load()
         DataMiner().key_stategy_cls = StorageKeysInspectDefault
         self.assertEqual("ahoj", self.simple_return("nonsense"))
+
+    def test_strategy_unique(self):
+        keys = self.keys + ["c"] + self.keys + ["d"]
+        self.assertEqual(
+            StorageKeysInspectUnique._get_unique_keys(keys), ["c"] + self.keys + ["d"]
+        )
 
 
 class Latency(BaseClass):
