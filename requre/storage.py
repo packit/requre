@@ -36,7 +36,11 @@ from .constants import (
     KEY_MINIMAL_MATCH,
     METATADA_KEY,
 )
-from .exceptions import ItemNotInStorage, StorageNoResponseLeft
+from .exceptions import (
+    ItemNotInStorage,
+    StorageNoResponseLeft,
+    PersistentStorageException,
+)
 from .singleton import SingletonMeta
 from .utils import StorageMode
 
@@ -356,7 +360,11 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         return self.metadata.get(self.version_key, 0)
 
     def do_store(self, keys):
-
+        if self.mode == StorageMode.read and not os.path.exists(self.storage_file):
+            raise PersistentStorageException(
+                "Requre can't work in this setup: we are meant to read "
+                "recorded responses but the storage file does not exist."
+            )
         if self.mode == StorageMode.read:
             return False
 
@@ -412,6 +420,13 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         if not os.path.exists(self._storage_file):
             if self.mode == StorageMode.default:
                 self.mode = StorageMode.write
+            elif self.mode == StorageMode.read and not os.path.exists(
+                self.storage_file
+            ):
+                raise PersistentStorageException(
+                    "Requre can't work in this setup: we are meant to read "
+                    "recorded responses but the storage file does not exist."
+                )
             self.is_flushed = False
             self.storage_object = {}
         else:
