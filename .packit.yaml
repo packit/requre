@@ -11,4 +11,5 @@ jobs:
 - job: copr_build
   trigger: pull_request
   metadata:
-    targets: fedora-stable
+    targets:
+    - fedora-stable
