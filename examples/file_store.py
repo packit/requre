@@ -4,17 +4,18 @@ from tempfile import mkdtemp
 import os
 
 PersistentObjectStorage().storage_file = "files.yaml"
-temp_file = mkdtemp()
+temp_dir = mkdtemp()
 
 
 @StoreFiles.guess_args
-def return_result(value, dir_name):
-    with open(os.path.join(dir_name, value), "w") as fd:
-        fd.write(input("value: "))
+def return_result(dir_name):
+    file_name = input("enter file name: ")
+    with open(os.path.join(dir_name, file_name), "w") as fd:
+        fd.write("empty")
+    return file_name
 
 
-value = return_result("filee", temp_file)
-
+print("returned file name:", return_result(temp_dir))
+print("dir name (current):", temp_dir)
+print("files:", os.listdir(temp_dir))
 PersistentObjectStorage().dump()
-print(PersistentObjectStorage().storage_object)
-print(value)
