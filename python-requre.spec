@@ -2,24 +2,14 @@
 %global pypi_name requre
 
 Name:           python-%{pypi_name}
-Version:        0.2.1.dev1+gf480bd7.d20200120
+Version:        0.2.1
 Release:        1%{?dist}
 Summary:        Library for testing python code what allows store output of various objects and use stored data for testing
 
 License:        MIT
 URL:            https://github.com/packit-service/requre
-Source0:        requre-0.2.1.dev1+gf480bd7.d20200120.tar.gz
+Source0:        https://files.pythonhosted.org/packages/source/r/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
-
-BuildRequires:  python3-devel
-BuildRequires:  python3dist(click)
-BuildRequires:  python3dist(pytest)
-BuildRequires:  python3dist(pyyaml)
-BuildRequires:  python3dist(requests)
-BuildRequires:  python3dist(setuptools)
-BuildRequires:  python3dist(setuptools-scm)
-BuildRequires:  python3dist(setuptools-scm-git-archive)
-BuildRequires:  python3dist(sphinx)
 
 %description
  REQUest REcordingRequre \[rekure\]Is Library for storing output of various
@@ -31,11 +21,6 @@ output to functions [Documentation]( Plan and current status - Used for testing
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
 
-Requires:       python3dist(click)
-Requires:       python3dist(pytest)
-Requires:       python3dist(pyyaml)
-Requires:       python3dist(requests)
-Requires:       python3dist(setuptools)
 %description -n python3-%{pypi_name}
  REQUest REcordingRequre \[rekure\]Is Library for storing output of various
 function and methods to persistent storage and be able to replay the stored
@@ -48,7 +33,7 @@ Summary:        requre documentation
 Documentation for requre
 
 %prep
-%autosetup -n requre-0.2.1.dev1+gf480bd7.d20200120
+%autosetup -n %{pypi_name}-%{version}
 # Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
