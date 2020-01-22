@@ -11,6 +11,16 @@ URL:            https://github.com/packit-service/requre
 Source0:        https://files.pythonhosted.org/packages/source/r/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
 BuildArch:      noarch
 
+BuildRequires:  python3-devel
+BuildRequires:  python3dist(click)
+BuildRequires:  python3dist(pytest)
+BuildRequires:  python3dist(pyyaml)
+BuildRequires:  python3dist(requests)
+BuildRequires:  python3dist(setuptools)
+BuildRequires:  python3dist(setuptools-scm)
+BuildRequires:  python3dist(setuptools-scm-git-archive)
+BuildRequires:  python3dist(sphinx)
+
 %description
  REQUest REcordingRequre \[rekure\]Is Library for storing output of various
 function and methods to persistent storage and be able to replay the stored
