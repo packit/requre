@@ -69,8 +69,5 @@ rm -rf html/.{doctrees,buildinfo}
 %license LICENSE
 
 %changelog
-* Mon Jan 20 2020 Jan Ščotka <jscotka@redhat.com> - 0.2.1.dev1+gf480bd7.d20200120-1
-Development snapshot (f480bd75)
-
 * Wed Jan 15 2020 Jan Ščotka <jscotka@redhat.com> - 0.2.0-1
 - Initial package.
