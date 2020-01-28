@@ -5,10 +5,6 @@
         script:
         - python3 -c "import requre"
     /full:
-      prepare:
-        how: shell
-        playbooks:
-        - pwd; cd ~/git-source && pwd && pip3 install .
       execute:
         how: shell
         script:
