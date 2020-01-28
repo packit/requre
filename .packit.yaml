@@ -13,3 +13,10 @@ actions:
   - "sh -c 'echo requre-$(python3 setup.py --version).tar.gz'"
   get-current-version:
   - "python3 setup.py --version"
+
+jobs:
+- job: tests
+  trigger: pull_request
+  metadata:
+    targets:
+    - fedora-stable

@@ -1,0 +1,15 @@
+/test/build:
+    /smoke:
+      execute:
+        how: shell
+        script:
+        - python3 -c "import requre"
+    /full:
+      prepare:
+        how: shell
+        playbooks:
+        - pwd; cd ~/git-source && pwd && pip3 install .
+      execute:
+        how: shell
+        script:
+        - pwd; cd ~/git-source && pwd && make check
