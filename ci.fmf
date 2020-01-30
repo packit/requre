@@ -1,0 +1,11 @@
+/test/build:
+    /smoke:
+      execute:
+        how: shell
+        script:
+        - python3 -c "import requre"
+    /full:
+      execute:
+        how: shell
+        script:
+        - pwd; cd ~/git-source && pwd && make check

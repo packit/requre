@@ -1,0 +1,22 @@
+specfile_path: python-requre.spec
+synced_files:
+  - python-requre.spec
+  - .packit.yaml
+# package project name what correspond to package name in setup.py
+upstream_package_name: requre
+# name what you used as name in specfile (for python packages it starts with python-)
+downstream_package_name: python-requre
+
+actions:
+  create-archive:
+  - "python3 setup.py sdist --dist-dir ."
+  - "sh -c 'echo requre-$(python3 setup.py --version).tar.gz'"
+  get-current-version:
+  - "python3 setup.py --version"
+
+jobs:
+- job: tests
+  trigger: pull_request
+  metadata:
+    targets:
+    - fedora-stable
