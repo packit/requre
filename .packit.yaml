@@ -9,14 +9,14 @@ downstream_package_name: python-requre
 
 actions:
   create-archive:
-  - "python3 setup.py sdist --dist-dir ."
-  - "sh -c 'echo requre-$(python3 setup.py --version).tar.gz'"
+    - "python3 setup.py sdist --dist-dir ."
+    - "sh -c 'echo requre-$(python3 setup.py --version).tar.gz'"
   get-current-version:
-  - "python3 setup.py --version"
+    - "python3 setup.py --version"
 
 jobs:
-- job: tests
-  trigger: pull_request
-  metadata:
-    targets:
-    - fedora-stable
+  - job: tests
+    trigger: pull_request
+    metadata:
+      targets:
+        - fedora-stable

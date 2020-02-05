@@ -9,6 +9,7 @@ back
 [Documentation](https://requre.readthedocs.io/en/latest/)
 
 ## Plan and current status
- - Used for testing [packit-service](https://github.com/packit-service) organization projects
-    - ogr
-    - packit
+
+- Used for testing [packit-service](https://github.com/packit-service) organization projects
+  - ogr
+  - packit
