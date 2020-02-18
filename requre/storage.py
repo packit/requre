@@ -322,13 +322,16 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
     version_key = "version_storage_file"
     key_inspect_strategy_key = "key_strategy"
 
-    def __init__(self) -> None:
-        # call dump() after store() is called
+    def _set_defaults(self) -> None:
         self.dump_after_store = False
         self.mode: StorageMode = StorageMode.default
         self.is_flushed = True
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
+
+    def __init__(self) -> None:
+        # call dump() after store() is called
+        self._set_defaults()
         storage_file_from_env = os.getenv(ENV_STORAGE_FILE)
         if storage_file_from_env:
             self.storage_file = storage_file_from_env
@@ -415,20 +418,14 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
     @storage_file.setter
     def storage_file(self, value):
-        self._storage_file = value
+        # when file is changed set PersistenStorage default values
+        if self._storage_file != value:
+            self._set_defaults()
+            self._storage_file = value
 
         if not os.path.exists(self._storage_file):
             if self.mode == StorageMode.default:
                 self.mode = StorageMode.write
-            elif self.mode == StorageMode.read and not os.path.exists(
-                self.storage_file
-            ):
-                raise PersistentStorageException(
-                    "Requre can't work in this setup: we are meant to read "
-                    "recorded responses but the storage file does not exist."
-                )
-            self.is_flushed = False
-            self.storage_object = {}
         else:
             if self.mode == StorageMode.default:
                 self.mode = StorageMode.read
