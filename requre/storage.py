@@ -35,6 +35,7 @@ from .constants import (
     ENV_STORAGE_FILE,
     KEY_MINIMAL_MATCH,
     METATADA_KEY,
+    ENV_REQURE_STORAGE_MODE,
 )
 from .exceptions import (
     ItemNotInStorage,
@@ -324,7 +325,16 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
     def _set_defaults(self) -> None:
         self.dump_after_store = False
-        self.mode: StorageMode = StorageMode.default
+        storage_mode = os.getenv(ENV_REQURE_STORAGE_MODE, "default")
+        logger.info(
+            f"You overrided storage mode via env var {ENV_REQURE_STORAGE_MODE}={storage_mode}"
+        )
+        if not hasattr(StorageMode, storage_mode):
+            raise PersistentStorageException(
+                f"storage mode '{storage_mode}' does not exist, "
+                f"use one of {list(StorageMode.__members__.keys())}) "
+            )
+        self.mode: StorageMode = getattr(StorageMode, storage_mode)
         self.is_flushed = True
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
@@ -426,6 +436,12 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         if not os.path.exists(self._storage_file):
             if self.mode == StorageMode.default:
                 self.mode = StorageMode.write
+
+            elif self.mode == StorageMode.read:
+                raise PersistentStorageException(
+                    f"You are in read mode, but file {self._storage_file} dees not exist"
+                )
+            self.is_flushed = False
         else:
             if self.mode == StorageMode.default:
                 self.mode = StorageMode.read
