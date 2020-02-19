@@ -439,7 +439,9 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
             elif self.mode == StorageMode.read:
                 raise PersistentStorageException(
-                    f"You are in read mode, but file {self._storage_file} dees not exist"
+                    "Requre can't work in this setup: we are meant to read"
+                    f" recorded responses but the storage file ({self._storage_file}) "
+                    "does not exist."
                 )
             self.is_flushed = False
         else:
