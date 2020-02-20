@@ -335,7 +335,7 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                 f"use one of {list(StorageMode.__members__.keys())}) "
             )
         self.mode: StorageMode = getattr(StorageMode, storage_mode)
-        self.is_flushed = True
+        self.is_flushed = False
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
 
@@ -443,7 +443,6 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
                     f" recorded responses but the storage file ({self._storage_file}) "
                     "does not exist."
                 )
-            self.is_flushed = False
         else:
             if self.mode == StorageMode.default:
                 self.mode = StorageMode.read
