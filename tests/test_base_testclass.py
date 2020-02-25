@@ -10,7 +10,7 @@ class CheckBaseTestClass(RequreTestCase):
         self.assertTrue(os.path.exists(data_file_path))
         self.assertIn(self.id(), data_file_path)
         self.assertIn("test_data", data_file_path)
-        shutil.rmtree(self.get_datafile_filename().split("/")[0])
+        shutil.rmtree(os.path.dirname(os.path.dirname(self.get_datafile_filename())))
 
     def test(self):
         pass
