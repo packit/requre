@@ -15,11 +15,13 @@ class RequreTestCase(TestCase):
     """
 
     def get_datafile_filename(self, suffix="yaml"):
-        test_file_name = os.path.basename(inspect.getfile(self.__class__)).rsplit(
-            ".", 1
-        )[0]
+        current_class_file = inspect.getfile(self.__class__)
+        real_path_dir = os.path.realpath(os.path.dirname(current_class_file))
+        test_file_name = os.path.basename(current_class_file).rsplit(".", 1)[0]
         test_name = self.id()
-        testdata_dirname = os.path.join(RELATIVE_TEST_DATA_DIRECTORY, test_file_name)
+        testdata_dirname = os.path.join(
+            real_path_dir, RELATIVE_TEST_DATA_DIRECTORY, test_file_name
+        )
         return os.path.join(testdata_dirname, f"{test_name}.{suffix}")
 
     def setUp(self):
