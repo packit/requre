@@ -2,7 +2,7 @@
 %global pypi_name requre
 
 Name:           python-%{pypi_name}
-Version:        0.2.3
+Version:        0.2.4
 Release:        1%{?dist}
 Summary:        Library for testing python code what allows store output of various objects and use stored data for testing
 
@@ -62,9 +62,12 @@ rm -rf html/.{doctrees,buildinfo}
 %license LICENSE
 %doc README.md
 %{_bindir}/requre-patch
-%{python3_sitelib}/%{pypi_name}
-%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/%{pypi_name}/
+%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info/
 
+%files -n python-%{pypi_name}-doc
+%doc html
+%license LICENSE
 
 %changelog
 * Fri Jan 31 2020 Jan Ščotka <jscotka@redhat.com> - 0.2.3.dev0+g7cbf0e7.d20200131-1
