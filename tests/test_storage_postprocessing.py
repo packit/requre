@@ -5,7 +5,7 @@ from requre.utils import run_command
 from requre.postprocessing import DictProcessing
 from requre.storage import PersistentObjectStorage, DataTypes, DataMiner
 from tests.testbase import BaseClass
-
+from tests.test_e2e_test_patching import is_requre_installed
 
 CMD_TOOL = "requre-patch purge"
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
@@ -56,6 +56,9 @@ class ObjectPostprocessing(unittest.TestCase):
         self.assertEqual(tmp_dict, self.testDict)
 
 
+@unittest.skipUnless(
+    is_requre_installed(), "not possible to run without installed requre"
+)
 class FilePostprocessing(unittest.TestCase):
     storage_file = os.path.join(DATA_DIR, "requre_postprocessing.yaml")
     storage_file_tmp = storage_file + ".tmp"

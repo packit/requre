@@ -24,12 +24,23 @@ def is_sudo_possible():
     random_file = "/usr/bin/test_superuser"
     try:
         run_command(f"sudo -n touch {random_file}")
-    except PersistentStorageException:
+    except (PersistentStorageException, FileNotFoundError):
         return False
     run_command(f"sudo rm {random_file}")
     return True
 
 
+def is_requre_installed():
+    try:
+        run_command(f"{CMD_TOOL} --help")
+    except (PersistentStorageException, FileNotFoundError):
+        return False
+    return True
+
+
+@unittest.skipUnless(
+    is_requre_installed(), "not possible to run without installed requre"
+)
 class InstalledCommand(unittest.TestCase):
     def setUp(self) -> None:
         run_command(cmd=f"{CMD_RELATIVE} clean", fail=False)

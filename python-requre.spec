@@ -2,13 +2,13 @@
 %global pypi_name requre
 
 Name:           python-%{pypi_name}
-Version:        0.2.1
+Version:        0.2.4
 Release:        1%{?dist}
 Summary:        Library for testing python code what allows store output of various objects and use stored data for testing
 
 License:        MIT
 URL:            https://github.com/packit-service/requre
-Source0:        https://files.pythonhosted.org/packages/source/r/%{pypi_name}/%{pypi_name}-%{version}.tar.gz
+Source0:        %{pypi_source}
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
@@ -22,25 +22,26 @@ BuildRequires:  python3dist(setuptools-scm-git-archive)
 BuildRequires:  python3dist(sphinx)
 
 %description
- REQUest REcordingRequre \[rekure\]Is Library for storing output of various
+REQUest REcordingRequre [rekure] - Is Library for storing output of various
 function and methods to persistent storage and be able to replay the stored
-output to functions [Documentation]( Plan and current status - Used for testing
-[packit-service]( organization projects - ogr - packit
+output to functions
 
 %package -n     python3-%{pypi_name}
 Summary:        %{summary}
 %{?python_provide:%python_provide python3-%{pypi_name}}
 
 %description -n python3-%{pypi_name}
- REQUest REcordingRequre \[rekure\]Is Library for storing output of various
+REQUest REcordingRequre [rekure] - Is Library for storing output of various
 function and methods to persistent storage and be able to replay the stored
-output to functions [Documentation]( Plan and current status - Used for testing
-[packit-service]( organization projects - ogr - packit
+output to functions
 
 %package -n python-%{pypi_name}-doc
 Summary:        requre documentation
 %description -n python-%{pypi_name}-doc
 Documentation for requre
+
+%check
+make check
 
 %prep
 %autosetup -n %{pypi_name}-%{version}
@@ -61,8 +62,8 @@ rm -rf html/.{doctrees,buildinfo}
 %license LICENSE
 %doc README.md
 %{_bindir}/requre-patch
-%{python3_sitelib}/%{pypi_name}
-%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info
+%{python3_sitelib}/%{pypi_name}/
+%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info/
 
 %files -n python-%{pypi_name}-doc
 %doc html
