@@ -86,6 +86,70 @@ class StorageKeysInspectFull(StorageKeysInspect):
         return output
 
 
+class StorageKeysInspectOuter(StorageKeysInspect):
+    @staticmethod
+    def get_base_keys(func: Callable) -> List[Any]:
+        """
+        return shorter stack information what will end after info goes to CWD.
+        Be careful: You have to use same scheduler (when you regenerate tests via pytest and
+        then run them via tox, it causes that tox what uses python venv installs all deps to
+        .tox subdir, so that .tox files will be in CWD then)
+        example: full stack info for packit project:
+
+        "long python execute handling":
+          unittest.case:
+            tests_recording.test_status:
+              packit.status:
+                ogr.services.pagure.project:
+                  ogr.services.pagure.service:
+                    requests.sessions:
+                      requre.objects:
+                        requests.sessions:
+                            send:
+        the current one remove all stack info before it goes to current directory (including)
+                ogr.services.pagure.project:
+                  ogr.services.pagure.service:
+                    requests.sessions:
+                      requre.objects:
+                        requests.sessions:
+                            send:
+
+        """
+        output: List[str] = list()
+        # callers module list, to be able to separate requests for various services in one file
+        caller_list: List[str] = list()
+        for currnetframe in inspect.stack():
+            module_info = inspect.getmodule(currnetframe[0])
+            # sometimes module_info is empty and not possible to found any info.
+            if not module_info:
+                continue
+            module_name = module_info.__name__
+            module_file = module_info.__file__
+            # If python stack is already in directory you are (CWD) then stop appending
+            # Because you dont want to track changes of test call stack or your project stack
+            # This is main feature regarding to StorageKeysInspectFull, what stores it as well
+            # and may cause issue with unittest execution changes
+            if os.path.realpath(os.getcwd()) in os.path.realpath(module_file):
+
+                break
+            # avoid to store requre.storage to module stack
+            # backward compatibility issue
+            if module_name.startswith("requre.storage"):
+                continue
+            # avoid duplication in stack information, e.g. one method will can another one from
+            # same file/module, so avoid to add it to list, in case already here on last position.
+            if len(caller_list) and caller_list[-1] == module_name:
+                continue
+            else:
+                caller_list.append(module_name)
+        output += caller_list[::-1]
+        # module name where function is
+        output.append(inspect.getmodule(func).__name__)
+        # name of function what were used
+        output.append(func.__name__)
+        return output
+
+
 class StorageKeysInspectSimple(StorageKeysInspect):
     @staticmethod
     def get_base_keys(func: Callable) -> List[Any]:
