@@ -5,4 +5,5 @@
     - include_tasks: tasks/zuul-project-setup.yaml
     - include_tasks: tasks/generic-dnf-requirements.yaml
     - include_tasks: tasks/rpm-test-deps.yaml
+    - include_tasks: tasks/install-ansible.yaml
     - include_tasks: tasks/ogr_reverse_dep_test.yaml
