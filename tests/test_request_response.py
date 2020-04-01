@@ -1,9 +1,10 @@
 import importlib
+import unittest
 
 from requre.helpers.requests_response import RequestResponseHandling
 from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
-from tests.testbase import BaseClass
+from tests.testbase import BaseClass, network_connection_avalilable
 
 
 class StoreAnyRequest(BaseClass):
@@ -18,6 +19,7 @@ class StoreAnyRequest(BaseClass):
         super().tearDown()
         setattr(self.requests, "post", self.post_orig)
 
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testRawCall(self):
         """
         Test if is class is able to explicitly write and read request handling
@@ -32,6 +34,7 @@ class StoreAnyRequest(BaseClass):
         self.assertNotIn("Example Domain", str(sess.persistent_storage.storage_object))
         self.assertIn("Example Domain", response_after.text)
 
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testExecuteWrapper(self):
         """
         test if it is able to use explicit decorator_all_keys for storing request handling
@@ -53,6 +56,7 @@ class StoreAnyRequest(BaseClass):
             self.domain,
         )
 
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionDecorator(self):
         """
         Test main purpose of the class, decorate post function and use it then
@@ -68,6 +72,7 @@ class StoreAnyRequest(BaseClass):
         self.assertEqual(response_before.text, response_after.text)
         self.assertRaises(Exception, self.requests.post, self.domain)
 
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionDecoratorNotFound(self):
         """
         Check if it fails with Exception in case request is not stored
@@ -79,6 +84,7 @@ class StoreAnyRequest(BaseClass):
         PersistentObjectStorage().mode = StorageMode.read
         self.assertRaises(Exception, self.requests.post, self.domain, data={"a": "b"})
 
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionCustomFields(self):
         """
         Test if it is able to use partial storing of args, kwargs
@@ -100,6 +106,7 @@ class StoreAnyRequest(BaseClass):
         self.assertEqual(response_google_before.text, response_google_after.text)
         self.assertRaises(Exception, self.requests.post, self.domain)
 
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionCustomFieldsWrong(self):
         """
         Check exceptions if using partial keys storing
