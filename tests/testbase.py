@@ -2,9 +2,17 @@ import os
 import shutil
 import tempfile
 import unittest
+import socket
 
 from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
+
+
+def network_connection_avalilable():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if sock.connect_ex(("example.com", 80)) == 0:
+        return True
+    return False
 
 
 class BaseClass(unittest.TestCase):

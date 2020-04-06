@@ -4,7 +4,7 @@
 Name:           python-%{pypi_name}
 Version:        0.2.4
 Release:        1%{?dist}
-Summary:        Library for testing python code what allows store output of various objects and use stored data for testing
+Summary:        Python library what allows re/store output of various objects for testing
 
 License:        MIT
 URL:            https://github.com/packit-service/requre
@@ -24,7 +24,7 @@ BuildRequires:  python3dist(sphinx)
 %description
 REQUest REcordingRequre [rekure] - Is Library for storing output of various
 function and methods to persistent storage and be able to replay the stored
-output to functions
+output to functions.
 
 %package -n     python3-%{pypi_name}
 Summary:        %{summary}
@@ -33,7 +33,7 @@ Summary:        %{summary}
 %description -n python3-%{pypi_name}
 REQUest REcordingRequre [rekure] - Is Library for storing output of various
 function and methods to persistent storage and be able to replay the stored
-output to functions
+output to functions.
 
 %package -n python-%{pypi_name}-doc
 Summary:        requre documentation
@@ -45,14 +45,11 @@ make check
 
 %prep
 %autosetup -n %{pypi_name}-%{version}
-# Remove bundled egg-info
 rm -rf %{pypi_name}.egg-info
 
 %build
 %py3_build
-# generate html docs
 PYTHONPATH=${PWD} sphinx-build-3 docs html
-# remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 %install
