@@ -1,6 +1,14 @@
 Installation
 ============
 
+Install and update using pip:
+-----------------------------
+
+.. code-block:: bash
+
+   pip install -U requre
+
+
 Github master
 ----------------
 1. Download sources code
