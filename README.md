@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/requre.svg)](https://badge.fury.io/py/requre)
+
 # REQUest REcording
 
 Requre \[rekure\]
