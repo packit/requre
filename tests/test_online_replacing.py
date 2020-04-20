@@ -10,12 +10,14 @@ SELECTOR = str(os.path.basename(__file__).rsplit(".", 1)[0])
 def decorator_a(func):
     def _int():
         return "decorator_a " + func()
+
     return _int
 
 
 def decorator_b(func):
     def _int():
         return "decorator_b " + func()
+
     return _int
 
 
@@ -47,11 +49,14 @@ class TestOnlinePatchingDecorate(unittest.TestCase):
     # @replace(in_module="special_requre_module", what="hello", decorate=decorator_b)
     def XtestDecoratorMoreDecorators(self):
         print("\n", tests.data.special_requre_module.hello())
-        self.assertEqual(tests.data.special_requre_module.hello(), "decorator_a decorator_b Hi! ")
+        self.assertEqual(
+            tests.data.special_requre_module.hello(), "decorator_a decorator_b Hi! "
+        )
 
 
 class TestOnlinePatchingReplace(unittest.TestCase):
-
-    @replace(in_module="special_requre_module", what="hello", replace=lambda: "replaced HI")
+    @replace(
+        in_module="special_requre_module", what="hello", replace=lambda: "replaced HI"
+    )
     def test(self):
         self.assertEqual(tests.data.special_requre_module.hello(), "replaced HI")

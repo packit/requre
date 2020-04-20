@@ -9,12 +9,16 @@ from requre.storage import PersistentObjectStorage
 logger = logging.getLogger(__name__)
 
 
-def replace(in_module: str,
-            what: str,
-            decorate: Optional[Callable] = None,
-            replace: Optional[Callable] = None,
-            storage_file: Optional[str] = None):
-    if (decorate is None and replace is None) or (decorate is not None and replace is not None):
+def replace(
+    in_module: str,
+    what: str,
+    decorate: Optional[Callable] = None,
+    replace: Optional[Callable] = None,
+    storage_file: Optional[str] = None,
+):
+    if (decorate is None and replace is None) or (
+        decorate is not None and replace is not None
+    ):
         raise ValueError("right one from [decorate, replace] parameter has to be set.")
 
     def decorator_cover(func):
@@ -39,24 +43,30 @@ def replace(in_module: str,
                         original_obj = getattr(original_obj, key_item)
                     if replace is not None:
                         setattr(
-                            parent_obj,
-                            original_obj.__name__,
-                            replace,
+                            parent_obj, original_obj.__name__, replace,
                         )
-                        logger.info(f"\treplacing {module_name}.{what}"
-                                    f" by function {replace.__name__}")
+                        logger.info(
+                            f"\treplacing {module_name}.{what}"
+                            f" by function {replace.__name__}"
+                        )
                     elif decorate is not None:
                         setattr(
-                            parent_obj,
-                            original_obj.__name__,
-                            decorate(original_obj),
+                            parent_obj, original_obj.__name__, decorate(original_obj),
                         )
-                        logger.info(f"\tdecorating {module_name}.{what}"
-                                    f" by function {decorate.__name__}")
-                    original_module_items[module_name] = [what, parent_obj, original_obj]
+                        logger.info(
+                            f"\tdecorating {module_name}.{what}"
+                            f" by function {decorate.__name__}"
+                        )
+                    original_module_items[module_name] = [
+                        what,
+                        parent_obj,
+                        original_obj,
+                    ]
                 else:
-                    raise ValueError("You have to define what will be replaced inside module,"
-                                     " not possible to replace whole module on the fly")
+                    raise ValueError(
+                        "You have to define what will be replaced inside module,"
+                        " not possible to replace whole module on the fly"
+                    )
             # execute content
 
             output = func(*args, **kwargs)
@@ -67,5 +77,7 @@ def replace(in_module: str,
             if original_storage:
                 PersistentObjectStorage().storage_file = original_storage
             return output
+
         return _internal
+
     return decorator_cover
