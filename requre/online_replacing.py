@@ -1,12 +1,20 @@
-import sys
-import re
-import os
 import functools
 import logging
-from typing import List, Callable, Optional, Dict, Union, Any
+import os
+import re
+from contextlib import contextmanager
+from typing import List, Callable, Optional, Dict, Any, Union
 
+import sys
+
+from requre.cassette import Cassette
+from requre.helpers.requests_response import (
+    RequestResponseHandling,
+    remove_password_from_url,
+)
+from requre.objects import ObjectStorage
+from requre.storage import PersistentObjectStorage
 from requre.storage import (
-    PersistentObjectStorage,
     StorageKeysInspectSimple,
     DataMiner,
 )
@@ -116,9 +124,14 @@ def _parse_and_replace_sys_modules(
                     # in case it match partial path, make it None
                     parent_obj = None
                     break
+                original_obj_text = (
+                    original_obj.__name__
+                    if hasattr(original_obj, "__name__")
+                    else str(original_obj)
+                )
                 logger.debug(
                     f"\tmodule {module_name} -> {module_path} in "
-                    f"{original_obj.__name__} ({full_module_list[depth:]})"
+                    f"{original_obj_text} ({full_module_list[depth:]})"
                 )
             # continue if parent is empty or module of function did not match
             # path inside what avoid replace something else with same path
@@ -292,3 +305,139 @@ def replace_module_match(
         return _internal
 
     return decorator_cover
+
+
+def record(
+    what: str, storage_file: Optional[str] = None,
+):
+    """
+    Decorator which can be used to store calls of the function and
+    and replay responses on the next run.
+
+    :param what: str - full path of function inside module
+    :param storage_file: path for storage file if you don't want to use default location
+    """
+
+    def _record_inner(func):
+        return replace_module_match(
+            what=what,
+            decorate=ObjectStorage.decorator_all_keys,
+            storage_file=storage_file,
+        )(func)
+
+    return _record_inner
+
+
+def record_requests(
+    _func=None, response_headers_to_drop: Optional[List[str]] = None, storage_file=None
+):
+    """
+    Decorator which can be used to store all requests to a file
+    and replay responses on the next run.
+
+    - The matching is based on `url`.
+    - Removes tokens from the url when saving if needed.
+
+    Can be used with or without parenthesis.
+
+    :param _func: can be used to decorate function (with, or without parenthesis).
+    :param response_headers_to_drop: list of header names we don't want to save with response
+                                        (Will be replaced to `None`.)
+    :param storage_file: file for reading and writing data in storage_object
+    """
+
+    response_headers_to_drop = response_headers_to_drop or []
+
+    def decorator_cover(func):
+        return replace_module_match(
+            what="requests.sessions.Session.request",
+            decorate=RequestResponseHandling.decorator(
+                item_list=["method", "url"],
+                map_function_to_item={"url": remove_password_from_url},
+                response_headers_to_drop=response_headers_to_drop,
+            ),
+            storage_file=storage_file,
+        )(func)
+
+    if _func is None:
+        return decorator_cover
+    else:
+        return decorator_cover(_func)
+
+
+@contextmanager
+def recording(
+    what: str,
+    decorate: Optional[Union[List[Callable], Callable]] = None,
+    replace: Optional[Callable] = None,
+    storage_file: Optional[str] = None,
+    storage_keys_strategy=StorageKeysInspectSimple,
+):
+    """
+    Context manager which can be used to store calls of the function and
+    and replay responses on the next run.
+
+    :param what: str - full path of function inside module
+    :param decorate: function decorator what will be applied to what, could be also list of
+                     decorators, to be able to apply more decorators on one function
+                     eg. store files and store output
+    :param replace: replace original function by given one
+    :param storage_file: path for storage file if you don't want to use default location
+    :param storage_keys_strategy: you can change key strategy for storing data
+                                  default simple one avoid to store stack information
+    """
+
+    original_key_strategy = DataMiner().key_stategy_cls
+    DataMiner().key_stategy_cls = storage_keys_strategy
+    original_storage_file = storage_file
+    PersistentObjectStorage().storage_file = storage_file
+    # ensure that directory structure exists already
+    os.makedirs(os.path.dirname(PersistentObjectStorage().storage_file), exist_ok=True)
+    # Store values and their replacements for modules to be able to revert changes back
+    original_module_items = _parse_and_replace_sys_modules(
+        what=what, decorate=decorate, replace=replace
+    )
+    try:
+        yield Cassette()
+    finally:
+        # dump data to storage file
+        PersistentObjectStorage().dump()
+        # revert back changed functions
+        for module_name, item_list in original_module_items.items():
+            setattr(
+                item_list["parent_obj"],
+                item_list["original_obj"].__name__,
+                item_list["original_obj"],
+            )
+        # revert back changed values of singletons, to go to consistent state before test
+        # it is important in this order
+        PersistentObjectStorage().storage_file = original_storage_file
+        DataMiner().key_stategy_cls = original_key_strategy
+
+
+@contextmanager
+def recording_requests(
+    response_headers_to_drop: Optional[List[str]] = None, storage_file=None
+):
+    """
+    Context manager which can be used to store all requests to a file
+    and replay responses on the next run.
+
+    - The matching is based on `url`.
+    - Removes tokens from the url when saving if needed.
+
+    :param _func: can be used to decorate function (with, or without parenthesis).
+    :param response_headers_to_drop: list of header names we don't want to save with response
+                                        (Will be replaced to `None`.)
+    :param storage_file: file for reading and writing data in storage_object
+    """
+    with recording(
+        what="requests.sessions.Session.request",
+        decorate=RequestResponseHandling.decorator(
+            item_list=["method", "url"],
+            map_function_to_item={"url": remove_password_from_url},
+            response_headers_to_drop=response_headers_to_drop,
+        ),
+        storage_file=storage_file,
+    ) as cassette:
+        yield cassette

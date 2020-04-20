@@ -23,11 +23,11 @@
 import inspect
 import logging
 import os
-import time
 from _collections_abc import Hashable
 from enum import Enum
 from typing import Dict, List, Any, Optional, Callable
 
+import time
 import yaml
 
 from .constants import (
@@ -130,7 +130,6 @@ class StorageKeysInspectOuter(StorageKeysInspect):
             # This is main feature regarding to StorageKeysInspectFull, what stores it as well
             # and may cause issue with unittest execution changes
             if os.path.realpath(os.getcwd()) in os.path.realpath(module_file):
-
                 break
             # avoid to store requre.storage to module stack
             # backward compatibility issue
@@ -409,6 +408,16 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
         storage_file_from_env = os.getenv(ENV_STORAGE_FILE)
         if storage_file_from_env:
             self.storage_file = storage_file_from_env
+
+    def __str__(self) -> str:
+        return (
+            f"PersistentObjectStorage("
+            f"storage_mode={self.mode}, "
+            f"storage_file={self._storage_file})"
+        )
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
     @property
     def metadata(self):

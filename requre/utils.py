@@ -25,10 +25,11 @@ import shlex
 import subprocess
 from enum import Enum
 from pathlib import Path
-import os
 
+from _pytest.python import Function
+
+from requre.constants import RELATIVE_TEST_DATA_DIRECTORY, DEFAULT_SUFIX
 from requre.exceptions import PersistentStorageException
-from requre.constants import RELATIVE_TEST_DATA_DIRECTORY
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +125,7 @@ def get_class_that_defined_method(meth):
     return None
 
 
-def get_datafile_filename(obj, suffix="yaml"):
+def get_datafile_filename(obj, suffix=DEFAULT_SUFIX):
     """
     get default path for data files.
     It consist of 3 pieces: "location of test"/test_data/test_file_name/"test_id or function name"
@@ -132,25 +133,34 @@ def get_datafile_filename(obj, suffix="yaml"):
     :param obj: object from which try to guess name of file and functioon
     :return: str with path where to store data_file
     """
+
     try:
-        # try to get filename via class if possible (pytest way)
-        current_fn_file_name = inspect.getfile(obj.__class__)
+        if isinstance(obj, Function):
+            # pytest fixture
+            current_fn_file_name = obj.module.__file__
+        else:
+            # try to get filename via class if possible (pytest way)
+            current_fn_file_name = inspect.getfile(obj.__class__)
     except (AttributeError, TypeError):
         # try to get filename from object
         current_fn_file_name = inspect.getfile(obj)
-    real_path_dir = os.path.realpath(os.path.dirname(current_fn_file_name))
-    test_file_name = os.path.basename(current_fn_file_name).rsplit(".", 1)[0]
+
+    real_path_dir = Path(current_fn_file_name).parent.absolute()
+    test_file_name = Path(current_fn_file_name).name.rsplit(".", 1)[0]
     try:
         # try to use object.id() function (it is defined inside pytest unittests)
         test_name = obj.id()
     except AttributeError:
         try:
-            # try to use __name__ of the object (typically name of function)
-            test_name = obj.__name__
+            if isinstance(obj, Function):
+                # pytest fixture
+                test_name = obj.name
+            else:
+                # try to use __name__ of the object (typically name of function)
+                test_name = obj.__name__
         except AttributeError:
             # if not possible, use this name as name of data file
             test_name = "static_test_data_name"
-    testdata_dirname = os.path.join(
-        real_path_dir, RELATIVE_TEST_DATA_DIRECTORY, test_file_name
-    )
-    return os.path.join(testdata_dirname, f"{test_name}.{suffix}")
+    testdata_dirname = real_path_dir / RELATIVE_TEST_DATA_DIRECTORY / test_file_name
+
+    return testdata_dirname / f"{test_name}.{suffix}"

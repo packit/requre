@@ -1,10 +1,11 @@
-import unittest
 import os
+import unittest
+
+import tests.data.special_requre_module
 from requre.online_replacing import replace, replace_module_match
 from requre.storage import PersistentObjectStorage, DataMiner, StorageKeysInspectFull
-import tests.data.special_requre_module
-from tests.data.special_requre_module import hello
 from tests.data import special_requre_module
+from tests.data.special_requre_module import hello
 
 SELECTOR = str(os.path.basename(__file__).rsplit(".", 1)[0])
 
@@ -95,7 +96,7 @@ class TestOnlinePatchingModuleMatch(unittest.TestCase):
         # check if storage file is set properly
         self.assertIn(
             "requre/tests/test_data/test_online_replacing/decorated_exact.yaml",
-            PersistentObjectStorage().storage_file,
+            str(PersistentObjectStorage().storage_file),
         )
         # test revenrting
         self.assertEqual(tests.data.special_requre_module.hello(), "Hi! ")
@@ -114,7 +115,7 @@ class TestOnlinePatchingModuleMatch(unittest.TestCase):
             "requre/tests/test_data/test_online_replacing/"
             "tests.test_online_replacing."
             "TestOnlinePatchingModuleMatch.testDecoratorMainUsage.yaml",
-            PersistentObjectStorage().storage_file,
+            str(PersistentObjectStorage().storage_file),
         )
 
     @replace_module_match(
@@ -126,7 +127,7 @@ class TestOnlinePatchingModuleMatch(unittest.TestCase):
     )
     def testDecoratorMultipleDecorators(self):
         self.assertEqual(hello(), "decorator_c decorator_c Hi! ")
-        # derify the decorator
+        # verify the decorator
         self.assertEqual(decorator_inc(lambda x: x)(1), 2)
         # verify decorated function
         self.assertEqual(tests.data.special_requre_module.inc(1), 3)

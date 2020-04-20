@@ -22,9 +22,9 @@
 
 
 import functools
+import inspect
 import logging
 import pickle
-import inspect
 import warnings
 from typing import Optional, Callable, Any, List, Dict
 
@@ -65,18 +65,21 @@ class ObjectStorage:
         return DataMiner().key_stategy_cls.get_base_keys(func)
 
     @classmethod
-    def execute(cls, keys: list, func: Callable, *args, **kwargs) -> Any:
+    def execute(
+        cls, keys: list, func: Callable, *args, storage_object_kwargs=None, **kwargs
+    ) -> Any:
         """
         Class method to store or read object from persistent storage
         with explicit set of *args, **kwargs parameters to use as keys
         :param keys: list of keys used as parameter
         :param func: original function
         :param args: parameters of original function
+        :param storage_object_kwargs: forwarded to the storage object
         :param kwargs: parameters of original function
         :return: output of called func
         """
-
-        object_storage = cls(store_keys=keys)
+        storage_object_kwargs = storage_object_kwargs or {}
+        object_storage = cls(store_keys=keys, **storage_object_kwargs)
 
         if object_storage.persistent_storage.do_store(keys):
             time_before = original_time()
@@ -106,11 +109,14 @@ class ObjectStorage:
             return response
 
     @classmethod
-    def execute_all_keys(cls, func: Callable, *args, **kwargs):
+    def execute_all_keys(
+        cls, func: Callable, *args, storage_object_kwargs=None, **kwargs
+    ):
         """
         Class method what does same as execute, but use all *args, **kwargs as keys
         :param func: original function
         :param args: parameters of original function
+        :param storage_object_kwargs: forwarded to the storage object
         :param kwargs: parameters of original function
         :return: output of called func
         """
@@ -119,48 +125,61 @@ class ObjectStorage:
             + [x for x in args if isinstance(int, str)]
             + [f"{k}:{v}" for k, v in kwargs.items()]
         )
-        return cls.execute(keys, func, *args, **kwargs)
+        return cls.execute(
+            keys, func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
+        )
 
     @classmethod
-    def execute_plain(cls, func: Callable, *args, **kwargs):
+    def execute_plain(cls, func: Callable, *args, storage_object_kwargs=None, **kwargs):
         """
         Class method what does same as execute, but use just name of module and function as name
 
         :param func: original function
         :param args: parameters of original function
+        :param storage_object_kwargs: forwarded to the storage object
         :param kwargs: parameters of original function
         :return: output of called func
         """
         keys = cls.get_base_keys(func)
-        return cls.execute(keys, func, *args, **kwargs)
+        return cls.execute(
+            keys, func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
+        )
 
     @classmethod
-    def decorator_all_keys(cls, func: Callable) -> Any:
+    def decorator_all_keys(cls, func: Callable, storage_object_kwargs=None) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
         This use all arguments of function as keys
 
         :param func: Callable object
+        :param storage_object_kwargs: forwarded to the storage object
         :return: output of func
         """
 
         @functools.wraps(func)
         def internal(*args, **kwargs):
-            return cls.execute_all_keys(func, *args, **kwargs)
+            return cls.execute_all_keys(
+                func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
+            )
 
         return internal
 
     @classmethod
-    def decorator(cls, *, item_list: list, map_item_list: Dict = {}) -> Any:
+    def decorator(
+        cls, *, item_list: list, map_function_to_item=None, storage_object_kwargs=None
+    ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
         This use list of selection of *args or **kwargs as arguments of function as keys
 
         :param item_list: list of values of *args nums,  **kwargs names to use as keys
-        :param map_item_list: dict of function to apply to keys before storing
+        :param map_function_to_item: dict of function to apply to keys before storing
                                   (have to be listed in item_list)
+        :param storage_object_kwargs: forwarded to the storage object
         :return: output of func
         """
+
+        map_function_to_item = map_function_to_item or {}
 
         def internal(func: Callable):
             @functools.wraps(func)
@@ -189,29 +208,38 @@ class ObjectStorage:
                             key = None
                         else:
                             key = args[arg_keys.index(param_name)]
-                    if param_name not in map_item_list:
+                    if param_name not in map_function_to_item:
                         keys.append(key)
                     else:
-                        keys.append(map_item_list[param_name](key))
-                return cls.execute(keys, func, *args, **kwargs)
+                        keys.append(map_function_to_item[param_name](key))
+                return cls.execute(
+                    keys,
+                    func,
+                    *args,
+                    storage_object_kwargs=storage_object_kwargs,
+                    **kwargs,
+                )
 
             return internal_internal
 
         return internal
 
     @classmethod
-    def decorator_plain(cls, func: Callable) -> Any:
+    def decorator_plain(cls, func: Callable, storage_object_kwargs=None) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
         This use no arguments of function as keys
 
         :param func: Callable object
+        :param storage_object_kwargs: forwarded to the storage object
         :return: output of func
         """
 
         @functools.wraps(func)
         def internal(*args, **kwargs):
-            return cls.execute_plain(func, *args, **kwargs)
+            return cls.execute_plain(
+                func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
+            )
 
         return internal
 
