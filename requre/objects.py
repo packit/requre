@@ -24,6 +24,8 @@
 import functools
 import logging
 import pickle
+import inspect
+import warnings
 from typing import Optional, Callable, Any, List, Dict
 
 from requre.storage import (
@@ -149,29 +151,50 @@ class ObjectStorage:
         return internal
 
     @classmethod
-    def decorator(cls, *, item_list: list) -> Any:
+    def decorator(cls, *, item_list: list, apply_arg_filters: Dict = {}) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
         This use list of selection of *args or **kwargs as arguments of function as keys
 
         :param item_list: list of values of *args nums,  **kwargs names to use as keys
+        :param apply_arg_filters: dict of function to apply to keys before storing
+                                  (have to be listed in item_list)
         :return: output of func
         """
-
         def internal(func: Callable):
             @functools.wraps(func)
             def internal_internal(*args, **kwargs):
                 keys = cls.get_base_keys(func)
-                for item in item_list:
-                    if isinstance(item, int):
-                        keys.append(args[item])
+                # get all possible arguments of passed function
+                arg_keys = inspect.getfullargspec(func)[0]
+                for param_name in item_list:
+                    # if you pass int as an agrument, it forces to use args
+                    if isinstance(param_name, int):
+                        key = args[param_name]
+                    # try to look into kwargs if item is there
+                    elif param_name in kwargs:
+                        key = kwargs[param_name]
+                    #  translate param name to positional argument
                     else:
-                        keys.append(kwargs[item])
+                        # out of index check. This is bad but possible use case, raise warning and continue
+                        if len(args) <= arg_keys.index(param_name):
+                            warnings.warn(f"You've defined keys: {item_list} but '{param_name}' is not part"
+                                          f" of args:{args} and kwargs:{kwargs},"
+                                          f" original function and args: {func.__name__}({arg_keys})")
+                            # but add there None as key, to not spoil dictionary deep
+                            key = None
+                        else:
+                            key = args[arg_keys.index(param_name)]
+                    if param_name not in apply_arg_filters:
+                        keys.append(key)
+                    else:
+                        keys.append(apply_arg_filters[param_name](key))
                 return cls.execute(keys, func, *args, **kwargs)
 
             return internal_internal
 
         return internal
+
 
     @classmethod
     def decorator_plain(cls, func: Callable) -> Any:
