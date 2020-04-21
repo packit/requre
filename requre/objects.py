@@ -151,16 +151,17 @@ class ObjectStorage:
         return internal
 
     @classmethod
-    def decorator(cls, *, item_list: list, apply_arg_filters: Dict = {}) -> Any:
+    def decorator(cls, *, item_list: list, map_item_list: Dict = {}) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
         This use list of selection of *args or **kwargs as arguments of function as keys
 
         :param item_list: list of values of *args nums,  **kwargs names to use as keys
-        :param apply_arg_filters: dict of function to apply to keys before storing
+        :param map_item_list: dict of function to apply to keys before storing
                                   (have to be listed in item_list)
         :return: output of func
         """
+
         def internal(func: Callable):
             @functools.wraps(func)
             def internal_internal(*args, **kwargs):
@@ -176,25 +177,27 @@ class ObjectStorage:
                         key = kwargs[param_name]
                     #  translate param name to positional argument
                     else:
-                        # out of index check. This is bad but possible use case, raise warning and continue
+                        # out of index check. This is bad but possible use case
+                        # raise warning and continue
                         if len(args) <= arg_keys.index(param_name):
-                            warnings.warn(f"You've defined keys: {item_list} but '{param_name}' is not part"
-                                          f" of args:{args} and kwargs:{kwargs},"
-                                          f" original function and args: {func.__name__}({arg_keys})")
+                            warnings.warn(
+                                f"You've defined keys: {item_list} but '{param_name}' is not part"
+                                f" of args:{args} and kwargs:{kwargs},"
+                                f" original function and args: {func.__name__}({arg_keys})"
+                            )
                             # but add there None as key, to not spoil dictionary deep
                             key = None
                         else:
                             key = args[arg_keys.index(param_name)]
-                    if param_name not in apply_arg_filters:
+                    if param_name not in map_item_list:
                         keys.append(key)
                     else:
-                        keys.append(apply_arg_filters[param_name](key))
+                        keys.append(map_item_list[param_name](key))
                 return cls.execute(keys, func, *args, **kwargs)
 
             return internal_internal
 
         return internal
-
 
     @classmethod
     def decorator_plain(cls, func: Callable) -> Any:

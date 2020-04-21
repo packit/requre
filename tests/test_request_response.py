@@ -127,12 +127,22 @@ class StoreAnyRequest(BaseClass):
 
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionCustomFieldsCheckKeys(self):
-        self.requests.post = RequestResponseHandling.decorator(item_list=["url", "data"], apply_arg_filters={"url": lambda x: x[0:10]})(
-            self.requests.post
-        )
+        self.requests.post = RequestResponseHandling.decorator(
+            item_list=["url", "data"], map_item_list={"url": lambda x: x[0:10]}
+        )(self.requests.post)
         self.requests.post(self.domain)
         self.requests.post("http://www.google.com", data={"a": "b"})
         PersistentObjectStorage().dump()
         PersistentObjectStorage().mode = StorageMode.read
-        self.assertIn('https://ex', PersistentObjectStorage().storage_object['unittest.case']['tests.test_request_response']['requre.objects']['requests.api']['post'])
-        self.assertIn('http://www', PersistentObjectStorage().storage_object['unittest.case']['tests.test_request_response']['requre.objects']['requests.api']['post'])
+        self.assertIn(
+            "https://ex",
+            PersistentObjectStorage().storage_object["unittest.case"][
+                "tests.test_request_response"
+            ]["requre.objects"]["requests.api"]["post"],
+        )
+        self.assertIn(
+            "http://www",
+            PersistentObjectStorage().storage_object["unittest.case"][
+                "tests.test_request_response"
+            ]["requre.objects"]["requests.api"]["post"],
+        )
