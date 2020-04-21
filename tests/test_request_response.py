@@ -1,9 +1,13 @@
 import importlib
 import unittest
 
-from requre.helpers.requests_response import RequestResponseHandling
+from requre.helpers.requests_response import (
+    RequestResponseHandling,
+    remove_password_from_url,
+)
 from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
+from requre.exceptions import ItemNotInStorage
 from tests.testbase import BaseClass, network_connection_avalilable
 
 
@@ -120,6 +124,43 @@ class StoreAnyRequest(BaseClass):
         PersistentObjectStorage().mode = StorageMode.read
 
         self.assertRaises(Exception, self.requests.post, self.domain, data={"x": "y"})
-        self.assertRaises(KeyError, self.requests.post, self.domain)
+        self.assertRaises(ItemNotInStorage, self.requests.post, self.domain)
         response_2_after = self.requests.post(self.domain, data={"c": "d"})
         self.assertEqual(response_2.text, response_2_after.text)
+
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    def testFunctionCustomFieldsCheckKeys(self):
+        self.requests.post = RequestResponseHandling.decorator(
+            item_list=["url", "data"], map_item_list={"url": lambda x: x[0:10]}
+        )(self.requests.post)
+        self.requests.post(self.domain)
+        self.requests.post("http://www.google.com", data={"a": "b"})
+        PersistentObjectStorage().dump()
+        PersistentObjectStorage().mode = StorageMode.read
+        self.assertIn(
+            "https://ex",
+            PersistentObjectStorage().storage_object["unittest.case"][
+                "tests.test_request_response"
+            ]["requre.objects"]["requests.api"]["post"],
+        )
+        self.assertIn(
+            "http://www",
+            PersistentObjectStorage().storage_object["unittest.case"][
+                "tests.test_request_response"
+            ]["requre.objects"]["requests.api"]["post"],
+        )
+
+    def testUrlCleanup(self):
+        self.assertEqual(
+            remove_password_from_url("http://user:pass@www.google.com/"),
+            "http://user:???@www.google.com/",
+        )
+        self.assertEqual(
+            remove_password_from_url("http://www.google.com/"), "http://www.google.com/"
+        )
+        self.assertIn(
+            "/a/b/asdsa?x&y=y#z",
+            remove_password_from_url(
+                "http://user:pass@www.google.com/a/b/asdsa?x&y=y#z"
+            ),
+        )

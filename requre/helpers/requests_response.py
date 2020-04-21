@@ -25,11 +25,22 @@ import datetime
 import json
 from io import BytesIO
 from typing import Any, Optional, Dict
+from urllib.parse import urlparse
 
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 
 from requre.objects import ObjectStorage
+
+
+def remove_password_from_url(url):
+    urlobject = urlparse(url)
+    if urlobject.password:
+        return urlobject._replace(
+            netloc="{}:{}@{}".format(urlobject.username, "???", urlobject.hostname)
+        ).geturl()
+    else:
+        return url
 
 
 class RequestResponseHandling(ObjectStorage):
