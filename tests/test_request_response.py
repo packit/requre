@@ -1,7 +1,10 @@
 import importlib
 import unittest
 
-from requre.helpers.requests_response import RequestResponseHandling
+from requre.helpers.requests_response import (
+    RequestResponseHandling,
+    remove_password_from_url,
+)
 from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
 from requre.exceptions import ItemNotInStorage
@@ -145,4 +148,19 @@ class StoreAnyRequest(BaseClass):
             PersistentObjectStorage().storage_object["unittest.case"][
                 "tests.test_request_response"
             ]["requre.objects"]["requests.api"]["post"],
+        )
+
+    def testUrlCleanup(self):
+        self.assertEqual(
+            remove_password_from_url("http://user:pass@www.google.com/"),
+            "http://user:???@www.google.com/",
+        )
+        self.assertEqual(
+            remove_password_from_url("http://www.google.com/"), "http://www.google.com/"
+        )
+        self.assertIn(
+            "/a/b/asdsa?x&y=y#z",
+            remove_password_from_url(
+                "http://user:pass@www.google.com/a/b/asdsa?x&y=y#z"
+            ),
         )
