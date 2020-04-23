@@ -1,10 +1,16 @@
 import sys
 import re
+import os
 import functools
 import logging
-from typing import List, Callable, Optional, Dict
+from typing import List, Callable, Optional, Dict, Union, Any
 
-from requre.storage import PersistentObjectStorage
+from requre.storage import (
+    PersistentObjectStorage,
+    StorageKeysInspectSimple,
+    DataMiner,
+)
+from requre.utils import get_datafile_filename
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +82,205 @@ def replace(
                 setattr(item_list[1], item_list[2].__name__, item_list[2])
             if original_storage:
                 PersistentObjectStorage().storage_file = original_storage
+            return output
+
+        return _internal
+
+    return decorator_cover
+
+
+def _parse_and_replace_sys_modules(
+    what: str, decorate: Any = None, replace: Any = None,
+) -> Dict:
+    """
+    Internal fucntion what will check all sys.modules, and try to find there implementation of
+    "what" and replace or decorate it by given value(s)
+    """
+    original_module_items: Dict[str, Dict] = {}
+    # go over all modules, and try to find match
+    for module_name, module in sys.modules.items():
+        full_module_list = what.split(".")
+        # avoid to deep dive into
+        # if not matched, try to find just part, if not imported as full path
+        for depth in range(len(full_module_list)):
+            original_obj = module
+            parent_obj = None
+            # rest of list has to match object path
+            for module_path in full_module_list[depth:]:
+                parent_obj = original_obj
+                try:
+                    original_obj = getattr(original_obj, module_path)
+                except AttributeError:
+                    # this is used also for indication that match of path passed
+                    # in case it match partial path, make it None
+                    parent_obj = None
+                    break
+                logger.debug(
+                    f"\tmodule {module_name} -> {module_path} in "
+                    f"{original_obj.__name__} ({full_module_list[depth:]})"
+                )
+            # continuye if parent is empty or module of function did not match
+            # path inside what avoid replace something else with same path
+            # eg, you define what "re.search", and it matches "search" as
+            # part of your module but it does not come from re module
+
+            try:
+                # TODO: this part should be improved, theoretically
+                #  join(full_module_list).startswith( original_obj.__module__)
+                #  could lead to issue, that it matches another module path
+                if not parent_obj:
+                    continue
+                if not ".".join(full_module_list).startswith(original_obj.__module__):
+                    logger.debug(
+                        f"SIMILAR MATCH module {module_name} "
+                        f"in {parent_obj.__name__} -> {original_obj.__name__} "
+                        f"from {original_obj.__module__} ({full_module_list[depth:]})"
+                    )
+                    continue
+            except AttributeError as e:
+                logger.debug(e)
+                continue
+            logger.info(
+                f"MATCH module {module_name} "
+                f"in {parent_obj.__name__} -> {original_obj.__name__} "
+                f"from {original_obj.__module__} ({full_module_list[depth:]})"
+            )
+            if replace is not None:
+                new_function = replace
+                replacement = new_function
+            elif decorate is not None:
+                new_function = decorate
+                if isinstance(new_function, list):
+                    replacement = original_obj
+                    for item in new_function:
+                        replacement = item(replacement)
+                else:
+                    replacement = new_function(original_obj)
+            else:
+                continue
+            # check if already replaced, then continue
+            if original_obj in [
+                x["replacement"] for x in original_module_items.values()
+            ]:
+                logger.info(f"\talready replaced {what} in {module_name}")
+                continue
+            # TODO: have to try to investigate how to do multiple replacements of same
+            #  change the module string in replacements, to be able to do multiple
+            #  replacements this is tricky and may be confusing, but also make it
+            #  clear what has to be replaced
+            #  replacement.__module__ = original_obj.__module__
+            setattr(
+                parent_obj, original_obj.__name__, replacement,
+            )
+            fn_str = (
+                new_function.__name__
+                if not isinstance(new_function, list)
+                else new_function
+            )
+            logger.info(
+                f"\tREPLACES {what} in {module_name}"
+                f" by function {fn_str} {original_obj}"
+            )
+            original_module_items[module_name] = {
+                "what": what,
+                "parent_obj": parent_obj,
+                "original_obj": original_obj,
+                "replacement": replacement,
+            }
+    return original_module_items
+
+
+def _change_storage_file(storage_file, func, args):
+    """
+    Internal function that try to construct persistent data file based on various
+    possibilities.
+    """
+    if storage_file:
+        PersistentObjectStorage().storage_file = storage_file
+    else:
+
+        if len(args):
+            try:
+                PersistentObjectStorage().storage_file = get_datafile_filename(args[0])
+            except NameError:
+                PersistentObjectStorage().storage_file = get_datafile_filename(func)
+        else:
+            PersistentObjectStorage().storage_file = get_datafile_filename(func)
+    original_storage_file = PersistentObjectStorage().storage_file
+    return original_storage_file
+
+
+def replace_module_match(
+    what: str,
+    decorate: Optional[Union[List[Callable], Callable]] = None,
+    replace: Optional[Callable] = None,
+    storage_file: Optional[str] = None,
+    storage_keys_strategy=StorageKeysInspectSimple,
+):
+    """
+    Decorator what helps you to replace/decorate functions/methods inside any already
+    imported module. It uses what as identifier what you want to replace, then you can
+    define if it will be decorated or replaced by given function.
+
+    Example usage to decorate request method of requests module:
+    @replace_module_match(what="requests.sessions.Session.request",
+                          decorate=RequestResponseHandling.decorator(
+                          item_list=["method", "url", "data"],
+                          map_item_list={"url": remove_password_from_url})
+
+    :param what: str - full path of function inside module
+    :param decorate: function decorator what will be applied to what, could be also list of
+                     decorators, to be able to apply more decorators on one function
+                     eg. store files and store output
+    :param replace: replace original function by given one
+    :param storage_file: path for storage file if you don't want to use default location
+    :param storage_keys_strategy: you can change key strategy for storing data
+                                  default simple one avoid to store stack information
+    """
+    if (decorate is None and replace is None) or (
+        decorate is not None and replace is not None
+    ):
+        raise ValueError("right one from [decorate, replace] parameter has to be set.")
+
+    def decorator_cover(func):
+        @functools.wraps(func)
+        def _internal(*args, **kwargs):
+            logger.info(
+                f"\n++++++ SEARCH {what} decorator={decorate} replace={replace}"
+            )
+            original_key_strategy = DataMiner().key_stategy_cls
+            # use simple strategy, to not store stack info as keys
+            DataMiner().key_stategy_cls = storage_keys_strategy
+            original_storage_file = _change_storage_file(
+                storage_file=storage_file, func=func, args=args
+            )
+            # ensure that directory structure exists already
+            os.makedirs(
+                os.path.dirname(PersistentObjectStorage().storage_file), exist_ok=True
+            )
+            # Store values and their replacements for modules to be able to revert changes back
+            original_module_items = _parse_and_replace_sys_modules(
+                what=what, decorate=decorate, replace=replace
+            )
+            try:
+                # execute content
+                output = func(*args, **kwargs)
+            except Exception as e:
+                raise (e)
+            finally:
+                # dump data to storage file
+                PersistentObjectStorage().dump()
+                # revert back changed functions
+                for module_name, item_list in original_module_items.items():
+                    setattr(
+                        item_list["parent_obj"],
+                        item_list["original_obj"].__name__,
+                        item_list["original_obj"],
+                    )
+                # revert back changed values of singletons, to go to consistent state before test
+                # it is important in this order
+                PersistentObjectStorage().storage_file = original_storage_file
+                DataMiner().key_stategy_cls = original_key_strategy
             return output
 
         return _internal
