@@ -130,3 +130,27 @@ class TestOnlinePatchingModuleMatch(unittest.TestCase):
         self.assertEqual(decorator_inc(lambda x: x)(1), 2)
         # verify decorated function
         self.assertEqual(tests.data.special_requre_module.inc(1), 3)
+
+
+# part of documented workaround for the next testcase
+setattr(tests.data.special_requre_module.dynamic, "other", lambda self: "static")
+
+
+class DynamicMethods(unittest.TestCase):
+    @replace_module_match(
+        what="tests.data.special_requre_module.dynamic.some", decorate=decorator_exact
+    )
+    def testDynamicClassMethodNotWorking(self):
+        self.assertRaises(
+            AttributeError, getattr, tests.data.special_requre_module.dynamic, "some"
+        )
+        self.assertEqual(tests.data.special_requre_module.dynamic().some(), "SOME")
+
+    @unittest.skip("this also does not work, probably caused by pytest execution")
+    @replace_module_match(
+        what="tests.data.special_requre_module.dynamic.other", decorate=decorator_exact
+    )
+    def testDynamicClassMethodWorking(self):
+        self.assertEqual(
+            tests.data.special_requre_module.dynamic().other(), "decorated_c static"
+        )

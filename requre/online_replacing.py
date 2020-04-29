@@ -120,7 +120,7 @@ def _parse_and_replace_sys_modules(
                     f"\tmodule {module_name} -> {module_path} in "
                     f"{original_obj.__name__} ({full_module_list[depth:]})"
                 )
-            # continuye if parent is empty or module of function did not match
+            # continue if parent is empty or module of function did not match
             # path inside what avoid replace something else with same path
             # eg, you define what "re.search", and it matches "search" as
             # part of your module but it does not come from re module
@@ -222,6 +222,14 @@ def replace_module_match(
     Decorator what helps you to replace/decorate functions/methods inside any already
     imported module. It uses what as identifier what you want to replace, then you can
     define if it will be decorated or replaced by given function.
+
+    Be aware of several situations:
+      * This will not work if there are dynamic imports inside code execution
+        * Workaround: import the module as part of your test code fist
+      * When you try to decorate/replace method what is not defined (e.g. via using __getattr__)
+        * Workaround: try it. maybe it will work as expected.
+        Import the module and create there mock the method, or replace it with inspired by
+        __getattr__ codebase
 
     Example usage to decorate request method of requests module:
     @replace_module_match(what="requests.sessions.Session.request",
