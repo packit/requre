@@ -96,13 +96,14 @@ def _parse_and_replace_sys_modules(
     Internal fucntion what will check all sys.modules, and try to find there implementation of
     "what" and replace or decorate it by given value(s)
     """
+    logger.info(f"\n++++++ SEARCH {what} decorator={decorate} replace={replace}")
     original_module_items: Dict[str, Dict] = {}
     # go over all modules, and try to find match
     for module_name, module in sys.modules.items():
         full_module_list = what.split(".")
         # avoid to deep dive into
         # if not matched, try to find just part, if not imported as full path
-        for depth in range(len(full_module_list)):
+        for depth, _ in enumerate(full_module_list):
             original_obj = module
             parent_obj = None
             # rest of list has to match object path
@@ -245,9 +246,6 @@ def replace_module_match(
     def decorator_cover(func):
         @functools.wraps(func)
         def _internal(*args, **kwargs):
-            logger.info(
-                f"\n++++++ SEARCH {what} decorator={decorate} replace={replace}"
-            )
             original_key_strategy = DataMiner().key_stategy_cls
             # use simple strategy, to not store stack info as keys
             DataMiner().key_stategy_cls = storage_keys_strategy
