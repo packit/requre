@@ -492,6 +492,10 @@ class PersistentObjectStorage(metaclass=SingletonMeta):
 
     @storage_file.setter
     def storage_file(self, value):
+        # when set to None, reset to default
+        if value is None:
+            self._set_defaults()
+            return
         # when file is changed set PersistenStorage default values
         if self._storage_file != value:
             self._set_defaults()

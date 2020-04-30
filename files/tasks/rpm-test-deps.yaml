@@ -17,5 +17,6 @@
     name:
       - twine # we need newest twine, b/c of the check command
       - readme_renderer[md]
+      - ogr # install ogr for E2E testing
     state: latest
   become: true
