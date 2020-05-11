@@ -1,13 +1,13 @@
 import importlib
 import unittest
 
+from requre.exceptions import ItemNotInStorage
 from requre.helpers.requests_response import (
     RequestResponseHandling,
     remove_password_from_url,
 )
 from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
-from requre.exceptions import ItemNotInStorage
 from tests.testbase import BaseClass, network_connection_avalilable
 
 
@@ -131,7 +131,7 @@ class StoreAnyRequest(BaseClass):
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionCustomFieldsCheckKeys(self):
         self.requests.post = RequestResponseHandling.decorator(
-            item_list=["url", "data"], map_item_list={"url": lambda x: x[0:10]}
+            item_list=["url", "data"], map_function_to_item={"url": lambda x: x[0:10]}
         )(self.requests.post)
         self.requests.post(self.domain)
         self.requests.post("http://www.google.com", data={"a": "b"})
@@ -149,6 +149,40 @@ class StoreAnyRequest(BaseClass):
                 "tests.test_request_response"
             ]["requre.objects"]["requests.api"]["post"],
         )
+
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    def testFunctionFilterHeaders(self):
+        self.requests.post = RequestResponseHandling.decorator(
+            item_list=["url"], response_headers_to_drop=["Date"],
+        )(self.requests.post)
+        self.requests.post(self.domain)
+        self.requests.post("http://www.google.com", data={"a": "b"})
+        PersistentObjectStorage().dump()
+        PersistentObjectStorage().mode = StorageMode.read
+
+        saved_item = PersistentObjectStorage().storage_object["unittest.case"][
+            "tests.test_request_response"
+        ]["requre.objects"]["requests.api"]["post"]["http://www.google.com"][0]
+
+        self.assertIn("headers", saved_item["output"])
+        self.assertIsNone(saved_item["output"]["headers"]["Date"])
+
+    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    def testFunctionFilterUnknownHeaders(self):
+        self.requests.post = RequestResponseHandling.decorator(
+            item_list=["url"], response_headers_to_drop=["NotKnownHeader"],
+        )(self.requests.post)
+        self.requests.post(self.domain)
+        self.requests.post("http://www.google.com", data={"a": "b"})
+        PersistentObjectStorage().dump()
+        PersistentObjectStorage().mode = StorageMode.read
+
+        saved_item = PersistentObjectStorage().storage_object["unittest.case"][
+            "tests.test_request_response"
+        ]["requre.objects"]["requests.api"]["post"]["http://www.google.com"][0]
+
+        self.assertIn("headers", saved_item["output"])
+        self.assertNotIn("NotKnownHeader", saved_item["output"]["headers"])
 
     def testUrlCleanup(self):
         self.assertEqual(

@@ -24,13 +24,14 @@
 import datetime
 import json
 from io import BytesIO
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, Callable
 from urllib.parse import urlparse
 
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 
 from requre.objects import ObjectStorage
+from requre.storage import PersistentObjectStorage
 
 
 def remove_password_from_url(url):
@@ -49,6 +50,15 @@ class RequestResponseHandling(ObjectStorage):
     __response_keys_special = ["raw", "_next", "headers", "elapsed", "_content"]
     __store_indicator = "__store_indicator"
     __implicit_encoding = "UTF-8"
+
+    def __init__(
+        self,
+        store_keys: list,
+        pstorage: Optional[PersistentObjectStorage] = None,
+        response_headers_to_drop=None,
+    ) -> None:
+        super().__init__(store_keys, pstorage)
+        self.response_headers_to_drop = response_headers_to_drop or []
 
     def write(self, response: Response, metadata: Optional[Dict] = None) -> Response:
         super().write(response, metadata)
@@ -73,7 +83,11 @@ class RequestResponseHandling(ObjectStorage):
                 # replay it back to raw
                 response.raw = BytesIO(binary_data)
             if key == "headers":
-                output[key] = dict(response.headers)
+                headers_dict = dict(response.headers)
+                for header in self.response_headers_to_drop:
+                    if header in headers_dict:
+                        headers_dict[header] = None
+                output[key] = headers_dict
             if key == "elapsed":
                 output[key] = response.elapsed.total_seconds()
             if key == "_content":
@@ -121,3 +135,71 @@ class RequestResponseHandling(ObjectStorage):
             if key == "_next":
                 setattr(response, "_next", data[key])
         return response
+
+    @classmethod
+    def decorator_all_keys(
+        cls, func: Callable, storage_object_kwargs=None, response_headers_to_drop=None
+    ) -> Any:
+        """
+        Class method for what should be used as decorator of import replacing system
+        This use all arguments of function as keys
+
+        :param func: Callable object
+        :param storage_object_kwargs: forwarded to the storage object
+        :param response_headers_to_drop: list of header names we don't want to save with response
+                                            (Will be replaced to `None`.)
+        :return: output of func
+        """
+        storage_object_kwargs = storage_object_kwargs or {}
+        if response_headers_to_drop:
+            storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
+        return super().decorator_all_keys(func, storage_object_kwargs)
+
+    @classmethod
+    def decorator(
+        cls,
+        *,
+        item_list: list,
+        map_function_to_item=None,
+        storage_object_kwargs=None,
+        response_headers_to_drop=None
+    ) -> Any:
+        """
+        Class method for what should be used as decorator of import replacing system
+        This use list of selection of *args or **kwargs as arguments of function as keys
+
+        :param item_list: list of values of *args nums,  **kwargs names to use as keys
+        :param map_function_to_item: dict of function to apply to keys before storing
+                                  (have to be listed in item_list)
+        :param storage_object_kwargs: forwarded to the storage object
+        :param response_headers_to_drop: list of header names we don't want to save with response
+                                        (Will be replaced to `None`.)
+        :return: output of func
+        """
+        storage_object_kwargs = storage_object_kwargs or {}
+        if response_headers_to_drop:
+            storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
+        return super().decorator(
+            item_list=item_list,
+            map_function_to_item=map_function_to_item,
+            storage_object_kwargs=storage_object_kwargs,
+        )
+
+    @classmethod
+    def decorator_plain(
+        cls, func: Callable, storage_object_kwargs=None, response_headers_to_drop=None
+    ) -> Any:
+        """
+        Class method for what should be used as decorator of import replacing system
+        This use no arguments of function as keys
+
+        :param func: Callable object
+        :param storage_object_kwargs: forwarded to the storage object
+        :param response_headers_to_drop: list of header names we don't want to save with response
+                                          (Will be replaced to `None`.)
+        :return: output of func
+        """
+        storage_object_kwargs = storage_object_kwargs or {}
+        if response_headers_to_drop:
+            storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
+        return super().decorator_plain(func, storage_object_kwargs)

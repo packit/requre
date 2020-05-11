@@ -1,5 +1,7 @@
+import logging
 import os
 from unittest import TestCase
+
 from requre.storage import (
     PersistentObjectStorage,
     StorageKeysInspectOuter,
@@ -7,6 +9,8 @@ from requre.storage import (
     StorageKeysInspectSimple,
 )
 from requre.utils import get_datafile_filename
+
+logger = logging.getLogger(__name__)
 
 
 class RequreTestCase(TestCase):
