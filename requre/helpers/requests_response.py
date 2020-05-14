@@ -24,14 +24,14 @@
 import datetime
 import json
 from io import BytesIO
-from typing import Any, Optional, Dict, Callable
+from typing import Any, Optional, Dict
 from urllib.parse import urlparse
 
 from requests.models import Response
 from requests.structures import CaseInsensitiveDict
 
 from requre.objects import ObjectStorage
-from requre.storage import PersistentObjectStorage
+from requre.cassette import Cassette
 
 
 def remove_password_from_url(url):
@@ -54,10 +54,10 @@ class RequestResponseHandling(ObjectStorage):
     def __init__(
         self,
         store_keys: list,
-        pstorage: Optional[PersistentObjectStorage] = None,
+        cassette: Optional[Cassette] = None,
         response_headers_to_drop=None,
     ) -> None:
-        super().__init__(store_keys, pstorage)
+        super().__init__(store_keys, cassette=cassette)
         self.response_headers_to_drop = response_headers_to_drop or []
 
     def write(self, response: Response, metadata: Optional[Dict] = None) -> Response:
@@ -138,7 +138,10 @@ class RequestResponseHandling(ObjectStorage):
 
     @classmethod
     def decorator_all_keys(
-        cls, func: Callable, storage_object_kwargs=None, response_headers_to_drop=None
+        cls,
+        storage_object_kwargs=None,
+        cassette: Cassette = None,
+        response_headers_to_drop=None,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -148,12 +151,13 @@ class RequestResponseHandling(ObjectStorage):
         :param storage_object_kwargs: forwarded to the storage object
         :param response_headers_to_drop: list of header names we don't want to save with response
                                             (Will be replaced to `None`.)
-        :return: output of func
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
         if response_headers_to_drop:
             storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
-        return super().decorator_all_keys(func, storage_object_kwargs)
+        return super().decorator_all_keys(storage_object_kwargs, cassette=cassette)
 
     @classmethod
     def decorator(
@@ -162,6 +166,7 @@ class RequestResponseHandling(ObjectStorage):
         item_list: list,
         map_function_to_item=None,
         storage_object_kwargs=None,
+        cassette: Cassette = None,
         response_headers_to_drop=None
     ) -> Any:
         """
@@ -174,7 +179,8 @@ class RequestResponseHandling(ObjectStorage):
         :param storage_object_kwargs: forwarded to the storage object
         :param response_headers_to_drop: list of header names we don't want to save with response
                                         (Will be replaced to `None`.)
-        :return: output of func
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
         if response_headers_to_drop:
@@ -183,11 +189,15 @@ class RequestResponseHandling(ObjectStorage):
             item_list=item_list,
             map_function_to_item=map_function_to_item,
             storage_object_kwargs=storage_object_kwargs,
+            cassette=cassette,
         )
 
     @classmethod
     def decorator_plain(
-        cls, func: Callable, storage_object_kwargs=None, response_headers_to_drop=None
+        cls,
+        storage_object_kwargs=None,
+        cassette: Cassette = None,
+        response_headers_to_drop=None,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -197,9 +207,12 @@ class RequestResponseHandling(ObjectStorage):
         :param storage_object_kwargs: forwarded to the storage object
         :param response_headers_to_drop: list of header names we don't want to save with response
                                           (Will be replaced to `None`.)
-        :return: output of func
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
         if response_headers_to_drop:
             storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
-        return super().decorator_plain(func, storage_object_kwargs)
+        return super().decorator_plain(
+            storage_object_kwargs=storage_object_kwargs, cassette=cassette
+        )

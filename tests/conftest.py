@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import pytest
-from requre.storage import PersistentObjectStorage
 
 from requre.utils import get_datafile_filename
 
@@ -37,6 +36,7 @@ def remove_storage_file(request):
 def remove_storage_file_after(request):
     storage_file = get_datafile_filename(request.node)
     yield storage_file
-    PersistentObjectStorage().dump()
+    # TODO: found why this were necessary before change of singletons
+    # PersistentObjectStorage().cassette.dump()
     if storage_file.is_file():
         storage_file.unlink()

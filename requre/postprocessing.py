@@ -1,7 +1,7 @@
 import logging
 from typing import Union, Any, Dict, Optional, List
 from .constants import KEY_MINIMAL_MATCH, METATADA_KEY
-from .storage import DataMiner, DataStructure, DataTypes
+from .cassette import DataMiner, DataStructure, DataTypes
 
 logger = logging.getLogger(__name__)
 

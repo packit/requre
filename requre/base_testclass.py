@@ -1,13 +1,8 @@
 import logging
 import os
 from unittest import TestCase
-
-from requre.storage import (
-    PersistentObjectStorage,
-    StorageKeysInspectOuter,
-    DataMiner,
-    StorageKeysInspectSimple,
-)
+from requre.storage import PersistentObjectStorage
+from requre.cassette import StorageKeysInspectOuter, StorageKeysInspectSimple
 from requre.utils import get_datafile_filename
 
 logger = logging.getLogger(__name__)
@@ -26,10 +21,11 @@ class RequreTestCase(TestCase):
         super().setUp()
         response_file = get_datafile_filename(self)
         os.makedirs(os.path.dirname(response_file), mode=0o777, exist_ok=True)
-        PersistentObjectStorage().storage_file = response_file
+        self.cassette = PersistentObjectStorage().cassette
+        self.cassette.storage_file = response_file
 
     def tearDown(self):
-        PersistentObjectStorage().dump()
+        self.cassette.dump()
         super().tearDown()
 
 
@@ -48,7 +44,7 @@ class RequreTestCaseOuterKeys(RequreTestCase):
 
     def setUp(self):
         super().setUp()
-        DataMiner().key_stategy_cls = StorageKeysInspectOuter
+        self.cassette.data_miner.key_stategy_cls = StorageKeysInspectOuter
 
 
 class RequreTestCaseSimple(RequreTestCase):
@@ -66,4 +62,4 @@ class RequreTestCaseSimple(RequreTestCase):
 
     def setUp(self):
         super().setUp()
-        DataMiner().key_stategy_cls = StorageKeysInspectSimple
+        self.cassette.data_miner.key_stategy_cls = StorageKeysInspectSimple

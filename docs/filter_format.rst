@@ -198,7 +198,7 @@ _________________________
     ).decorate(
         where="fedpkg",
         what="FedPKG.clone",
-        decorator=StoreFiles.arg_references(files_params={"target_path": 2}),
+        decorator=StoreFiles.where_arg_references(files_params={"target_path": 2}),
     ).decorate(
         where="git",
         who_name="local_project",

@@ -24,7 +24,6 @@ import logging
 import pytest
 
 from requre.online_replacing import recording_requests
-from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode, get_datafile_filename
 
 logger = logging.getLogger(__name__)
@@ -39,10 +38,10 @@ def record_requests_fixture(request):
             StorageMode.write: "recording",
             StorageMode.append: "appending",
             StorageMode.default: "in default mode",
-        }[PersistentObjectStorage().mode]
+        }[cassette.mode]
         logger.debug(
             f"Start requre {mode_description} with storage file: {storage_file}"
         )
         yield cassette
-        PersistentObjectStorage().dump()
+        cassette.dump()
         logger.debug(f"End requre {mode_description} with storage file: {storage_file}")

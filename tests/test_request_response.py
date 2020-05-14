@@ -6,7 +6,6 @@ from requre.helpers.requests_response import (
     RequestResponseHandling,
     remove_password_from_url,
 )
-from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
 from tests.testbase import BaseClass, network_connection_avalilable
 
@@ -35,7 +34,7 @@ class StoreAnyRequest(BaseClass):
 
         response_after = sess.read()
         self.assertIsInstance(response_after, self.requests.models.Response)
-        self.assertNotIn("Example Domain", str(sess.persistent_storage.storage_object))
+        self.assertNotIn("Example Domain", str(sess.cassette.storage_object))
         self.assertIn("Example Domain", response_after.text)
 
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
@@ -45,12 +44,12 @@ class StoreAnyRequest(BaseClass):
         :return:
         """
         response_before = RequestResponseHandling.execute_all_keys(
-            self.requests.post, self.domain
+            self.requests.post, self.domain, cassette=self.cassette
         )
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
         response_after = RequestResponseHandling.execute_all_keys(
-            self.requests.post, self.domain
+            self.requests.post, self.domain, cassette=self.cassette
         )
         self.assertEqual(response_before.text, response_after.text)
         self.assertRaises(
@@ -58,6 +57,7 @@ class StoreAnyRequest(BaseClass):
             RequestResponseHandling.execute_all_keys,
             self.requests.post,
             self.domain,
+            cassette=self.cassette,
         )
 
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
@@ -65,12 +65,12 @@ class StoreAnyRequest(BaseClass):
         """
         Test main purpose of the class, decorate post function and use it then
         """
-        self.requests.post = RequestResponseHandling.decorator_all_keys(
+        self.requests.post = RequestResponseHandling.decorator_all_keys()(
             self.requests.post
         )
         response_before = self.requests.post(self.domain)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
 
         response_after = self.requests.post(self.domain)
         self.assertEqual(response_before.text, response_after.text)
@@ -81,11 +81,11 @@ class StoreAnyRequest(BaseClass):
         """
         Check if it fails with Exception in case request is not stored
         """
-        self.requests.post = RequestResponseHandling.decorator_all_keys(
+        self.requests.post = RequestResponseHandling.decorator_all_keys()(
             self.requests.post
         )
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
         self.assertRaises(Exception, self.requests.post, self.domain, data={"a": "b"})
 
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
@@ -101,8 +101,8 @@ class StoreAnyRequest(BaseClass):
         response_google_before = self.requests.post(
             "http://www.google.com", data={"a": "b"}
         )
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
 
         response_after = self.requests.post(self.domain)
         response_google_after = self.requests.post("http://www.google.com")
@@ -120,8 +120,8 @@ class StoreAnyRequest(BaseClass):
         )
         self.requests.post(self.domain, data={"a": "b"})
         response_2 = self.requests.post(self.domain, data={"c": "d"})
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
 
         self.assertRaises(Exception, self.requests.post, self.domain, data={"x": "y"})
         self.assertRaises(ItemNotInStorage, self.requests.post, self.domain)
@@ -135,19 +135,20 @@ class StoreAnyRequest(BaseClass):
         )(self.requests.post)
         self.requests.post(self.domain)
         self.requests.post("http://www.google.com", data={"a": "b"})
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
+        print(">>>", self.cassette.storage_object)
         self.assertIn(
             "https://ex",
-            PersistentObjectStorage().storage_object["unittest.case"][
+            self.cassette.storage_object["unittest.case"][
                 "tests.test_request_response"
-            ]["requre.objects"]["requests.api"]["post"],
+            ]["requre.objects"]["requre.cassette"]["requests.api"]["post"],
         )
         self.assertIn(
             "http://www",
-            PersistentObjectStorage().storage_object["unittest.case"][
+            self.cassette.storage_object["unittest.case"][
                 "tests.test_request_response"
-            ]["requre.objects"]["requests.api"]["post"],
+            ]["requre.objects"]["requre.cassette"]["requests.api"]["post"],
         )
 
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
@@ -157,12 +158,16 @@ class StoreAnyRequest(BaseClass):
         )(self.requests.post)
         self.requests.post(self.domain)
         self.requests.post("http://www.google.com", data={"a": "b"})
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
 
-        saved_item = PersistentObjectStorage().storage_object["unittest.case"][
+        saved_item = self.cassette.storage_object["unittest.case"][
             "tests.test_request_response"
-        ]["requre.objects"]["requests.api"]["post"]["http://www.google.com"][0]
+        ]["requre.objects"]["requre.cassette"]["requests.api"]["post"][
+            "http://www.google.com"
+        ][
+            0
+        ]
 
         self.assertIn("headers", saved_item["output"])
         self.assertIsNone(saved_item["output"]["headers"]["Date"])
@@ -174,12 +179,16 @@ class StoreAnyRequest(BaseClass):
         )(self.requests.post)
         self.requests.post(self.domain)
         self.requests.post("http://www.google.com", data={"a": "b"})
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
 
-        saved_item = PersistentObjectStorage().storage_object["unittest.case"][
+        saved_item = self.cassette.storage_object["unittest.case"][
             "tests.test_request_response"
-        ]["requre.objects"]["requests.api"]["post"]["http://www.google.com"][0]
+        ]["requre.objects"]["requre.cassette"]["requests.api"]["post"][
+            "http://www.google.com"
+        ][
+            0
+        ]
 
         self.assertIn("headers", saved_item["output"])
         self.assertNotIn("NotKnownHeader", saved_item["output"]["headers"])

@@ -5,7 +5,8 @@ import yaml
 from unittest import TestCase
 from requre.constants import ENV_REQURE_STORAGE_MODE
 from requre.exceptions import PersistentStorageException
-from requre.storage import PersistentObjectStorage, StorageMode
+from requre.storage import PersistentObjectStorage
+from requre.cassette import StorageMode
 
 
 class GenericModeTests(TestCase):
@@ -17,14 +18,14 @@ class GenericModeTests(TestCase):
     def test_bad_mode(self):
         os.environ[ENV_REQURE_STORAGE_MODE] = "mistake"
         with self.assertRaises(PersistentStorageException) as context:
-            PersistentObjectStorage().storage_file = "/not/important"
+            PersistentObjectStorage().cassette.storage_file = "/not/important"
             self.assertTrue(
                 f"storage mode mistake does not exist," in context.exception
             )
 
     def test_default(self):
-        PersistentObjectStorage()._set_defaults()
-        self.assertEqual(PersistentObjectStorage().mode, StorageMode.default)
+        PersistentObjectStorage().cassette._set_defaults()
+        self.assertEqual(PersistentObjectStorage().cassette.mode, StorageMode.default)
 
 
 class ReadMode(TestCase):
@@ -43,12 +44,12 @@ class ReadMode(TestCase):
     def test_existing_file(self):
         with open(self.response_file, "w") as fd:
             yaml.dump({}, fd)
-        PersistentObjectStorage().storage_file = self.response_file
-        self.assertEqual(PersistentObjectStorage().mode, StorageMode.read)
+        PersistentObjectStorage().cassette.storage_file = self.response_file
+        self.assertEqual(PersistentObjectStorage().cassette.mode, StorageMode.read)
 
     def test_non_existing_file(self):
         with self.assertRaises(PersistentStorageException) as context:
-            PersistentObjectStorage().storage_file = self.response_file
+            PersistentObjectStorage().cassette.storage_file = self.response_file
             self.assertTrue("does not exist" in context.exception)
 
 
@@ -68,11 +69,11 @@ class WriteMode(TestCase):
     def test_existing_file(self):
         with open(self.response_file, "w") as fd:
             yaml.dump({}, fd)
-        PersistentObjectStorage().storage_file = self.response_file
-        self.assertEqual(PersistentObjectStorage().mode, StorageMode.write)
+        PersistentObjectStorage().cassette.storage_file = self.response_file
+        self.assertEqual(PersistentObjectStorage().cassette.mode, StorageMode.write)
 
     def test_non_existing_file(self):
-        PersistentObjectStorage().storage_file = self.response_file
+        PersistentObjectStorage().cassette.storage_file = self.response_file
 
 
 class AppendMode(WriteMode):
@@ -83,5 +84,5 @@ class AppendMode(WriteMode):
     def test_existing_file(self):
         with open(self.response_file, "w") as fd:
             yaml.dump({}, fd)
-        PersistentObjectStorage().storage_file = self.response_file
-        self.assertEqual(PersistentObjectStorage().mode, StorageMode.append)
+        PersistentObjectStorage().cassette.storage_file = self.response_file
+        self.assertEqual(PersistentObjectStorage().cassette.mode, StorageMode.append)
