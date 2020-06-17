@@ -1,13 +1,27 @@
+import socket
 import os
 import unittest
+import requests
+import math
 
 import tests.data.special_requre_module
 from requre.online_replacing import replace, replace_module_match
-from requre.storage import PersistentObjectStorage, DataMiner, StorageKeysInspectFull
+from requre.cassette import Cassette
+from requre.storage import PersistentObjectStorage
+from requre.helpers.requests_response import RequestResponseHandling
+from requre.helpers.simple_object import Simple
 from tests.data import special_requre_module
 from tests.data.special_requre_module import hello
 
+
+def guard(*args, **kwargs):
+    raise IOError("No Internet connection")
+
+
+original_socket = socket.socket
+
 SELECTOR = str(os.path.basename(__file__).rsplit(".", 1)[0])
+TEST_DIR = os.path.dirname(__file__)
 
 
 def decorator_a(func):
@@ -88,16 +102,7 @@ def decorated_exact():
 
 class TestOnlinePatchingModuleMatch(unittest.TestCase):
     def testDecoratorImport(self):
-        # check if  there is is full inspect stragegy
-        self.assertEqual(DataMiner().key_stategy_cls, StorageKeysInspectFull)
         self.assertEqual(decorated_exact(), "decorator_c Hi! decorator_c Hi! exact")
-        # check if inspect stragety it reverted back (internally used Simple)
-        self.assertEqual(DataMiner().key_stategy_cls, StorageKeysInspectFull)
-        # check if storage file is set properly
-        self.assertIn(
-            "requre/tests/test_data/test_online_replacing/decorated_exact.yaml",
-            str(PersistentObjectStorage().storage_file),
-        )
         # test revenrting
         self.assertEqual(tests.data.special_requre_module.hello(), "Hi! ")
 
@@ -110,13 +115,6 @@ class TestOnlinePatchingModuleMatch(unittest.TestCase):
         self.assertEqual(tests.data.special_requre_module.hello(), "decorator_c Hi! ")
         self.assertEqual(hello(), "decorator_c Hi! ")
         self.assertEqual(special_requre_module.hello(), "decorator_c Hi! ")
-        # check also if proper filename is used for Persistent Storage
-        self.assertIn(
-            "requre/tests/test_data/test_online_replacing/"
-            "tests.test_online_replacing."
-            "TestOnlinePatchingModuleMatch.testDecoratorMainUsage.yaml",
-            str(PersistentObjectStorage().storage_file),
-        )
 
     @replace_module_match(
         what="tests.data.special_requre_module.hello",
@@ -155,3 +153,80 @@ class DynamicMethods(unittest.TestCase):
         self.assertEqual(
             tests.data.special_requre_module.dynamic().other(), "decorated_c static"
         )
+
+
+own_cassette = Cassette()
+
+
+class CassetteSelection(unittest.TestCase):
+    def setUp(self) -> None:
+        # disable internet access via sockets
+        setattr(socket, "socket", guard)
+        own_cassette.storage_file = None
+
+    def reset(self):
+        setattr(socket, "socket", original_socket)
+
+    def tearDown(self) -> None:
+        self.reset()
+
+    def testGuard(self):
+        # check if
+        self.assertRaises(IOError, requests.get, "http://example.com")
+
+    @replace_module_match(
+        cassette=own_cassette,
+        what="requests.sessions.Session.request",
+        decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
+    )
+    def testWrite(self):
+        self.reset()
+        response = requests.get("http://example.com")
+        self.assertIn("This domain is for use", response.text)
+        self.assertFalse(os.path.exists(own_cassette.storage_file))
+        own_cassette.dump()
+        self.assertTrue(os.path.exists(own_cassette.storage_file))
+        os.remove(own_cassette.storage_file)
+
+    @replace_module_match(
+        cassette=own_cassette,
+        what="requests.sessions.Session.request",
+        decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
+    )
+    def testRead(self):
+        # uncomment it and remove storage file to regenerate data
+        # self.reset()
+        self.assertTrue(os.path.exists(own_cassette.storage_file))
+        response = requests.get("http://example.com")
+        self.assertIn("This domain is for use", response.text)
+
+    @replace_module_match(
+        what="requests.sessions.Session.request",
+        decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
+    )
+    def testReadDefaultCassette(self):
+        # uncomment it and remove storage file to regenerate data
+        # self.reset()
+        self.assertEqual(own_cassette.storage_file, None)
+        self.assertNotIn(
+            self.__class__.__name__,
+            PersistentObjectStorage().cassette.storage_file or "",
+        )
+        response = requests.get("http://example.com")
+        self.assertIn("This domain is for use", response.text)
+
+    @replace_module_match(
+        cassette=own_cassette,
+        what="requests.sessions.Session.request",
+        decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
+    )
+    @replace_module_match(what="math.sin", decorate=Simple.decorator(item_list=[]))
+    def testReadMultiple(self):
+        # uncomment it and remove storage file to regenerate data
+        # self.reset()
+        # sin_output = math.sin(1.5)
+        # comment out this line for regeneration (output is another than this number)
+        sin_output = math.sin(4)
+        response = requests.get("http://example.com")
+        self.assertIn("This domain is for use", response.text)
+        self.assertAlmostEqual(0.9974949866040544, sin_output, delta=0.0005)

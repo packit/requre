@@ -61,11 +61,11 @@ This allows you to use decorators to store files or directories
 to persistent storage. It allows to use several decorators, how
 and what to store.
 
- - ``return_value``
+ - ``where_file_as_return_value``
     It uses return value  of method/function as name of file or directory and store
- - ``guess_args``
+ - ``guess_files_from_parameters``
     Try to guess which parameter of function is file. It is based on the existence of the argument on the filesystem. It checks every ``string`` argument
- - ``arg_references(files_params: Dict)``
+ - ``where_arg_references(files_params: Dict)``
     Exact reference which argument is file. ``files_params`` dictionary contains a definition
     of pairs, ``named_value: int_position`` of argument to be able to handle
     key-value parameters and positional as well.

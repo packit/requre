@@ -30,6 +30,8 @@ from types import ModuleType
 from typing import Optional, Dict, Any, Callable, List, Tuple, Union
 
 from requre.utils import Replacement, get_module_of_previous_context
+from requre.cassette import CassetteExecution
+from requre.storage import PersistentObjectStorage
 
 
 class ReplaceType(Enum):
@@ -347,31 +349,41 @@ class UpgradeImportSystem:
                                     replacement=replacement,
                                     parent=parent_obj,
                                 )
-
+                                if isinstance(replace_object, CassetteExecution):
+                                    replace_object.cassette = (
+                                        PersistentObjectStorage().cassette
+                                    )
+                                    new_function = replace_object.function
+                                else:
+                                    new_function = replace_object
+                                if isinstance(original_obj, CassetteExecution):
+                                    original_obj_fn = original_obj.function
+                                else:
+                                    original_obj_fn = original_obj
                                 if replace_type == ReplaceType.REPLACE:
                                     setattr(
                                         parent_obj,
-                                        original_obj.__name__,
-                                        replace_object,
+                                        original_obj_fn.__name__,
+                                        new_function,
                                     )
                                     text.append(
                                         f"\treplacing {key} "
-                                        f"by function {replace_object.__name__}\n"
+                                        f"by function {original_obj_fn.__name__}\n"
                                     )
                                 elif replace_type == ReplaceType.DECORATOR:
                                     setattr(
                                         parent_obj,
-                                        original_obj.__name__,
-                                        replace_object(original_obj),
+                                        original_obj_fn.__name__,
+                                        new_function(original_obj_fn),
                                     )
                                     text.append(
-                                        f"\tdecorate {key}  by {replace_object.__name__}\n"
+                                        f"\tdecorate {key}  by {new_function.__name__}\n"
                                     )
                                 elif replace_type == ReplaceType.REPLACE_MODULE:
-                                    out = replace_object
+                                    out = new_function
                                     text.append(
                                         f"\treplace module {name} in {module_name} "
-                                        f"by {replace_object.__name__}\n"
+                                        f"by {new_function.__name__}\n"
                                     )
                     if self.debug_file:
                         with open(self.debug_file, "a") as fd:

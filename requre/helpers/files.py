@@ -26,11 +26,12 @@ import logging
 import os
 import tarfile
 from io import BytesIO
-from typing import Callable, Any, Dict
+from typing import Any, Dict, Optional
 
 from requre.exceptions import PersistentStorageException
 from requre.helpers.simple_object import Simple
-from requre.storage import PersistentObjectStorage, DataMiner
+from requre.storage import PersistentObjectStorage
+from requre.cassette import Cassette, CassetteExecution
 
 logger = logging.getLogger(__name__)
 
@@ -39,23 +40,25 @@ class StoreFiles:
     dir_suffix = "file_storage"
     tar_compression = "xz"
     basic_ps_keys = ["X", "file", "tar"]
+    cassette = PersistentObjectStorage().cassette
+
+    def __init__(self, cassette: Cassette):
+        self.cassette = cassette
+
+    @staticmethod
+    def _test_identifier(cassette):
+        return os.path.basename(cassette.storage_file)
 
     @classmethod
-    def _test_identifier(cls):
-        return os.path.basename(PersistentObjectStorage().storage_file)
-
-    @classmethod
-    def _copy_logic(
-        cls, pers_storage: PersistentObjectStorage, pathname: str, keys: list
-    ) -> None:
+    def _copy_logic(cls, cassette: Cassette, pathname: str, keys: list) -> None:
         """
         Internal function. Copy files to or back from persisten storage
-        It will  create tar archive with tar_compression and stores it to Persistent Storage
+        It will create tar archive with tar_compression and stores it to Persistent Storage
         """
         logger.debug(f"Copy files {pathname} -> {keys}")
-        logger.debug(f"Persistent Storage mode: {pers_storage.mode}")
+        logger.debug(f"Persistent Storage mode: {cassette.mode}")
         original_cwd = os.getcwd()
-        if pers_storage.do_store(keys=cls.basic_ps_keys + keys):
+        if cassette.do_store(keys=cls.basic_ps_keys + keys):
             try:
                 artifact_name = os.path.basename(pathname)
                 artifact_path = os.path.dirname(pathname)
@@ -66,8 +69,8 @@ class StoreFiles:
                     ) as tar_store:
                         tar_store.add(name=artifact_name)
                     fileobj.seek(0)
-                    metadata = {DataMiner().LATENCY_KEY: 0}
-                    pers_storage.store(
+                    metadata = {cassette.data_miner.LATENCY_KEY: 0}
+                    cassette.store(
                         keys=cls.basic_ps_keys + keys,
                         values=fileobj.read(),
                         metadata=metadata,
@@ -75,7 +78,7 @@ class StoreFiles:
             finally:
                 os.chdir(original_cwd)
         else:
-            value = pers_storage[cls.basic_ps_keys + keys]
+            value = cassette[cls.basic_ps_keys + keys]
             with BytesIO(value) as fileobj:
                 with tarfile.open(
                     mode=f"r:{cls.tar_compression}", fileobj=fileobj
@@ -101,85 +104,113 @@ class StoreFiles:
                                 tar_store.extract(tar_item, path=pathname)
 
     @classmethod
-    def return_value(cls, func: Callable) -> Any:
+    def where_file_as_return_value(cls, cassette: Optional[Cassette] = None) -> Any:
         """
         Decorator what will store return value of function/method as file and will store content
 
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
+
         """
+        casex = CassetteExecution()
+        casex.cassette = cassette or cls.cassette
 
-        @functools.wraps(func)
-        def store_files_int(*args, **kwargs):
-            output = Simple.decorator_plain(func)(*args, **kwargs)
-            cls._copy_logic(
-                PersistentObjectStorage(),
-                pathname=output,
-                keys=[cls.__name__, cls._test_identifier()],
-            )
-            return output
+        def internal(func):
+            @functools.wraps(func)
+            def store_files_int(*args, **kwargs):
+                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                cls._copy_logic(
+                    cassette=casex.cassette,
+                    pathname=output,
+                    keys=[cls.__name__, cls._test_identifier(cassette)],
+                )
+                return output
 
-        return store_files_int
+            return store_files_int
+
+        casex.function = internal
+        return casex
 
     @classmethod
-    def guess_args(cls, func: Callable) -> Any:
+    def guess_files_from_parameters(cls, cassette: Optional[Cassette] = None) -> Any:
         """
         Decorator what try to guess, which arg is file or directory and store its content
+
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
+        casex = CassetteExecution()
+        casex.cassette = cassette or cls.cassette
 
-        @functools.wraps(func)
-        def store_files_int(*args, **kwargs):
-            def int_dec_fn(pathname_arg, keys_arg):
-                if not isinstance(pathname_arg, str):
-                    return
-                if PersistentObjectStorage().do_store(
-                    keys=StoreFiles.basic_ps_keys + keys_arg
-                ):
-                    if os.path.exists(pathname_arg):
-                        cls._copy_logic(
-                            PersistentObjectStorage(),
-                            pathname=pathname_arg,
-                            keys=keys_arg,
-                        )
-                else:
-                    try:
-                        cls._copy_logic(
-                            PersistentObjectStorage(),
-                            pathname=pathname_arg,
-                            keys=keys_arg,
-                        )
-                    except PersistentStorageException:
-                        pass
+        def internal(func):
+            @functools.wraps(func)
+            def store_files_int(*args, **kwargs):
+                def int_dec_fn(pathname_arg, keys_arg):
+                    if not isinstance(pathname_arg, str):
+                        return
+                    if casex.cassette.do_store(
+                        keys=StoreFiles.basic_ps_keys + keys_arg
+                    ):
+                        if os.path.exists(pathname_arg):
+                            cls._copy_logic(
+                                cassette=casex.cassette,
+                                pathname=pathname_arg,
+                                keys=keys_arg,
+                            )
+                    else:
+                        try:
+                            cls._copy_logic(
+                                cassette=casex.cassette,
+                                pathname=pathname_arg,
+                                keys=keys_arg,
+                            )
+                        except PersistentStorageException:
+                            pass
 
-            class_test_id_list = [cls.__name__, cls._test_identifier()]
-            output = Simple.decorator_plain(func)(*args, **kwargs)
-            for position in range(len(args)):
-                int_dec_fn(args[position], class_test_id_list + [position])
-            for k, v in kwargs.items():
-                int_dec_fn(v, class_test_id_list + [k])
-            return output
+                class_test_id_list = [
+                    cls.__name__,
+                    cls._test_identifier(casex.cassette),
+                ]
+                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                for position in range(len(args)):
+                    int_dec_fn(args[position], class_test_id_list + [position])
+                for k, v in kwargs.items():
+                    int_dec_fn(v, class_test_id_list + [k])
+                return output
 
-        return store_files_int
+            return store_files_int
+
+        casex.function = internal
+        return casex
 
     @classmethod
-    def arg_references(cls, files_params: Dict) -> Any:
+    def where_arg_references(
+        cls, key_position_params_dict: Dict, cassette: Optional[Cassette] = None
+    ) -> Any:
         """
         Decorator what will store files or directory based on arguments,
         you have to pass name and position of arg via dict
         (be careful about counting self or cls parameteres for methods)
-        eg. files_params = {"target_dir": 2}
-        """
+        eg. key_position_params_dict = {"target_dir": 2}
 
-        def store_files_int(func):
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
+        """
+        casex = CassetteExecution()
+        casex.cassette = cassette or cls.cassette
+
+        def internal(func):
             @functools.wraps(func)
             def store_files_int_int(*args, **kwargs):
-                class_test_id_list = [cls.__name__, cls._test_identifier()]
-                output = Simple.decorator_plain(func)(*args, **kwargs)
-                for key, position in files_params.items():
+                class_test_id_list = [cls.__name__, cls._test_identifier(cassette)]
+                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                for key, position in key_position_params_dict.items():
                     if key in kwargs:
                         param = kwargs[key]
                     else:
                         param = args[position]
                     cls._copy_logic(
-                        PersistentObjectStorage(),
+                        cassette=cassette,
                         pathname=param,
                         keys=class_test_id_list + [key],
                     )
@@ -187,16 +218,41 @@ class StoreFiles:
 
             return store_files_int_int
 
-        return store_files_int
+        casex.function = internal
+        return casex
 
     @classmethod
-    def explicit_reference(cls, file_param: str, dest_key: str = "default") -> Any:
+    def explicit_reference(
+        cls,
+        file_param: str,
+        dest_key: str = "default",
+        cassette: Optional[Cassette] = None,
+    ) -> Any:
         """
         Method to store explicitly path file_param to persistent storage
+
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
-        class_test_id_list = [cls.__name__, cls._test_identifier()]
-        cls._copy_logic(
-            PersistentObjectStorage(),
-            pathname=file_param,
-            keys=class_test_id_list + [dest_key],
-        )
+        casex = CassetteExecution()
+        casex.cassette = cassette or cls.cassette
+
+        def internal(func):
+            @functools.wraps(func)
+            def store_files_int(*args, **kwargs):
+                class_test_id_list = [
+                    cls.__name__,
+                    cls._test_identifier(casex.cassette),
+                ]
+                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                cls._copy_logic(
+                    cassette=casex.cassette,
+                    pathname=file_param,
+                    keys=class_test_id_list + [dest_key],
+                )
+                return output
+
+            return store_files_int
+
+        casex.function = internal
+        return casex

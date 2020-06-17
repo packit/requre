@@ -11,16 +11,21 @@ from tests.testbase import BaseClass
 
 
 class Base(BaseClass):
-    @StoreFiles.arg_references({"target_file": 2})
+    @StoreFiles.where_arg_references(
+        {"target_file": 2}, cassette=PersistentObjectStorage().cassette
+    )
     def create_file_content(self, value, target_file):
         with open(target_file, "w") as fd:
             fd.write(value)
         return "value"
 
-    @StoreFiles.arg_references({"target_dir": 2})
+    @StoreFiles.where_arg_references(
+        {"target_dir": 2}, cassette=PersistentObjectStorage().cassette
+    )
     def create_dir_content(self, filename, target_dir, content="empty"):
         with open(os.path.join(target_dir, filename), "w") as fd:
             fd.write(content)
+        return "value 2"
 
 
 class FileStorage(Base):
@@ -33,7 +38,7 @@ class FileStorage(Base):
         self.create_dir_content(
             filename=filename, target_dir=self.temp_dir, content="ciao"
         )
-        tar_data = PersistentObjectStorage().storage_object["X"]["file"]["tar"][
+        tar_data = PersistentObjectStorage().cassette.content["X"]["file"]["tar"][
             "StoreFiles"
         ]["storage_test.yaml"]["target_dir"][0]["output"]
         with BytesIO(tar_data) as tar_byte:
@@ -51,8 +56,8 @@ class FileStorage(Base):
 
         self.create_file_content("cao", target_file=self.temp_file)
 
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
 
         self.create_file_content("first", target_file=self.temp_file)
         with open(self.temp_file, "r") as fd:
@@ -77,8 +82,8 @@ class FileStorage(Base):
         self.create_file_content("ahoj", self.temp_file)
         self.create_file_content("cao", self.temp_file)
 
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
 
         self.create_temp_file()
         self.create_file_content("first", self.temp_file)
@@ -112,8 +117,8 @@ class FileStorage(Base):
             content = fd.read()
             self.assertIn("ciao", content)
 
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
 
         self.create_temp_dir()
         self.create_dir_content(
@@ -136,8 +141,8 @@ class FileStorage(Base):
             filename=filename, target_dir=self.temp_dir, content="hidden"
         )
 
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
 
         self.create_temp_dir()
         self.create_dir_content(
@@ -152,7 +157,9 @@ class FileStorage(Base):
 
 
 class SessionRecordingWithFileStore(Base):
-    @StoreFiles.arg_references({"target_file": 2})
+    @StoreFiles.where_arg_references(
+        {"target_file": 2}, cassette=PersistentObjectStorage().cassette
+    )
     def create_file_content(self, value, target_file):
         StoreFunctionOutput.run_command_wrapper(
             cmd=["bash", "-c", f"echo {value} > {target_file}"]
@@ -168,10 +175,10 @@ class SessionRecordingWithFileStore(Base):
         self.create_file_content("ahoj", target_file=self.temp_file)
         self.create_file_content("cao", target_file=self.temp_file)
 
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
 
-        before = str(PersistentObjectStorage().storage_object)
+        before = str(PersistentObjectStorage().cassette.storage_object)
 
         self.create_file_content("ahoj", target_file=self.temp_file)
         with open(self.temp_file, "r") as fd:
@@ -183,13 +190,13 @@ class SessionRecordingWithFileStore(Base):
             content = fd.read()
             self.assertNotIn("ahoj", content)
             self.assertIn("cao", content)
-        after = str(PersistentObjectStorage().storage_object)
+        after = str(PersistentObjectStorage().cassette.storage_object)
         self.assertGreater(len(before), len(after))
         self.assertIn("True", before)
 
 
 class DynamicFileStorage(Base):
-    @StoreFiles.guess_args
+    @StoreFiles.guess_files_from_parameters()
     def write_to_file(self, value, target_file):
         with open(target_file, "w") as fd:
             fd.write(value)
@@ -202,8 +209,8 @@ class DynamicFileStorage(Base):
         self.write_to_file("ahoj", self.temp_file)
         self.write_to_file("cao", self.temp_file)
 
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
         self.create_temp_file()
         self.write_to_file("ahoj", self.temp_file)
         with open(self.temp_file, "r") as fd:
@@ -225,7 +232,7 @@ class DynamicFileStorage(Base):
 
 
 class StoreOutputFile(Base):
-    @StoreFiles.return_value
+    @StoreFiles.where_file_as_return_value(cassette=PersistentObjectStorage().cassette)
     def create_file(self, value):
         tmpfile = tempfile.mktemp()
         with open(tmpfile, "w") as fd:
@@ -239,8 +246,8 @@ class StoreOutputFile(Base):
         ofile1 = self.create_file("ahoj")
         ofile2 = self.create_file("cao")
 
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
 
         oofile1 = self.create_file("first")
         with open(ofile1, "r") as fd:

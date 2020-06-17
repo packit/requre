@@ -7,7 +7,7 @@ PersistentObjectStorage().storage_file = "files.yaml"
 temp_dir = mkdtemp()
 
 
-@StoreFiles.guess_args
+@StoreFiles.guess_files_from_parameters
 def return_result(dir_name):
     file_name = input("enter file name: ")
     with open(os.path.join(dir_name, file_name), "w") as fd:

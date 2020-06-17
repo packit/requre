@@ -54,7 +54,7 @@ class Void(Simple):
         :param metadata: store metedata to object
         :return: same obj
         """
-        self.persistent_storage.store(
+        self.cassette.store(
             self.store_keys,
             f">>>>> Requre output supressed by using {self.__class__.__name__}",
             metadata=metadata,

@@ -3,7 +3,7 @@ import unittest
 from copy import deepcopy
 from requre.utils import run_command
 from requre.postprocessing import DictProcessing
-from requre.storage import PersistentObjectStorage, DataTypes, DataMiner
+from requre.cassette import DataTypes
 from tests.testbase import BaseClass
 from tests.test_e2e_test_patching import is_requre_installed
 
@@ -120,51 +120,45 @@ class Simplify(BaseClass):
 
     def tearDown(self):
         # return it to default type
-        DataMiner().data_type = DataTypes.List
+        self.cassette.data_type = DataTypes.List
         super().tearDown()
 
     def store_key(self):
-        PersistentObjectStorage().store(
-            keys=self.keys, values="x", metadata=self.metadata
-        )
+        self.cassette.store(keys=self.keys, values="x", metadata=self.metadata)
 
     def testDefault(self):
         self.store_key()
-        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor = DictProcessing(self.cassette.storage_object)
         processor.simplify()
-        self.assertIn(
-            "'a': {'d': {'e': [", str(PersistentObjectStorage().storage_object)
-        )
+        self.assertIn("'a': {'d': {'e': [", str(self.cassette.storage_object))
 
     def testDict(self):
-        DataMiner().data_type = DataTypes.Dict
+        self.cassette.data_miner.data_type = DataTypes.Dict
         self.store_key()
-        print(PersistentObjectStorage().storage_object)
-        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        processor = DictProcessing(self.cassette.storage_object)
         processor.simplify()
         self.assertIn(
-            "'a': {'d': {'e': {'%s': {'metadata'" % DataMiner().key,
-            str(PersistentObjectStorage().storage_object),
+            "'a': {'d': {'e': {'%s': {'metadata'" % self.cassette.data_miner.key,
+            str(self.cassette.storage_object),
         )
 
     def testDictWithList(self):
-        DataMiner().data_type = DataTypes.DictWithList
+        self.cassette.data_miner.data_type = DataTypes.DictWithList
         self.store_key()
-        print(PersistentObjectStorage().storage_object)
-        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        print(self.cassette.storage_object)
+        processor = DictProcessing(self.cassette.storage_object)
         processor.simplify()
         self.assertIn(
-            "'a': {'d': {'e': {'%s': [" % DataMiner().key,
-            str(PersistentObjectStorage().storage_object),
+            "'a': {'d': {'e': {'%s': [" % self.cassette.data_miner.key,
+            str(self.cassette.storage_object),
         )
 
     def testValue(self):
-        DataMiner().data_type = DataTypes.Value
+        self.cassette.data_miner.data_type = DataTypes.Value
         self.store_key()
-        print(PersistentObjectStorage().storage_object)
-        processor = DictProcessing(PersistentObjectStorage().storage_object)
+        print(self.cassette.storage_object)
+        processor = DictProcessing(self.cassette.storage_object)
         processor.simplify()
         self.assertIn(
-            "'a': {'d': {'e': {'metadata'",
-            str(PersistentObjectStorage().storage_object),
+            "'a': {'d': {'e': {'metadata'", str(self.cassette.storage_object),
         )

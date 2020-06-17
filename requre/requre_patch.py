@@ -12,7 +12,7 @@ import builtins
 
 from requre.import_system import upgrade_import_system, UpgradeImportSystem
 from requre.postprocessing import DictProcessing
-from requre.storage import DataMiner, PersistentObjectStorage
+from requre.storage import PersistentObjectStorage
 from requre.constants import (
     ENV_REPLACEMENT_FILE,
     ENV_STORAGE_FILE,
@@ -97,8 +97,8 @@ def apply_fn():
             )
         if if_latency:
             debug_print("Use latency for function calls")
-            DataMiner().use_latency = True
-        PersistentObjectStorage().storage_file = storage_file
+            PersistentObjectStorage().cassette.data_miner.use_latency = True
+        PersistentObjectStorage().cassette.storage_file = storage_file
         spec = importlib.util.spec_from_file_location("replacements", replacement_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
@@ -122,7 +122,7 @@ def apply_fn():
                 f"in {replacement_file} there is not defined '{replacement_var}' variable",
             )
         # register dump command, when python finish
-        atexit.register(PersistentObjectStorage().dump)
+        atexit.register(PersistentObjectStorage().cassette.dump)
 
 
 def get_current_python_version():

@@ -28,12 +28,14 @@ import pickle
 import warnings
 from typing import Optional, Callable, Any, List, Dict
 
-from requre.storage import (
-    PersistentObjectStorage,
-    DataMiner,
+from requre.storage import PersistentObjectStorage
+from requre.cassette import (
     original_time,
     StorageKeysInspectFull,
+    Cassette,
+    CassetteExecution,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -48,25 +50,36 @@ class ObjectStorage:
     in case object is not serializable well. Use this class very carefully.
     """
 
-    persistent_storage = PersistentObjectStorage()
+    cassette = PersistentObjectStorage().cassette
     __response_keys: list = list()
     object_type = object
 
     def __init__(
-        self, store_keys: list, pstorage: Optional[PersistentObjectStorage] = None
+        self,
+        store_keys: list,
+        cassette: Cassette,
+        storage_object_kwargs: Optional[dict] = None,
     ) -> None:
         self.store_keys = store_keys
-        if pstorage:
-            self.persistent_storage = pstorage
+        if cassette:
+            self.cassette = cassette
         self.store_keys = store_keys
+        self.storage_object_kwargs = storage_object_kwargs or {}
 
-    @staticmethod
-    def get_base_keys(func: Callable) -> List[Any]:
-        return DataMiner().key_stategy_cls.get_base_keys(func)
+    @classmethod
+    def get_base_keys(cls, func: Callable) -> List[Any]:
+        function = func.function if isinstance(func, CassetteExecution) else func
+        return cls.cassette.data_miner.key_stategy_cls.get_base_keys(function)
 
     @classmethod
     def execute(
-        cls, keys: list, func: Callable, *args, storage_object_kwargs=None, **kwargs
+        cls,
+        keys: list,
+        func: Callable,
+        *args,
+        storage_object_kwargs=None,
+        cassette: Cassette,
+        **kwargs,
     ) -> Any:
         """
         Class method to store or read object from persistent storage
@@ -75,30 +88,39 @@ class ObjectStorage:
         :param func: original function
         :param args: parameters of original function
         :param storage_object_kwargs: forwarded to the storage object
+        :param cassette: Cassette instance to pass inside object to work with
         :param kwargs: parameters of original function
-        :return: output of called func
+        :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
-        object_storage = cls(store_keys=keys, **storage_object_kwargs)
+        object_storage = cls(
+            store_keys=keys, cassette=cassette, **storage_object_kwargs
+        )
 
-        if object_storage.persistent_storage.do_store(keys):
+        if object_storage.cassette.do_store(keys):
             time_before = original_time()
-            response = func(*args, **kwargs)
+            func_exposed = (
+                func.function if isinstance(func, CassetteExecution) else func
+            )
+            response = func_exposed(*args, **kwargs)
+
             time_after = original_time()
             metadata: Dict = {
-                DataMiner().LATENCY_KEY: time_after - time_before,
-                DataMiner().METADATA_CALLER_LIST: StorageKeysInspectFull.get_base_keys(
-                    func
+                cassette.data_miner.LATENCY_KEY: time_after - time_before,
+                cassette.data_miner.METADATA_CALLER_LIST: StorageKeysInspectFull.get_base_keys(
+                    func_exposed
                 ),
             }
-            if DataMiner().store_arg_debug_metadata:
+            if cassette.data_miner.store_arg_debug_metadata:
                 args_clean = [f"'{x}'" if isinstance(x, str) else str(x) for x in args]
                 kwargs_clean = [
                     f"""{k}={f"'{v}'" if isinstance(v, str) else str(v)}"""
                     for k, v in kwargs.items()
                 ]
-                caller = f"{func.__name__}({', '.join(args_clean + kwargs_clean)})"
-                metadata[DataMiner().METADATA_ARG_DEBUG_KEY] = caller
+                caller = (
+                    f"{func_exposed.__name__}({', '.join(args_clean + kwargs_clean)})"
+                )
+                metadata[cassette.data_miner.METADATA_ARG_DEBUG_KEY] = caller
             object_storage.write(response, metadata)
             logger.debug(f"WRITE Keys: {keys} -> {response}")
             return response
@@ -110,7 +132,12 @@ class ObjectStorage:
 
     @classmethod
     def execute_all_keys(
-        cls, func: Callable, *args, storage_object_kwargs=None, **kwargs
+        cls,
+        func: Callable,
+        *args,
+        storage_object_kwargs=None,
+        cassette: Cassette,
+        **kwargs,
     ):
         """
         Class method what does same as execute, but use all *args, **kwargs as keys
@@ -118,19 +145,33 @@ class ObjectStorage:
         :param args: parameters of original function
         :param storage_object_kwargs: forwarded to the storage object
         :param kwargs: parameters of original function
-        :return: output of called func
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
+        func_exposed = func.function if isinstance(func, CassetteExecution) else func
         keys = (
-            cls.get_base_keys(func)
+            cls.get_base_keys(func_exposed)
             + [x for x in args if isinstance(int, str)]
             + [f"{k}:{v}" for k, v in kwargs.items()]
         )
         return cls.execute(
-            keys, func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
+            keys,
+            func,
+            *args,
+            storage_object_kwargs=storage_object_kwargs,
+            cassette=cassette,
+            **kwargs,
         )
 
     @classmethod
-    def execute_plain(cls, func: Callable, *args, storage_object_kwargs=None, **kwargs):
+    def execute_plain(
+        cls,
+        func: Callable,
+        *args,
+        storage_object_kwargs=None,
+        cassette: Cassette,
+        **kwargs,
+    ):
         """
         Class method what does same as execute, but use just name of module and function as name
 
@@ -138,35 +179,54 @@ class ObjectStorage:
         :param args: parameters of original function
         :param storage_object_kwargs: forwarded to the storage object
         :param kwargs: parameters of original function
-        :return: output of called func
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
-        keys = cls.get_base_keys(func)
+        func_exposed = func.function if isinstance(func, CassetteExecution) else func
+        keys = cls.get_base_keys(func_exposed)
         return cls.execute(
-            keys, func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
+            keys,
+            func,
+            *args,
+            storage_object_kwargs=storage_object_kwargs,
+            cassette=cassette,
+            **kwargs,
         )
 
     @classmethod
-    def decorator_all_keys(cls, func: Callable, storage_object_kwargs=None) -> Any:
+    def decorator_all_keys(
+        cls, storage_object_kwargs=None, cassette: Cassette = None
+    ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
         This use all arguments of function as keys
 
         :param func: Callable object
         :param storage_object_kwargs: forwarded to the storage object
-        :return: output of func
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
 
-        @functools.wraps(func)
-        def internal(*args, **kwargs):
-            return cls.execute_all_keys(
-                func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
-            )
+        def internal(func):
+            @functools.wraps(func)
+            def internal_internal(*args, **kwargs):
+                return cls.decorator(
+                    item_list=list(range(len(args))) + list(kwargs.keys()),
+                    cassette=cassette,
+                )(func)(*args, **kwargs)
+
+            return internal_internal
 
         return internal
 
     @classmethod
     def decorator(
-        cls, *, item_list: list, map_function_to_item=None, storage_object_kwargs=None
+        cls,
+        *,
+        item_list: list,
+        map_function_to_item=None,
+        storage_object_kwargs=None,
+        cassette: Cassette = None,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -176,17 +236,23 @@ class ObjectStorage:
         :param map_function_to_item: dict of function to apply to keys before storing
                                   (have to be listed in item_list)
         :param storage_object_kwargs: forwarded to the storage object
-        :return: output of func
+        :param cassette: Cassette instance to pass inside object to work with
+        :return: CassetteExecution class with function and cassette instance
         """
 
         map_function_to_item = map_function_to_item or {}
+        casex = CassetteExecution()
+        casex.cassette = cassette or cls.cassette
 
         def internal(func: Callable):
             @functools.wraps(func)
             def internal_internal(*args, **kwargs):
                 keys = cls.get_base_keys(func)
                 # get all possible arguments of passed function
-                arg_keys = inspect.getfullargspec(func)[0]
+                try:
+                    arg_keys = inspect.getfullargspec(func)[0]
+                except TypeError:
+                    arg_keys = []
                 for param_name in item_list:
                     # if you pass int as an agrument, it forces to use args
                     if isinstance(param_name, int):
@@ -217,43 +283,34 @@ class ObjectStorage:
                     func,
                     *args,
                     storage_object_kwargs=storage_object_kwargs,
+                    cassette=casex.cassette,
                     **kwargs,
                 )
 
             return internal_internal
 
-        return internal
+        casex.function = internal
+        return casex
 
     @classmethod
-    def decorator_plain(cls, func: Callable, storage_object_kwargs=None) -> Any:
-        """
-        Class method for what should be used as decorator of import replacing system
-        This use no arguments of function as keys
-
-        :param func: Callable object
-        :param storage_object_kwargs: forwarded to the storage object
-        :return: output of func
-        """
-
-        @functools.wraps(func)
-        def internal(*args, **kwargs):
-            return cls.execute_plain(
-                func, *args, storage_object_kwargs=storage_object_kwargs, **kwargs
-            )
-
-        return internal
+    def decorator_plain(
+        cls, *, cassette: Cassette = None, storage_object_kwargs=None
+    ) -> Any:
+        return cls.decorator(
+            item_list=[], cassette=cassette, storage_object_kwargs=storage_object_kwargs
+        )
 
     def write(self, obj: Any, metadata: Optional[Dict] = None) -> Any:
         """
         Write the object representation to storage
-        Internally it will use self.to_serializable()
+        Internally it will use self.to_serializable
         method to get serializable object representation
 
         :param obj: some object
         :param metadata: store metedata to object
         :return: same obj
         """
-        self.persistent_storage.store(
+        self.cassette.store(
             self.store_keys, self.to_serializable(obj), metadata=metadata
         )
         return obj
@@ -265,7 +322,7 @@ class ObjectStorage:
 
         :return: proper object
         """
-        data = self.persistent_storage[self.store_keys]
+        data = self.cassette[self.store_keys]
         obj = self.from_serializable(data)
         return obj
 

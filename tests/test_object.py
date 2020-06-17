@@ -1,6 +1,6 @@
 from requre.objects import ObjectStorage
-from requre.storage import PersistentObjectStorage, DataMiner
 from requre.utils import StorageMode
+
 from tests.testbase import BaseClass
 
 
@@ -14,6 +14,9 @@ class OwnClass:
         else:
             return return_num
 
+    def get_sum(self, inputval):
+        return self.num + inputval
+
 
 class StoreAnyRequest(BaseClass):
     domain = "https://example.com/"
@@ -23,7 +26,7 @@ class StoreAnyRequest(BaseClass):
         Test if is class is able to explicitly write and read object handling
         """
         keys = [1]
-        sess = ObjectStorage(store_keys=keys)
+        sess = ObjectStorage(store_keys=keys, cassette=self.cassette)
         obj_before = OwnClass(*keys)
         sess.write(obj_before)
         obj_after = sess.read()
@@ -38,22 +41,28 @@ class StoreAnyRequest(BaseClass):
         test if it is able to use explicit decorator_all_keys for storing object handling
         :return:
         """
-        obj_before = ObjectStorage.execute_all_keys(OwnClass, 1)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
-        obj_after = ObjectStorage.execute_all_keys(OwnClass, 1)
+        obj_before = ObjectStorage.execute_all_keys(OwnClass, 1, cassette=self.cassette)
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
+        obj_after = ObjectStorage.execute_all_keys(OwnClass, 1, cassette=self.cassette)
         self.assertEqual(obj_before.num, obj_after.num)
         # all objects are already read, next have to fail
-        self.assertRaises(Exception, ObjectStorage.execute_all_keys, OwnClass, 1)
+        self.assertRaises(
+            Exception,
+            ObjectStorage.execute_all_keys,
+            OwnClass,
+            1,
+            cassette=self.cassette,
+        )
 
     def testFunctionDecorator(self):
         """
         Test main purpose of the class, decorate class and use it then
         """
-        decorated_own = ObjectStorage.decorator_all_keys(OwnClass)
+        decorated_own = ObjectStorage.decorator_all_keys()(OwnClass)
         obj_before = decorated_own(1)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
         obj_after = decorated_own(1)
         self.assertEqual(obj_before.num, obj_after.num)
         # all objects are already read, next have to fail
@@ -63,44 +72,51 @@ class StoreAnyRequest(BaseClass):
 class CallDebug(BaseClass):
     def setUp(self) -> None:
         super().setUp()
-        DataMiner().store_arg_debug_metadata = True
+        self.cassette.data_miner.store_arg_debug_metadata = True
 
     def tearDown(self) -> None:
-        DataMiner().store_arg_debug_metadata = False
+        self.cassette.data_miner.store_arg_debug_metadata = False
         super().tearDown()
 
     def testCallDebug(self):
-        OwnClass.get_num = ObjectStorage.decorator_plain(OwnClass.get_num)
+        OwnClass.get_num = ObjectStorage.decorator_plain()(OwnClass.get_num)
         test_obj = OwnClass(3)
         obj_before_4 = test_obj.get_num(4)
         obj_before_5 = test_obj.get_num(5, extended=True)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
         obj_after_4 = test_obj.get_num(4)
-        obj_after_4_meta = DataMiner().metadata
+        obj_after_4_meta = self.cassette.data_miner.metadata
         obj_after_5 = test_obj.get_num(5, extended=True)
-        obj_after_5_meta = DataMiner().metadata
+        obj_after_5_meta = self.cassette.data_miner.metadata
         self.assertEqual(obj_before_4, obj_after_4)
         self.assertIsInstance(obj_after_4, int)
         self.assertRegex(
-            obj_after_4_meta[DataMiner().METADATA_ARG_DEBUG_KEY], "get_num(.*, 4)"
+            obj_after_4_meta[self.cassette.data_miner.METADATA_ARG_DEBUG_KEY],
+            "get_num(.*, 4)",
         )
         self.assertEqual(obj_before_5, obj_after_5)
         self.assertIsInstance(obj_after_5, str)
         self.assertRegex(
-            obj_after_5_meta[DataMiner().METADATA_ARG_DEBUG_KEY],
+            obj_after_5_meta[self.cassette.data_miner.METADATA_ARG_DEBUG_KEY],
             "get_num(.*, 5, extended=True)",
         )
 
     def testCallNoDebug(self):
-        DataMiner().store_arg_debug_metadata = False
-        OwnClass.get_num = ObjectStorage.decorator_plain(OwnClass.get_num)
+        self.cassette.data_miner.store_arg_debug_metadata = False
+        OwnClass.get_num = ObjectStorage.decorator_plain()(OwnClass.get_num)
         test_obj = OwnClass(3)
         obj_before_4 = test_obj.get_num(4)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        obj_sum_before = test_obj.get_sum(3)
+        self.cassette.dump()
+        self.cassette.mode = StorageMode.read
         obj_after_4 = test_obj.get_num(4)
-        obj_after_4_meta = DataMiner().metadata
+        obj_sum_after = test_obj.get_sum(3)
+        obj_after_4_meta = self.cassette.data_miner.metadata
+        self.assertEqual(obj_sum_before, 6)
+        self.assertEqual(obj_sum_after, 6)
         self.assertEqual(obj_before_4, obj_after_4)
         self.assertIsInstance(obj_after_4, int)
-        self.assertEqual(obj_after_4_meta.get(DataMiner().METADATA_ARG_DEBUG_KEY), None)
+        self.assertEqual(
+            obj_after_4_meta.get(self.cassette.data_miner.METADATA_ARG_DEBUG_KEY), None
+        )

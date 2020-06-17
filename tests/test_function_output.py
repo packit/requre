@@ -8,11 +8,15 @@ from tests.testbase import BaseClass
 
 class StoreFunctionOutput(BaseClass):
     @staticmethod
-    @Simple.decorator_plain
+    @Simple.decorator_plain()
     def run_command_wrapper(cmd, error_message=None, cwd=None, fail=True, output=False):
         return run_command(
             cmd=cmd, error_message=error_message, cwd=cwd, fail=fail, output=output
         )
+
+    def test_a(self):
+        self.assertIn("bin", Simple.decorator_plain()(run_command)("ls /", output=True))
+        self.assertIn("bin", Simple.decorator_plain()(run_command)("ls /", output=True))
 
     def test_run_command_true(self):
         """
@@ -21,11 +25,11 @@ class StoreFunctionOutput(BaseClass):
         """
         output = self.run_command_wrapper(cmd=["true"])
         self.assertTrue(output)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
-        before = str(PersistentObjectStorage().storage_object)
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
+        before = str(PersistentObjectStorage().cassette.storage_object)
         output = self.run_command_wrapper(cmd=["true"])
-        after = str(PersistentObjectStorage().storage_object)
+        after = str(PersistentObjectStorage().cassette.storage_object)
         self.assertTrue(output)
         self.assertIn("True", before)
         self.assertNotIn("True", after)
@@ -40,17 +44,17 @@ class StoreFunctionOutput(BaseClass):
             fd.write("ahoj\n")
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("ahoj", output)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
         with open(self.file_name, "a") as fd:
             fd.write("cao\n")
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("ahoj", output)
         self.assertNotIn("cao", output)
-        PersistentObjectStorage().mode = StorageMode.write
+        PersistentObjectStorage().cassette.mode = StorageMode.write
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("cao", output)
-        PersistentObjectStorage().dump()
-        PersistentObjectStorage().mode = StorageMode.read
+        PersistentObjectStorage().cassette.dump()
+        PersistentObjectStorage().cassette.mode = StorageMode.read
         output = self.run_command_wrapper(cmd=["cat", self.file_name], output=True)
         self.assertIn("cao", output)

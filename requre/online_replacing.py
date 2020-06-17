@@ -2,22 +2,19 @@ import functools
 import logging
 import os
 import re
+import inspect
 from contextlib import contextmanager
 from typing import List, Callable, Optional, Dict, Any, Union
 
 import sys
 
-from requre.cassette import Cassette
+from requre.cassette import Cassette, CassetteExecution
 from requre.helpers.requests_response import (
     RequestResponseHandling,
     remove_password_from_url,
 )
 from requre.objects import ObjectStorage
-from requre.storage import PersistentObjectStorage
-from requre.storage import (
-    StorageKeysInspectSimple,
-    DataMiner,
-)
+from requre.cassette import StorageKeysInspectSimple
 from requre.utils import get_datafile_filename
 
 logger = logging.getLogger(__name__)
@@ -34,14 +31,13 @@ def replace(
         decorate is not None and replace is not None
     ):
         raise ValueError("right one from [decorate, replace] parameter has to be set.")
+    cassette = Cassette()
 
     def decorator_cover(func):
         @functools.wraps(func)
         def _internal(*args, **kwargs):
-            original_storage = None
             if storage_file:
-                original_storage = PersistentObjectStorage().storage_file
-                PersistentObjectStorage().storage_file = storage_file
+                cassette.storage_file = storage_file
             original_module_items: Dict[List] = {}
             for module_name, module in sys.modules.items():
                 if not re.search(in_module, module_name):
@@ -55,9 +51,18 @@ def replace(
                     for key_item in what.split("."):
                         parent_obj = original_obj
                         original_obj = getattr(original_obj, key_item)
+                    # set proper cassette inside calls if it is proper object
+                    if isinstance(replace, CassetteExecution):
+                        replace.cassette = cassette
+                    if isinstance(decorate, CassetteExecution):
+                        decorate.cassette = cassette
                     if replace is not None:
                         setattr(
-                            parent_obj, original_obj.__name__, replace,
+                            parent_obj,
+                            original_obj.__name__,
+                            replace
+                            if not isinstance(replace, CassetteExecution)
+                            else replace.function,
                         )
                         logger.info(
                             f"\treplacing {module_name}.{what}"
@@ -65,7 +70,13 @@ def replace(
                         )
                     elif decorate is not None:
                         setattr(
-                            parent_obj, original_obj.__name__, decorate(original_obj),
+                            parent_obj,
+                            original_obj.__name__,
+                            (
+                                decorate
+                                if not isinstance(decorate, CassetteExecution)
+                                else decorate.function
+                            )(original_obj),
                         )
                         logger.info(
                             f"\tdecorating {module_name}.{what}"
@@ -88,8 +99,6 @@ def replace(
             # revert back
             for module_name, item_list in original_module_items.items():
                 setattr(item_list[1], item_list[2].__name__, item_list[2])
-            if original_storage:
-                PersistentObjectStorage().storage_file = original_storage
             return output
 
         return _internal
@@ -98,7 +107,7 @@ def replace(
 
 
 def _parse_and_replace_sys_modules(
-    what: str, decorate: Any = None, replace: Any = None,
+    what: str, cassette: Cassette, decorate: Any = None, replace: Any = None,
 ) -> Dict:
     """
     Internal fucntion what will check all sys.modules, and try to find there implementation of
@@ -160,16 +169,25 @@ def _parse_and_replace_sys_modules(
                 f"from {original_obj.__module__} ({full_module_list[depth:]})"
             )
             if replace is not None:
-                new_function = replace
+                if isinstance(replace, CassetteExecution):
+                    new_function = replace.function
+                    replace.cassette = cassette
+
+                else:
+                    new_function = replace
                 replacement = new_function
             elif decorate is not None:
-                new_function = decorate
-                if isinstance(new_function, list):
-                    replacement = original_obj
-                    for item in new_function:
-                        replacement = item(replacement)
+                if not isinstance(decorate, list):
+                    new_function = [decorate]
                 else:
-                    replacement = new_function(original_obj)
+                    new_function = decorate
+                replacement = original_obj
+                for item in new_function:
+                    if isinstance(item, CassetteExecution):
+                        item.cassette = cassette
+                        replacement = item.function(replacement)
+                    else:
+                        replacement = item(replacement)
             else:
                 continue
             # check if already replaced, then continue
@@ -204,31 +222,34 @@ def _parse_and_replace_sys_modules(
     return original_module_items
 
 
-def _change_storage_file(storage_file, func, args):
+def _change_storage_file(
+    cassette: Cassette, func, args, storage_file: Optional[str] = None
+):
     """
     Internal function that try to construct persistent data file based on various
     possibilities.
+
+    :param cassette: Cassette instance to pass inside object to work with
     """
     if storage_file:
-        PersistentObjectStorage().storage_file = storage_file
+        cassette.storage_file = storage_file
     else:
-
         if len(args):
             try:
-                PersistentObjectStorage().storage_file = get_datafile_filename(args[0])
+                cassette.storage_file = get_datafile_filename(args[0])
             except NameError:
-                PersistentObjectStorage().storage_file = get_datafile_filename(func)
+                cassette.storage_file = get_datafile_filename(func)
         else:
-            PersistentObjectStorage().storage_file = get_datafile_filename(func)
-    original_storage_file = PersistentObjectStorage().storage_file
+            cassette.storage_file = get_datafile_filename(func)
+    original_storage_file = cassette.storage_file
     return original_storage_file
 
 
 def replace_module_match(
     what: str,
+    cassette: Optional[Cassette] = None,
     decorate: Optional[Union[List[Callable], Callable]] = None,
     replace: Optional[Callable] = None,
-    storage_file: Optional[str] = None,
     storage_keys_strategy=StorageKeysInspectSimple,
 ):
     """
@@ -255,7 +276,7 @@ def replace_module_match(
                      decorators, to be able to apply more decorators on one function
                      eg. store files and store output
     :param replace: replace original function by given one
-    :param storage_file: path for storage file if you don't want to use default location
+    :param cassette: Cassette instance to pass inside object to work with
     :param storage_keys_strategy: you can change key strategy for storing data
                                   default simple one avoid to store stack information
     """
@@ -267,28 +288,35 @@ def replace_module_match(
     def decorator_cover(func):
         @functools.wraps(func)
         def _internal(*args, **kwargs):
-            original_key_strategy = DataMiner().key_stategy_cls
-            # use simple strategy, to not store stack info as keys
-            DataMiner().key_stategy_cls = storage_keys_strategy
-            original_storage_file = _change_storage_file(
-                storage_file=storage_file, func=func, args=args
-            )
+            if cassette:
+                cassette_int = cassette
+            else:
+                cassette_int = Cassette()
+            # set storage if if not set to default one, based on function name
+            if cassette_int.storage_file is None:
+                _change_storage_file(cassette=cassette_int, func=func, args=args)
+            cassette_int.data_miner.key_stategy_cls = storage_keys_strategy
             # ensure that directory structure exists already
-            os.makedirs(
-                os.path.dirname(PersistentObjectStorage().storage_file), exist_ok=True
-            )
+            os.makedirs(os.path.dirname(cassette_int.storage_file), exist_ok=True)
             # Store values and their replacements for modules to be able to revert changes back
             original_module_items = _parse_and_replace_sys_modules(
-                what=what, decorate=decorate, replace=replace
+                what=what, cassette=cassette_int, decorate=decorate, replace=replace
             )
             try:
+                # pass current cassette to underneath decorator and do not overwrite if set there
+                if (
+                    "cassette" in inspect.getfullargspec(func).annotations
+                    and inspect.getfullargspec(func).annotations["cassette"] == Cassette
+                    and "cassette" not in kwargs
+                ):
+                    kwargs[cassette] = cassette_int
                 # execute content
                 output = func(*args, **kwargs)
             except Exception as e:
                 raise (e)
             finally:
                 # dump data to storage file
-                PersistentObjectStorage().dump()
+                cassette_int.dump()
                 # revert back changed functions
                 for module_name, item_list in original_module_items.items():
                     setattr(
@@ -296,10 +324,6 @@ def replace_module_match(
                         item_list["original_obj"].__name__,
                         item_list["original_obj"],
                     )
-                # revert back changed values of singletons, to go to consistent state before test
-                # it is important in this order
-                PersistentObjectStorage().storage_file = original_storage_file
-                DataMiner().key_stategy_cls = original_key_strategy
             return output
 
         return _internal
@@ -317,19 +341,22 @@ def record(
     :param what: str - full path of function inside module
     :param storage_file: path for storage file if you don't want to use default location
     """
+    cassette = Cassette()
+    cassette.storage_file = storage_file
 
     def _record_inner(func):
         return replace_module_match(
-            what=what,
-            decorate=ObjectStorage.decorator_all_keys,
-            storage_file=storage_file,
+            what=what, cassette=cassette, decorate=ObjectStorage.decorator_all_keys
         )(func)
 
     return _record_inner
 
 
 def record_requests(
-    _func=None, response_headers_to_drop: Optional[List[str]] = None, storage_file=None
+    _func=None,
+    response_headers_to_drop: Optional[List[str]] = None,
+    storage_file=None,
+    cassette: Optional[Cassette] = None,
 ):
     """
     Decorator which can be used to store all requests to a file
@@ -343,20 +370,34 @@ def record_requests(
     :param _func: can be used to decorate function (with, or without parenthesis).
     :param response_headers_to_drop: list of header names we don't want to save with response
                                         (Will be replaced to `None`.)
-    :param storage_file: file for reading and writing data in storage_object
+    :param storage_file: str - storage file to be passed to cassette instance if given,
+                               else it creates new instance
+    :param cassette: Cassette instance to pass inside object to work with
     """
 
     response_headers_to_drop = response_headers_to_drop or []
 
     def decorator_cover(func):
+        if cassette:
+            cassette_int = cassette
+            if cassette_int.storage_file is None:
+                _change_storage_file(
+                    cassette=cassette_int, func=func, args=[], storage_file=storage_file
+                )
+        else:
+            cassette_int = Cassette()
+            _change_storage_file(
+                cassette=cassette_int, func=func, args=[], storage_file=storage_file
+            )
         return replace_module_match(
             what="requests.sessions.Session.request",
+            cassette=cassette,
             decorate=RequestResponseHandling.decorator(
                 item_list=["method", "url"],
                 map_function_to_item={"url": remove_password_from_url},
                 response_headers_to_drop=response_headers_to_drop,
+                cassette=cassette,
             ),
-            storage_file=storage_file,
         )(func)
 
     if _func is None:
@@ -386,22 +427,20 @@ def recording(
     :param storage_keys_strategy: you can change key strategy for storing data
                                   default simple one avoid to store stack information
     """
-
-    original_key_strategy = DataMiner().key_stategy_cls
-    DataMiner().key_stategy_cls = storage_keys_strategy
-    original_storage_file = storage_file
-    PersistentObjectStorage().storage_file = storage_file
+    cassette = Cassette()
+    cassette.data_miner.key_stategy_cls = storage_keys_strategy
+    cassette.storage_file = storage_file
     # ensure that directory structure exists already
-    os.makedirs(os.path.dirname(PersistentObjectStorage().storage_file), exist_ok=True)
+    os.makedirs(os.path.dirname(cassette.storage_file), exist_ok=True)
     # Store values and their replacements for modules to be able to revert changes back
     original_module_items = _parse_and_replace_sys_modules(
-        what=what, decorate=decorate, replace=replace
+        what=what, cassette=cassette, decorate=decorate, replace=replace
     )
     try:
-        yield Cassette()
+        yield cassette
     finally:
         # dump data to storage file
-        PersistentObjectStorage().dump()
+        cassette.dump()
         # revert back changed functions
         for module_name, item_list in original_module_items.items():
             setattr(
@@ -409,10 +448,6 @@ def recording(
                 item_list["original_obj"].__name__,
                 item_list["original_obj"],
             )
-        # revert back changed values of singletons, to go to consistent state before test
-        # it is important in this order
-        PersistentObjectStorage().storage_file = original_storage_file
-        DataMiner().key_stategy_cls = original_key_strategy
 
 
 @contextmanager
