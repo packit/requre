@@ -122,7 +122,7 @@ class StoreFiles:
                 cls._copy_logic(
                     cassette=casex.cassette,
                     pathname=output,
-                    keys=[cls.__name__, cls._test_identifier(cassette)],
+                    keys=[cls.__name__, cls._test_identifier(casex.cassette)],
                 )
                 return output
 
@@ -202,7 +202,10 @@ class StoreFiles:
         def internal(func):
             @functools.wraps(func)
             def store_files_int_int(*args, **kwargs):
-                class_test_id_list = [cls.__name__, cls._test_identifier(cassette)]
+                class_test_id_list = [
+                    cls.__name__,
+                    cls._test_identifier(casex.cassette),
+                ]
                 output = Simple.decorator_plain()(func)(*args, **kwargs)
                 for key, position in key_position_params_dict.items():
                     if key in kwargs:
@@ -210,7 +213,7 @@ class StoreFiles:
                     else:
                         param = args[position]
                     cls._copy_logic(
-                        cassette=cassette,
+                        cassette=casex.cassette,
                         pathname=param,
                         keys=class_test_id_list + [key],
                     )
