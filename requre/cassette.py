@@ -432,20 +432,11 @@ class Cassette:
 
     def _set_defaults(self) -> None:
         self.dump_after_store = False
-        storage_mode = os.getenv(ENV_REQURE_STORAGE_MODE, "default")
-        logger.info(
-            f"You overrided storage mode via env var {ENV_REQURE_STORAGE_MODE}={storage_mode}"
-        )
-        if not hasattr(StorageMode, storage_mode):
-            raise PersistentStorageException(
-                f"storage mode '{storage_mode}' does not exist, "
-                f"use one of {list(StorageMode.__members__.keys())}) "
-            )
-        self.mode: StorageMode = getattr(StorageMode, storage_mode)
         self.is_flushed = False
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
         self.data_miner = DataMiner()
+        self.mode = StorageMode.default
 
     def __init__(self) -> None:
         # call dump() after store() is called
@@ -540,6 +531,36 @@ class Cassette:
         if self.metadata.get(data_type_name) is None:
             self.metadata = {data_type_name: self.data_miner.data_type.value}
 
+    def _set_storage_mode(self, storage_file):
+        # use env var mode if given as the most important
+        storage_mode = os.getenv(ENV_REQURE_STORAGE_MODE)
+        if storage_mode:
+            logger.info(
+                f"You overrided storage mode via env var {ENV_REQURE_STORAGE_MODE}={storage_mode}"
+            )
+            if not hasattr(StorageMode, storage_mode):
+                raise PersistentStorageException(
+                    f"storage mode '{storage_mode}' does not exist, "
+                    f"use one of {list(StorageMode.__members__.keys())}) "
+                )
+            self.mode: StorageMode = getattr(StorageMode, storage_mode)
+
+        # if not given by ENV VAR, guess mode via file existence
+        else:
+            if not os.path.exists(storage_file):
+                if self.mode == StorageMode.default:
+                    self.mode = StorageMode.write
+            else:
+                if self.mode == StorageMode.default:
+                    self.mode = StorageMode.read
+                self.storage_object = self.load()
+        if self.mode == StorageMode.read and not os.path.exists(storage_file):
+            raise PersistentStorageException(
+                "Requre can't work in this setup: we are meant to read"
+                f" recorded responses but the storage file ({self._storage_file}) "
+                "does not exist."
+            )
+
     @property
     def storage_file(self):
         return self._storage_file
@@ -555,20 +576,12 @@ class Cassette:
         if self._storage_file != value:
             self._set_defaults()
             self._storage_file = value
-
-        if not os.path.exists(self._storage_file):
-            if self.mode == StorageMode.default:
-                self.mode = StorageMode.write
-
-            elif self.mode == StorageMode.read:
-                raise PersistentStorageException(
-                    "Requre can't work in this setup: we are meant to read"
-                    f" recorded responses but the storage file ({self._storage_file}) "
-                    "does not exist."
-                )
-        else:
-            if self.mode == StorageMode.default:
-                self.mode = StorageMode.read
+        self._set_storage_mode(storage_file=self._storage_file)
+        # load data for read.
+        if self.mode == StorageMode.read:
+            self.storage_object = self.load()
+        # if append mode load data just in case file exists.
+        if self.mode == StorageMode.append and os.path.exists(self._storage_file):
             self.storage_object = self.load()
 
     @staticmethod
