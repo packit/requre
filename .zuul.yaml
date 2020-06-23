@@ -3,47 +3,31 @@
     name: packit-service/requre
     check:
       jobs:
-        - requre-pre-commit
+        - pre-commit
         - requre-tests
         - requre-reverse-dep-ogr-tests
         - requre-reverse-dep-packit-tests
     gate:
       jobs:
-        - requre-pre-commit
+        - pre-commit
         - requre-tests
         - requre-reverse-dep-ogr-tests
         - requre-reverse-dep-packit-tests
 
 - job:
-    name: requre-parent
-    parent: base
-    extra-vars:
-      ansible_python_interpreter: /usr/bin/python3
-    nodeset:
-      nodes:
-        - name: test-node
-          label: cloud-fedora-30
-
-- job:
-    name: requre-pre-commit
-    parent: requre-parent
-    description: Run pre-commit
-    run: files/zuul-pre-commit.yaml
-
-- job:
     name: requre-tests
-    parent: requre-parent
+    parent: base
     description: Run tests
     run: files/zuul-tests.yaml
 
 - job:
     name: requre-reverse-dep-ogr-tests
-    parent: requre-parent
+    parent: base
     description: Run ogr tests
     run: files/zuul-reverse-dep-ogr.yaml
 
 - job:
     name: requre-reverse-dep-packit-tests
-    parent: requre-parent
+    parent: base
     description: Run packit tests
     run: files/zuul-reverse-dep-packit.yaml
