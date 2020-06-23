@@ -19,9 +19,7 @@ class GenericModeTests(TestCase):
         os.environ[ENV_REQURE_STORAGE_MODE] = "mistake"
         with self.assertRaises(PersistentStorageException) as context:
             PersistentObjectStorage().cassette.storage_file = "/not/important"
-            self.assertTrue(
-                f"storage mode mistake does not exist," in context.exception
-            )
+            self.assertTrue("storage mode mistake does not exist," in context.exception)
 
     def test_default(self):
         PersistentObjectStorage().cassette._set_defaults()

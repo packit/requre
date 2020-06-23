@@ -14,7 +14,7 @@ class DictProcessing:
         if internal_object is None:
             internal_object = self.requre_dict
         if len(selector) == 0:
-            logger.debug(f"all selectors matched")
+            logger.debug("all selectors matched")
             yield internal_object
             # add return here, to avoid multiple returns
             return
