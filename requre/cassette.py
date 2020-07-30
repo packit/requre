@@ -56,6 +56,7 @@ class CassetteExecution:
     def __init__(self):
         self._function = None
         self._cassette = None
+        self._obj_cls = None
 
     @property
     def function(self):
@@ -86,6 +87,14 @@ class CassetteExecution:
         """
         # TODO: fix issue with self removing
         return self.function(*args, **kwargs)
+
+    @property
+    def obj_cls(self):
+        return self._obj_cls
+
+    @obj_cls.setter
+    def obj_cls(self, value):
+        self._obj_cls = value
 
 
 class StorageKeysInspect:

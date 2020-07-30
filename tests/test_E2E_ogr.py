@@ -26,7 +26,7 @@ class GithubTests(unittest.TestCase):
             self.assertIn(self.id(), cassette.storage_file)
             self.assertIn("LGTM", str(cassette.storage_object))
             self.assertTrue(
-                cassette.storage_object["requests.sessions"]["request"]["GET"][
+                cassette.storage_object["requests.sessions"]["send"]["GET"][
                     "https://api.github.com:443/repos/packit-service/ogr"
                 ]
             )

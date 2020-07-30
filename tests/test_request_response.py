@@ -34,7 +34,7 @@ class StoreAnyRequest(BaseClass):
 
         response_after = sess.read()
         self.assertIsInstance(response_after, self.requests.models.Response)
-        self.assertNotIn("Example Domain", str(sess.cassette.storage_object))
+        self.assertNotIn("Example Domain", str(sess.get_cassette().storage_object))
         self.assertIn("Example Domain", response_after.text)
 
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")

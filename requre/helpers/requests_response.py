@@ -27,7 +27,7 @@ from io import BytesIO
 from typing import Any, Optional, Dict
 from urllib.parse import urlparse
 
-from requests.models import Response
+from requests.models import Response, Request, PreparedRequest
 from requests.structures import CaseInsensitiveDict
 
 from requre.objects import ObjectStorage
@@ -57,19 +57,26 @@ class RequestResponseHandling(ObjectStorage):
         cassette: Optional[Cassette] = None,
         response_headers_to_drop=None,
     ) -> None:
+        # replace request if given as key and use prettier url
+        for index, key in enumerate(store_keys):
+            if isinstance(key, (Request, PreparedRequest)):
+                store_keys[index] = remove_password_from_url(key.url)
+                store_keys.insert(index, key.method)
         super().__init__(store_keys, cassette=cassette)
         self.response_headers_to_drop = response_headers_to_drop or []
 
     def write(self, response: Response, metadata: Optional[Dict] = None) -> Response:
         super().write(response, metadata)
-        if getattr(response, "next"):
-            self.write(getattr(response, "next"))
+        # TODO: disabled for now, improve next handling if we find it makes sense
+        # if getattr(response, "next"):
+        #    self.write(getattr(response, "next"))
         return response
 
     def read(self):
         data = super().read()
-        if getattr(data, "next"):
-            data._next = self.read()
+        # TODO: disabled for now, improve next handling if we find it makes sense
+        # if getattr(data, "next"):
+        #    data._next = self.read()
         return data
 
     def to_serializable(self, response: Response) -> Any:

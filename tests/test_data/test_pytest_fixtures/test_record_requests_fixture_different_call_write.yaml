@@ -7,9 +7,9 @@ requests.sessions:
     GET:
       https://fedoraproject.org/:
         - metadata:
-            latency: 1.0452046394348145
+            latency: 3.7259702682495117
             module_call_list:
-              - tests.test_pytest_fixtures_autouse
+              - tests.test_pytest_fixtures
               - requests.api
               - requests.sessions
               - requre.objects
@@ -253,11 +253,11 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.607438
+            elapsed: 0.890889
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1146
+              AppTime: D=1630
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
@@ -269,11 +269,11 @@ requests.sessions:
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Thu, 13 Aug 2020 08:12:54 GMT
-              ETag: '"3f68-5acbd3114dff0-gzip"'
-              Expires: Thu, 13 Aug 2020 08:42:54 GMT
+              Date: Thu, 13 Aug 2020 08:59:39 GMT
+              ETag: '"3f68-5acbe07d15ce8-gzip"'
+              Expires: Thu, 13 Aug 2020 09:29:39 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Thu, 13 Aug 2020 07:24:15 GMT
+              Last-Modified: Thu, 13 Aug 2020 08:24:18 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -281,8 +281,8 @@ requests.sessions:
               Upgrade: h2
               Vary: negotiate,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
-              X-Fedora-ProxyServer: proxy14.fedoraproject.org
-              X-Fedora-RequestID: XzT2Bh5ZPsFcRPyEybg9LAAACoI
+              X-Fedora-ProxyServer: proxy06.fedoraproject.org
+              X-Fedora-RequestID: XzUA@6e2BLBhDpB1J0YUhgAAAMw
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""
@@ -290,9 +290,9 @@ requests.sessions:
             status_code: 200
       https://getfedora.org/:
         - metadata:
-            latency: 0.6083908081054688
+            latency: 0.891197681427002
             module_call_list:
-              - tests.test_pytest_fixtures_autouse
+              - tests.test_pytest_fixtures
               - requests.api
               - requests.sessions
               - requre.objects
@@ -538,11 +538,11 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.607438
+            elapsed: 0.890889
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1146
+              AppTime: D=1630
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
@@ -554,11 +554,11 @@ requests.sessions:
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Thu, 13 Aug 2020 08:12:54 GMT
-              ETag: '"3f68-5acbd3114dff0-gzip"'
-              Expires: Thu, 13 Aug 2020 08:42:54 GMT
+              Date: Thu, 13 Aug 2020 08:59:39 GMT
+              ETag: '"3f68-5acbe07d15ce8-gzip"'
+              Expires: Thu, 13 Aug 2020 09:29:39 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Thu, 13 Aug 2020 07:24:15 GMT
+              Last-Modified: Thu, 13 Aug 2020 08:24:18 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -566,8 +566,8 @@ requests.sessions:
               Upgrade: h2
               Vary: negotiate,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
-              X-Fedora-ProxyServer: proxy14.fedoraproject.org
-              X-Fedora-RequestID: XzT2Bh5ZPsFcRPyEybg9LAAACoI
+              X-Fedora-ProxyServer: proxy06.fedoraproject.org
+              X-Fedora-RequestID: XzUA@6e2BLBhDpB1J0YUhgAAAMw
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""

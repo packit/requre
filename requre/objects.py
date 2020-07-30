@@ -50,7 +50,7 @@ class ObjectStorage:
     in case object is not serializable well. Use this class very carefully.
     """
 
-    cassette = PersistentObjectStorage().cassette
+    _cassette: Cassette = None
     __response_keys: list = list()
     object_type = object
 
@@ -62,14 +62,30 @@ class ObjectStorage:
     ) -> None:
         self.store_keys = store_keys
         if cassette:
-            self.cassette = cassette
+            self.set_cassette(cassette)
         self.store_keys = store_keys
         self.storage_object_kwargs = storage_object_kwargs or {}
 
     @classmethod
+    def get_cassette(cls):
+        """
+        Internal method to return proper cassette, it is important after rewriting of singletons
+        Cassette were not passed to object executor
+        :return: Cassette instance
+        """
+        if cls._cassette:
+            return cls._cassette
+        else:
+            return PersistentObjectStorage().cassette
+
+    @classmethod
+    def set_cassette(cls, value):
+        cls._cassette = value
+
+    @classmethod
     def get_base_keys(cls, func: Callable) -> List[Any]:
         function = func.function if isinstance(func, CassetteExecution) else func
-        return cls.cassette.data_miner.key_stategy_cls.get_base_keys(function)
+        return cls.get_cassette().data_miner.key_stategy_cls.get_base_keys(function)
 
     @classmethod
     def execute(
@@ -97,7 +113,7 @@ class ObjectStorage:
             store_keys=keys, cassette=cassette, **storage_object_kwargs
         )
 
-        if object_storage.cassette.do_store(keys):
+        if object_storage.get_cassette().do_store(keys):
             time_before = original_time()
             func_exposed = (
                 func.function if isinstance(func, CassetteExecution) else func
@@ -242,7 +258,8 @@ class ObjectStorage:
 
         map_function_to_item = map_function_to_item or {}
         casex = CassetteExecution()
-        casex.cassette = cassette or cls.cassette
+        casex.cassette = cassette or cls.get_cassette()
+        casex.obj_cls = cls
 
         def internal(func: Callable):
             @functools.wraps(func)
@@ -310,7 +327,7 @@ class ObjectStorage:
         :param metadata: store metedata to object
         :return: same obj
         """
-        self.cassette.store(
+        self.get_cassette().store(
             self.store_keys, self.to_serializable(obj), metadata=metadata
         )
         return obj
@@ -322,7 +339,7 @@ class ObjectStorage:
 
         :return: proper object
         """
-        data = self.cassette[self.store_keys]
+        data = self.get_cassette()[self.store_keys]
         obj = self.from_serializable(data)
         return obj
 
