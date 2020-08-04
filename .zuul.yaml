@@ -1,6 +1,5 @@
 ---
 - project:
-    name: packit-service/requre
     check:
       jobs:
         - pre-commit
