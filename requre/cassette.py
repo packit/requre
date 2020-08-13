@@ -27,6 +27,7 @@ import os
 import yaml
 import time
 import inspect
+import sys
 
 from requre.utils import StorageMode
 from requre.constants import (
@@ -605,6 +606,20 @@ class Cassette:
                 output.append(item)
         return output
 
+    def _pretty_dict_output(self, input_dict: Optional[dict] = None, depth=0, sep="  "):
+        if not isinstance(input_dict, dict):
+            return
+        for key, value in input_dict.items():
+            yield (sep * depth) + str(key)
+            yield from self._pretty_dict_output(value, depth + 1)
+
+    def _printable_dict_output(self, input_dict: dict):
+        return (
+            "Current internal object structure:"
+            + "\n"
+            + "\n".join(list(self._pretty_dict_output(self.storage_object)))
+        )
+
     def store(self, keys: List, values: Any, metadata: Dict) -> None:
         """
         Stores data to dictionary object based on keys values it will create structure
@@ -618,10 +633,21 @@ class Cassette:
         """
         self._set_storage_metadata_if_not_set()
         current_level = self.storage_object
+        level_trace = []
         hashable_keys = self.transform_hashable(keys)
         for item_num in range(len(hashable_keys)):
             item = hashable_keys[item_num]
+            level_trace.append(item)
             if item_num + 1 < len(hashable_keys):
+                if not isinstance(current_level, dict):
+                    print(
+                        self._printable_dict_output(self.storage_object),
+                        file=sys.stderr,
+                    )
+                    raise PersistentStorageException(
+                        "you are mixing various depths of stored data: keys:"
+                        f" {hashable_keys}, current levels: {level_trace}"
+                    )
                 if not current_level.get(item):
                     current_level[item] = {}
             else:
@@ -667,6 +693,10 @@ class Cassette:
                     if matched_calls and item == matched_calls[-1]:
                         debug_keys.append(f"DUPLICATE {item}")
                         continue
+                    print(
+                        self._printable_dict_output(self.storage_object),
+                        file=sys.stderr,
+                    )
                     raise ItemNotInStorage(
                         f"Keys not in storage:{self.storage_file}"
                         f" Matched: {debug_keys},"
