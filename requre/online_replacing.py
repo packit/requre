@@ -9,10 +9,8 @@ from typing import List, Callable, Optional, Dict, Any, Union
 import sys
 
 from requre.cassette import Cassette, CassetteExecution
-from requre.helpers.requests_response import (
-    RequestResponseHandling,
-    remove_password_from_url,
-)
+from requre.helpers.requests_response import RequestResponseHandling
+
 from requre.objects import ObjectStorage
 from requre.cassette import StorageKeysInspectSimple
 from requre.utils import get_datafile_filename
@@ -172,7 +170,7 @@ def _parse_and_replace_sys_modules(
                 if isinstance(replace, CassetteExecution):
                     new_function = replace.function
                     replace.cassette = cassette
-
+                    replace.obj_cls.set_cassette(cassette)
                 else:
                     new_function = replace
                 replacement = new_function
@@ -185,6 +183,7 @@ def _parse_and_replace_sys_modules(
                 for item in new_function:
                     if isinstance(item, CassetteExecution):
                         item.cassette = cassette
+                        item.obj_cls.set_cassette(cassette)
                         replacement = item.function(replacement)
                     else:
                         replacement = item(replacement)
@@ -292,7 +291,7 @@ def replace_module_match(
                 cassette_int = cassette
             else:
                 cassette_int = Cassette()
-            # set storage if if not set to default one, based on function name
+            # set storage if not set to default one, based on function name
             if cassette_int.storage_file is None:
                 _change_storage_file(cassette=cassette_int, func=func, args=args)
             cassette_int.data_miner.key_stategy_cls = storage_keys_strategy
@@ -390,11 +389,10 @@ def record_requests(
                 cassette=cassette_int, func=func, args=[], storage_file=storage_file
             )
         return replace_module_match(
-            what="requests.sessions.Session.request",
+            what="requests.sessions.Session.send",
             cassette=cassette,
             decorate=RequestResponseHandling.decorator(
-                item_list=["method", "url"],
-                map_function_to_item={"url": remove_password_from_url},
+                item_list=[1],
                 response_headers_to_drop=response_headers_to_drop,
                 cassette=cassette,
             ),
@@ -428,8 +426,8 @@ def recording(
                                   default simple one avoid to store stack information
     """
     cassette = Cassette()
-    cassette.data_miner.key_stategy_cls = storage_keys_strategy
     cassette.storage_file = storage_file
+    cassette.data_miner.key_stategy_cls = storage_keys_strategy
     # ensure that directory structure exists already
     os.makedirs(os.path.dirname(cassette.storage_file), exist_ok=True)
     # Store values and their replacements for modules to be able to revert changes back
@@ -467,11 +465,9 @@ def recording_requests(
     :param storage_file: file for reading and writing data in storage_object
     """
     with recording(
-        what="requests.sessions.Session.request",
+        what="requests.sessions.Session.send",
         decorate=RequestResponseHandling.decorator(
-            item_list=["method", "url"],
-            map_function_to_item={"url": remove_password_from_url},
-            response_headers_to_drop=response_headers_to_drop,
+            item_list=[1], response_headers_to_drop=response_headers_to_drop,
         ),
         storage_file=storage_file,
     ) as cassette:

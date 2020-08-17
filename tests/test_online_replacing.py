@@ -220,7 +220,9 @@ class CassetteSelection(unittest.TestCase):
         what="requests.sessions.Session.request",
         decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
     )
-    @replace_module_match(what="math.sin", decorate=Simple.decorator(item_list=[]))
+    @replace_module_match(
+        cassette=own_cassette, what="math.sin", decorate=Simple.decorator(item_list=[])
+    )
     def testReadMultiple(self):
         # uncomment it and remove storage file to regenerate data
         # self.reset()
