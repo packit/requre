@@ -472,3 +472,26 @@ def recording_requests(
         storage_file=storage_file,
     ) as cassette:
         yield cassette
+
+
+def apply_decorator_to_all_methods(decorator, regexp_method_pattern="test.*"):
+    """
+    This function works as class decorator and apply decorator to
+    all matched methods via regexp, primary usage is to use it for
+    unittest testcases.
+
+    ref: https://stackoverflow.com/a/6307868
+
+    """
+
+    def decorate(cls):
+        for attr in cls.__dict__:
+            if callable(getattr(cls, attr)) and re.match(regexp_method_pattern, attr):
+                setattr(cls, attr, decorator(getattr(cls, attr)))
+        return cls
+
+    return decorate
+
+
+def record_requests_for_all_methods(cassette: Optional[Cassette] = None):
+    return apply_decorator_to_all_methods(record_requests(cassette=cassette))
