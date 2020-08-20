@@ -5,7 +5,12 @@ import requests
 import math
 
 import tests.data.special_requre_module
-from requre.online_replacing import replace, replace_module_match
+from requre.online_replacing import (
+    replace,
+    replace_module_match,
+    apply_decorator_to_all_methods,
+    record_requests_for_all_methods,
+)
 from requre.cassette import Cassette
 from requre.storage import PersistentObjectStorage
 from requre.helpers.requests_response import RequestResponseHandling
@@ -232,3 +237,37 @@ class CassetteSelection(unittest.TestCase):
         response = requests.get("http://example.com")
         self.assertIn("This domain is for use", response.text)
         self.assertAlmostEqual(0.9974949866040544, sin_output, delta=0.0005)
+
+
+new_cassette = Cassette()
+
+
+@apply_decorator_to_all_methods(
+    replace_module_match(
+        what="math.sin", decorate=Simple.decorator_plain(), cassette=new_cassette
+    )
+)
+@record_requests_for_all_methods(cassette=new_cassette)
+class DecoratorClassApply(unittest.TestCase):
+    # when regeneration, comment lines with assert equals, because checks for eqality does not work
+    def setUp(self):
+        new_cassette.storage_file = None
+
+    def test0(self):
+        self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 1)
+        sin_output = math.sin(1.5)
+        response = requests.get("http://example.com")
+        self.assertIn("This domain is for use", response.text)
+        self.assertAlmostEqual(0.9974949866040544, sin_output, delta=0.0005)
+
+    def test1(self):
+
+        sin_output = math.sin(1.5)
+        response = requests.get("http://example.com")
+        self.assertIn("This domain is for use", response.text)
+        self.assertAlmostEqual(0.9974949866040544, sin_output, delta=0.0005)
+
+    def test2(self):
+        self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 2)
+        self.test1()
+        self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 1)
