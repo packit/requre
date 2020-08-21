@@ -285,12 +285,11 @@ def replace_module_match(
         raise ValueError("right one from [decorate, replace] parameter has to be set.")
 
     def decorator_cover(func):
+        func_cassette = func._cassette if hasattr(func, "_cassette") else None
+        cassette_int = cassette or func_cassette or Cassette()
+
         @functools.wraps(func)
         def _internal(*args, **kwargs):
-            if cassette:
-                cassette_int = cassette
-            else:
-                cassette_int = Cassette()
             # set storage if not set to default one, based on function name
             if cassette_int.storage_file is None:
                 _change_storage_file(cassette=cassette_int, func=func, args=args)
@@ -325,6 +324,7 @@ def replace_module_match(
                     )
             return output
 
+        _internal._cassette = cassette_int
         return _internal
 
     return decorator_cover
