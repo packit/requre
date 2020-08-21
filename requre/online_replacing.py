@@ -1,18 +1,17 @@
 import functools
+import inspect
 import logging
 import os
 import re
-import inspect
+import sys
 from contextlib import contextmanager
 from typing import List, Callable, Optional, Dict, Any, Union
 
-import sys
-
 from requre.cassette import Cassette, CassetteExecution
-from requre.helpers.requests_response import RequestResponseHandling
-
-from requre.objects import ObjectStorage
 from requre.cassette import StorageKeysInspectSimple
+from requre.constants import REQURE_CASSETTE_ATTRIBUTE_NAME
+from requre.helpers.requests_response import RequestResponseHandling
+from requre.objects import ObjectStorage
 from requre.utils import get_datafile_filename
 
 logger = logging.getLogger(__name__)
@@ -285,7 +284,11 @@ def replace_module_match(
         raise ValueError("right one from [decorate, replace] parameter has to be set.")
 
     def decorator_cover(func):
-        func_cassette = func._cassette if hasattr(func, "_cassette") else None
+        func_cassette = (
+            getattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
+            if hasattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
+            else None
+        )
         cassette_int = cassette or func_cassette or Cassette()
 
         @functools.wraps(func)
@@ -307,7 +310,7 @@ def replace_module_match(
                     and inspect.getfullargspec(func).annotations["cassette"] == Cassette
                     and "cassette" not in kwargs
                 ):
-                    kwargs[cassette] = cassette_int
+                    kwargs["cassette"] = cassette_int
                 # execute content
                 output = func(*args, **kwargs)
             except Exception as e:
@@ -324,7 +327,7 @@ def replace_module_match(
                     )
             return output
 
-        _internal._cassette = cassette_int
+        setattr(_internal, REQURE_CASSETTE_ATTRIBUTE_NAME, cassette_int)
         return _internal
 
     return decorator_cover

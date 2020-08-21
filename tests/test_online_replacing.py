@@ -207,7 +207,7 @@ class CassetteSelection(unittest.TestCase):
     def testReadMultiple(self, cassette: Cassette):
         assert cassette
         # uncomment it and remove storage file to regenerate data
-        self.reset()
+        # self.reset()
         # sin_output = math.sin(1.5)
         # comment out this line for regeneration (output is another than this number)
         sin_output = math.sin(4)
