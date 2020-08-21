@@ -1,20 +1,20 @@
-import socket
-import os
-import unittest
-import requests
 import math
+import os
+import socket
+import unittest
+
+import requests
 
 import tests.data.special_requre_module
+from requre.cassette import Cassette
+from requre.helpers.requests_response import RequestResponseHandling
+from requre.helpers.simple_object import Simple
 from requre.online_replacing import (
     replace,
     replace_module_match,
     apply_decorator_to_all_methods,
     record_requests_for_all_methods,
 )
-from requre.cassette import Cassette
-from requre.storage import PersistentObjectStorage
-from requre.helpers.requests_response import RequestResponseHandling
-from requre.helpers.simple_object import Simple
 from tests.data import special_requre_module
 from tests.data.special_requre_module import hello
 
@@ -160,14 +160,10 @@ class DynamicMethods(unittest.TestCase):
         )
 
 
-own_cassette = Cassette()
-
-
 class CassetteSelection(unittest.TestCase):
     def setUp(self) -> None:
         # disable internet access via sockets
         setattr(socket, "socket", guard)
-        own_cassette.storage_file = None
 
     def reset(self):
         setattr(socket, "socket", original_socket)
@@ -180,28 +176,26 @@ class CassetteSelection(unittest.TestCase):
         self.assertRaises(IOError, requests.get, "http://example.com")
 
     @replace_module_match(
-        cassette=own_cassette,
         what="requests.sessions.Session.request",
         decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
     )
-    def testWrite(self):
+    def testWrite(self, cassette: Cassette):
         self.reset()
         response = requests.get("http://example.com")
         self.assertIn("This domain is for use", response.text)
-        self.assertFalse(os.path.exists(own_cassette.storage_file))
-        own_cassette.dump()
-        self.assertTrue(os.path.exists(own_cassette.storage_file))
-        os.remove(own_cassette.storage_file)
+        self.assertFalse(os.path.exists(cassette.storage_file))
+        cassette.dump()
+        self.assertTrue(os.path.exists(cassette.storage_file))
+        os.remove(cassette.storage_file)
 
     @replace_module_match(
-        cassette=own_cassette,
         what="requests.sessions.Session.request",
         decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
     )
-    def testRead(self):
+    def testRead(self, cassette: Cassette):
         # uncomment it and remove storage file to regenerate data
         # self.reset()
-        self.assertTrue(os.path.exists(own_cassette.storage_file))
+        self.assertTrue(os.path.exists(cassette.storage_file))
         response = requests.get("http://example.com")
         self.assertIn("This domain is for use", response.text)
 
@@ -209,28 +203,11 @@ class CassetteSelection(unittest.TestCase):
         what="requests.sessions.Session.request",
         decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
     )
-    def testReadDefaultCassette(self):
+    @replace_module_match(what="math.sin", decorate=Simple.decorator(item_list=[]))
+    def testReadMultiple(self, cassette: Cassette):
+        assert cassette
         # uncomment it and remove storage file to regenerate data
-        # self.reset()
-        self.assertEqual(own_cassette.storage_file, None)
-        self.assertNotIn(
-            self.__class__.__name__,
-            PersistentObjectStorage().cassette.storage_file or "",
-        )
-        response = requests.get("http://example.com")
-        self.assertIn("This domain is for use", response.text)
-
-    @replace_module_match(
-        cassette=own_cassette,
-        what="requests.sessions.Session.request",
-        decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
-    )
-    @replace_module_match(
-        cassette=own_cassette, what="math.sin", decorate=Simple.decorator(item_list=[])
-    )
-    def testReadMultiple(self):
-        # uncomment it and remove storage file to regenerate data
-        # self.reset()
+        self.reset()
         # sin_output = math.sin(1.5)
         # comment out this line for regeneration (output is another than this number)
         sin_output = math.sin(4)
@@ -261,7 +238,6 @@ class DecoratorClassApply(unittest.TestCase):
         self.assertAlmostEqual(0.9974949866040544, sin_output, delta=0.0005)
 
     def test1(self):
-
         sin_output = math.sin(1.5)
         response = requests.get("http://example.com")
         self.assertIn("This domain is for use", response.text)
