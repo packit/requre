@@ -20,16 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
-from typing import Dict, Optional, List, Hashable, Any, Callable
-from enum import Enum
-import os
-import yaml
-import time
 import inspect
+import logging
+import os
 import sys
+import time
+from enum import Enum
+from typing import Dict, Optional, List, Hashable, Any, Callable
 
-from requre.utils import StorageMode
+import yaml
+
 from requre.constants import (
     METATADA_KEY,
     ENV_REQURE_STORAGE_MODE,
@@ -42,6 +42,7 @@ from requre.exceptions import (
     ItemNotInStorage,
     StorageNoResponseLeft,
 )
+from requre.utils import StorageMode
 
 # use this sleep to avoid decorating original time function used internally
 original_sleep = time.sleep

@@ -496,5 +496,30 @@ def apply_decorator_to_all_methods(decorator, regexp_method_pattern="test.*"):
     return decorate
 
 
-def record_requests_for_all_methods(cassette: Optional[Cassette] = None):
-    return apply_decorator_to_all_methods(record_requests(cassette=cassette))
+def record_requests_for_all_methods(
+    _func=None,
+    cassette: Optional[Cassette] = None,
+    response_headers_to_drop: Optional[List[str]] = None,
+    regexp_method_pattern="test.*",
+):
+    """
+    Apply @recording_requests decorator to all (test) methods.
+
+    :param _func: can be used to decorate classes (with, or without parenthesis).
+    :param response_headers_to_drop: list of header names we don't want to save with response
+                                        (Will be replaced to `None`.)
+    """
+    if _func is None:
+        return apply_decorator_to_all_methods(
+            record_requests(
+                cassette=cassette, response_headers_to_drop=response_headers_to_drop
+            ),
+            regexp_method_pattern=regexp_method_pattern,
+        )
+
+    return apply_decorator_to_all_methods(
+        record_requests(
+            cassette=cassette, response_headers_to_drop=response_headers_to_drop
+        ),
+        regexp_method_pattern=regexp_method_pattern,
+    )(_func)
