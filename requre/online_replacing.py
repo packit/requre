@@ -9,7 +9,10 @@ from typing import List, Callable, Optional, Dict, Any, Union
 
 from requre.cassette import Cassette, CassetteExecution
 from requre.cassette import StorageKeysInspectSimple
-from requre.constants import REQURE_CASSETTE_ATTRIBUTE_NAME
+from requre.constants import (
+    REQURE_CASSETTE_ATTRIBUTE_NAME,
+    REQURE_SETUP_APPLIED_ATTRIBUTE_NAME,
+)
 from requre.helpers.requests_response import RequestResponseHandling
 from requre.objects import ObjectStorage
 from requre.utils import get_datafile_filename
@@ -477,6 +480,44 @@ def recording_requests(
         yield cassette
 
 
+def cassette_setup_and_teardown_decorator(func):
+    """
+    Decorator that triggers `cassette_setup` method to be run before the test method.
+    """
+    if hasattr(func, REQURE_SETUP_APPLIED_ATTRIBUTE_NAME):
+        return func
+
+    func_cassette = (
+        getattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
+        if hasattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
+        else None
+    )
+    cassette_int = func_cassette or Cassette()
+
+    @functools.wraps(func)
+    def cassette_setup_inner(self, *args, **kwargs):
+        if hasattr(self, "cassette_setup"):
+            self.cassette_setup(cassette=cassette_int)
+
+        if (
+            "cassette" in inspect.getfullargspec(func).annotations
+            and inspect.getfullargspec(func).annotations["cassette"] == Cassette
+            and "cassette" not in kwargs
+        ):
+            kwargs["cassette"] = cassette_int
+
+        return_value = func(self, *args, **kwargs)
+
+        if hasattr(self, "cassette_teardown"):
+            self.cassette_teardown(cassette=cassette_int)
+
+        return return_value
+
+    setattr(cassette_setup_inner, REQURE_CASSETTE_ATTRIBUTE_NAME, cassette_int)
+    setattr(cassette_setup_inner, REQURE_SETUP_APPLIED_ATTRIBUTE_NAME, True)
+    return cassette_setup_inner
+
+
 def apply_decorator_to_all_methods(decorator, regexp_method_pattern="test.*"):
     """
     This function works as class decorator and apply decorator to
@@ -485,12 +526,21 @@ def apply_decorator_to_all_methods(decorator, regexp_method_pattern="test.*"):
 
     ref: https://stackoverflow.com/a/6307868
 
+    Also triggers `cassette_setup`/`cassette_teardown` method before/after method execution
+    to be able to manipulate cassette in a method shared between all test cases.
+    (We do not have access to cassette from regular setUp/tearDown method.)
     """
 
     def decorate(cls):
         for attr in cls.__dict__:
             if callable(getattr(cls, attr)) and re.match(regexp_method_pattern, attr):
-                setattr(cls, attr, decorator(getattr(cls, attr)))
+                setattr(
+                    cls,
+                    attr,
+                    decorator(
+                        cassette_setup_and_teardown_decorator(getattr(cls, attr))
+                    ),
+                )
         return cls
 
     return decorate
