@@ -37,7 +37,7 @@ class StoreFunctionOutput(BaseClass):
 
     def test_run_command_output(self):
         """
-         check if wrapper returns proper string values in calls
+        check if wrapper returns proper string values in calls
         """
         self.file_name = tempfile.mktemp()
         with open(self.file_name, "w") as fd:
