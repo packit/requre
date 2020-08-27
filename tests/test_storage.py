@@ -55,7 +55,8 @@ class Versioning(BaseClass):
         self.assertEqual({}, self.cassette.metadata)
         self.assertEqual(0, self.cassette.storage_file_version)
         self.assertEqual(
-            None, self.cassette.metadata.get(self.cassette.version_key),
+            None,
+            self.cassette.metadata.get(self.cassette.version_key),
         )
         self.assertFalse(os.path.exists(self.response_file))
 
@@ -349,7 +350,9 @@ class KeySkipping(BaseClass):
 
     def test_key_inserted_last(self):
         self.assertRaises(
-            PersistentStorageException, self.cassette.read, self.keys + ["y"],
+            PersistentStorageException,
+            self.cassette.read,
+            self.keys + ["y"],
         )
 
     def test_key_inserted_1_before(self):
@@ -367,5 +370,7 @@ class KeySkipping(BaseClass):
     def test_key_exact_miner_exception(self):
         self.cassette.data_miner.read_key_exact = True
         self.assertRaises(
-            PersistentStorageException, self.cassette.read, ["y"] + self.keys,
+            PersistentStorageException,
+            self.cassette.read,
+            ["y"] + self.keys,
         )

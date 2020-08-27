@@ -160,5 +160,6 @@ class Simplify(BaseClass):
         processor = DictProcessing(self.cassette.storage_object)
         processor.simplify()
         self.assertIn(
-            "'a': {'d': {'e': {'metadata'", str(self.cassette.storage_object),
+            "'a': {'d': {'e': {'metadata'",
+            str(self.cassette.storage_object),
         )
