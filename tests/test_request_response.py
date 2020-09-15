@@ -154,8 +154,7 @@ class StoreAnyRequest(BaseClass):
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionFilterHeaders(self):
         self.requests.post = RequestResponseHandling.decorator(
-            item_list=["url"],
-            response_headers_to_drop=["Date"],
+            item_list=["url"], response_headers_to_drop=["Date"],
         )(self.requests.post)
         self.requests.post(self.domain)
         self.requests.post("http://www.google.com", data={"a": "b"})
@@ -176,8 +175,7 @@ class StoreAnyRequest(BaseClass):
     @unittest.skipIf(not network_connection_avalilable(), "No network connection")
     def testFunctionFilterUnknownHeaders(self):
         self.requests.post = RequestResponseHandling.decorator(
-            item_list=["url"],
-            response_headers_to_drop=["NotKnownHeader"],
+            item_list=["url"], response_headers_to_drop=["NotKnownHeader"],
         )(self.requests.post)
         self.requests.post(self.domain)
         self.requests.post("http://www.google.com", data={"a": "b"})

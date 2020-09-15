@@ -107,10 +107,7 @@ def replace(
 
 
 def _parse_and_replace_sys_modules(
-    what: str,
-    cassette: Cassette,
-    decorate: Any = None,
-    replace: Any = None,
+    what: str, cassette: Cassette, decorate: Any = None, replace: Any = None,
 ) -> Dict:
     """
     Internal fucntion what will check all sys.modules, and try to find there implementation of
@@ -206,9 +203,7 @@ def _parse_and_replace_sys_modules(
             #  clear what has to be replaced
             #  replacement.__module__ = original_obj.__module__
             setattr(
-                parent_obj,
-                original_obj.__name__,
-                replacement,
+                parent_obj, original_obj.__name__, replacement,
             )
             fn_str = (
                 new_function.__name__
@@ -342,8 +337,7 @@ def replace_module_match(
 
 
 def record(
-    what: str,
-    storage_file: Optional[str] = None,
+    what: str, storage_file: Optional[str] = None,
 ):
     """
     Decorator which can be used to store calls of the function and
@@ -479,8 +473,7 @@ def recording_requests(
     with recording(
         what="requests.sessions.Session.send",
         decorate=RequestResponseHandling.decorator(
-            item_list=[1],
-            response_headers_to_drop=response_headers_to_drop,
+            item_list=[1], response_headers_to_drop=response_headers_to_drop,
         ),
         storage_file=storage_file,
     ) as cassette:

@@ -6,34 +6,29 @@ from tests.testbase import BaseClass
 
 class TestTempFile(BaseClass):
     def testSimple(self):
-        output = TempFile.mktemp()
+        output = TempFile._mktemp()
         self.assertIn(
-            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_1",
-            output,
+            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_1", output,
         )
 
     def testChangeFile(self):
         self.cassette.storage_file += ".x"
-        output = TempFile.mktemp()
+        output = TempFile._mktemp()
         self.assertIn(
-            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_1",
-            output,
+            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_1", output,
         )
-        output = TempFile.mktemp()
+        output = TempFile._mktemp()
         self.assertIn(
-            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_2",
-            output,
+            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_2", output,
         )
         self.cassette.storage_file += ".y"
         self.assertEqual(TempFile.counter, 2)
-        output = TempFile.mktemp()
+        output = TempFile._mktemp()
         self.assertEqual(TempFile.counter, 1)
         self.assertIn(
-            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_1",
-            output,
+            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_1", output,
         )
-        output = TempFile.mktemp()
+        output = TempFile._mktemp()
         self.assertIn(
-            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_2",
-            output,
+            f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_2", output,
         )
