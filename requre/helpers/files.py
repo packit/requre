@@ -30,20 +30,17 @@ from typing import Any, Dict, Optional
 
 from requre.exceptions import PersistentStorageException
 from requre.helpers.simple_object import Simple
-from requre.storage import PersistentObjectStorage
-from requre.cassette import Cassette, CassetteExecution
+from requre.objects import ObjectStorage
+from requre.cassette import Cassette, CassetteExecution, StorageMode
 
 logger = logging.getLogger(__name__)
 
 
-class StoreFiles:
+class StoreFiles(ObjectStorage):
     dir_suffix = "file_storage"
     tar_compression = "xz"
     basic_ps_keys = ["X", "file", "tar"]
-    cassette = PersistentObjectStorage().cassette
-
-    def __init__(self, cassette: Cassette):
-        self.cassette = cassette
+    _cassette: Cassette = None
 
     @staticmethod
     def _test_identifier(cassette):
@@ -104,7 +101,11 @@ class StoreFiles:
                                 tar_store.extract(tar_item, path=pathname)
 
     @classmethod
-    def where_file_as_return_value(cls, cassette: Optional[Cassette] = None) -> Any:
+    def where_file_as_return_value(
+        cls,
+        cassette: Optional[Cassette] = None,
+        return_decorator=Simple.decorator_plain,
+    ) -> Any:
         """
         Decorator what will store return value of function/method as file and will store content
 
@@ -113,12 +114,15 @@ class StoreFiles:
 
         """
         casex = CassetteExecution()
-        casex.cassette = cassette or cls.cassette
+        casex.cassette = cassette or cls.get_cassette()
+        casex.obj_cls = cls
 
         def internal(func):
             @functools.wraps(func)
             def store_files_int(*args, **kwargs):
-                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                output = return_decorator(cassette=casex.cassette)(func)(
+                    *args, **kwargs
+                )
                 cls._copy_logic(
                     cassette=casex.cassette,
                     pathname=output,
@@ -132,7 +136,11 @@ class StoreFiles:
         return casex
 
     @classmethod
-    def guess_files_from_parameters(cls, cassette: Optional[Cassette] = None) -> Any:
+    def guess_files_from_parameters(
+        cls,
+        cassette: Optional[Cassette] = None,
+        return_decorator=Simple.decorator_plain,
+    ) -> Any:
         """
         Decorator what try to guess, which arg is file or directory and store its content
 
@@ -140,7 +148,8 @@ class StoreFiles:
         :return: CassetteExecution class with function and cassette instance
         """
         casex = CassetteExecution()
-        casex.cassette = cassette or cls.cassette
+        casex.cassette = cassette or cls.get_cassette()
+        casex.obj_cls = cls
 
         def internal(func):
             @functools.wraps(func)
@@ -171,7 +180,9 @@ class StoreFiles:
                     cls.__name__,
                     cls._test_identifier(casex.cassette),
                 ]
-                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                output = return_decorator(cassette=casex.cassette)(func)(
+                    *args, **kwargs
+                )
                 for position in range(len(args)):
                     int_dec_fn(args[position], class_test_id_list + [position])
                 for k, v in kwargs.items():
@@ -185,7 +196,10 @@ class StoreFiles:
 
     @classmethod
     def where_arg_references(
-        cls, key_position_params_dict: Dict, cassette: Optional[Cassette] = None
+        cls,
+        key_position_params_dict: Dict,
+        cassette: Optional[Cassette] = None,
+        return_decorator=Simple.decorator_plain,
     ) -> Any:
         """
         Decorator what will store files or directory based on arguments,
@@ -197,7 +211,8 @@ class StoreFiles:
         :return: CassetteExecution class with function and cassette instance
         """
         casex = CassetteExecution()
-        casex.cassette = cassette or cls.cassette
+        casex.cassette = cassette or cls.get_cassette()
+        casex.obj_cls = cls
 
         def internal(func):
             @functools.wraps(func)
@@ -206,7 +221,10 @@ class StoreFiles:
                     cls.__name__,
                     cls._test_identifier(casex.cassette),
                 ]
-                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                if casex.cassette.mode != StorageMode.read:
+                    output = return_decorator(cassette=casex.cassette)(func)(
+                        *args, **kwargs
+                    )
                 for key, position in key_position_params_dict.items():
                     if key in kwargs:
                         param = kwargs[key]
@@ -217,6 +235,11 @@ class StoreFiles:
                         pathname=param,
                         keys=class_test_id_list + [key],
                     )
+                if casex.cassette.mode == StorageMode.read:
+                    output = return_decorator(cassette=casex.cassette)(func)(
+                        *args, **kwargs
+                    )
+
                 return output
 
             return store_files_int_int
@@ -230,6 +253,7 @@ class StoreFiles:
         file_param: str,
         dest_key: str = "default",
         cassette: Optional[Cassette] = None,
+        return_decorator=Simple.decorator_plain,
     ) -> Any:
         """
         Method to store explicitly path file_param to persistent storage
@@ -238,7 +262,8 @@ class StoreFiles:
         :return: CassetteExecution class with function and cassette instance
         """
         casex = CassetteExecution()
-        casex.cassette = cassette or cls.cassette
+        casex.cassette = cassette or cls.get_cassette()
+        casex.obj_cls = cls
 
         def internal(func):
             @functools.wraps(func)
@@ -247,12 +272,19 @@ class StoreFiles:
                     cls.__name__,
                     cls._test_identifier(casex.cassette),
                 ]
-                output = Simple.decorator_plain()(func)(*args, **kwargs)
+                if casex.cassette.mode != StorageMode.read:
+                    output = return_decorator(cassette=casex.cassette)(func)(
+                        *args, **kwargs
+                    )
                 cls._copy_logic(
                     cassette=casex.cassette,
                     pathname=file_param,
                     keys=class_test_id_list + [dest_key],
                 )
+                if casex.cassette.mode == StorageMode.read:
+                    output = return_decorator(cassette=casex.cassette)(func)(
+                        *args, **kwargs
+                    )
                 return output
 
             return store_files_int

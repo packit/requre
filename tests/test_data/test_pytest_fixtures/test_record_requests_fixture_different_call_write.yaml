@@ -7,7 +7,7 @@ requests.sessions:
     GET:
       https://fedoraproject.org/:
         - metadata:
-            latency: 3.7259702682495117
+            latency: 0.9681727886199951
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -239,7 +239,8 @@ requests.sessions:
               ol</a></li> <li><a href=\"/eu/\">euskera</a></li> <li><a href=\"/fa/\"\
               >\u067E\u0627\u0631\u0633\u06CC</a></li> <li><a href=\"/fi/\">suomi</a></li>\
               \ <li><a href=\"/fr/\">Fran\xE7ais</a></li> <li><a href=\"/fur/\">Friulian</a></li>\
-              \ <li><a href=\"/hu/\">Magyar</a></li> <li><a href=\"/id/\">Indonesia</a></li>\
+              \ <li><a href=\"/he/\">\u05E2\u05D1\u05E8\u05D9\u05EA</a></li> <li><a\
+              \ href=\"/hu/\">Magyar</a></li> <li><a href=\"/id/\">Indonesia</a></li>\
               \ <li><a href=\"/it/\">Italiano</a></li> <li><a href=\"/ja/\">\u65E5\u672C\
               \u8A9E</a></li> <li><a href=\"/ko/\">\uD55C\uAD6D\uC5B4</a></li> <li><a\
               \ href=\"/nl/\">Nederlands</a></li> <li><a href=\"/pl/\">polski</a></li>\
@@ -253,27 +254,27 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.890889
+            elapsed: 0.495449
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1630
+              AppTime: D=1207
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
               Content-Language: en
-              Content-Length: "4111"
+              Content-Length: "4132"
               Content-Location: index.html.en
               Content-Security-Policy:
                 "default-src 'none'; img-src 'self' https://fedoramagazine.org;
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Thu, 13 Aug 2020 08:59:39 GMT
-              ETag: '"3f68-5acbe07d15ce8-gzip"'
-              Expires: Thu, 13 Aug 2020 09:29:39 GMT
+              Date: Thu, 17 Sep 2020 07:20:00 GMT
+              ETag: '"3f8f-5af7c6ec33ece-gzip"'
+              Expires: Thu, 17 Sep 2020 07:50:00 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Thu, 13 Aug 2020 08:24:18 GMT
+              Last-Modified: Thu, 17 Sep 2020 06:24:12 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -281,8 +282,8 @@ requests.sessions:
               Upgrade: h2
               Vary: negotiate,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
-              X-Fedora-ProxyServer: proxy06.fedoraproject.org
-              X-Fedora-RequestID: XzUA@6e2BLBhDpB1J0YUhgAAAMw
+              X-Fedora-ProxyServer: proxy12.fedoraproject.org
+              X-Fedora-RequestID: X2MOIDrllHHCtoiU6hJ53QAACQk
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""
@@ -290,7 +291,7 @@ requests.sessions:
             status_code: 200
       https://getfedora.org/:
         - metadata:
-            latency: 0.891197681427002
+            latency: 0.49628567695617676
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -524,7 +525,8 @@ requests.sessions:
               ol</a></li> <li><a href=\"/eu/\">euskera</a></li> <li><a href=\"/fa/\"\
               >\u067E\u0627\u0631\u0633\u06CC</a></li> <li><a href=\"/fi/\">suomi</a></li>\
               \ <li><a href=\"/fr/\">Fran\xE7ais</a></li> <li><a href=\"/fur/\">Friulian</a></li>\
-              \ <li><a href=\"/hu/\">Magyar</a></li> <li><a href=\"/id/\">Indonesia</a></li>\
+              \ <li><a href=\"/he/\">\u05E2\u05D1\u05E8\u05D9\u05EA</a></li> <li><a\
+              \ href=\"/hu/\">Magyar</a></li> <li><a href=\"/id/\">Indonesia</a></li>\
               \ <li><a href=\"/it/\">Italiano</a></li> <li><a href=\"/ja/\">\u65E5\u672C\
               \u8A9E</a></li> <li><a href=\"/ko/\">\uD55C\uAD6D\uC5B4</a></li> <li><a\
               \ href=\"/nl/\">Nederlands</a></li> <li><a href=\"/pl/\">polski</a></li>\
@@ -538,27 +540,27 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.890889
+            elapsed: 0.495449
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1630
+              AppTime: D=1207
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
               Content-Language: en
-              Content-Length: "4111"
+              Content-Length: "4132"
               Content-Location: index.html.en
               Content-Security-Policy:
                 "default-src 'none'; img-src 'self' https://fedoramagazine.org;
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Thu, 13 Aug 2020 08:59:39 GMT
-              ETag: '"3f68-5acbe07d15ce8-gzip"'
-              Expires: Thu, 13 Aug 2020 09:29:39 GMT
+              Date: Thu, 17 Sep 2020 07:20:00 GMT
+              ETag: '"3f8f-5af7c6ec33ece-gzip"'
+              Expires: Thu, 17 Sep 2020 07:50:00 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Thu, 13 Aug 2020 08:24:18 GMT
+              Last-Modified: Thu, 17 Sep 2020 06:24:12 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -566,8 +568,8 @@ requests.sessions:
               Upgrade: h2
               Vary: negotiate,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
-              X-Fedora-ProxyServer: proxy06.fedoraproject.org
-              X-Fedora-RequestID: XzUA@6e2BLBhDpB1J0YUhgAAAMw
+              X-Fedora-ProxyServer: proxy12.fedoraproject.org
+              X-Fedora-RequestID: X2MOIDrllHHCtoiU6hJ53QAACQk
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""

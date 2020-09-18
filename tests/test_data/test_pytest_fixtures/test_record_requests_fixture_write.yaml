@@ -7,7 +7,7 @@ requests.sessions:
     GET:
       https://google.com/:
         - metadata:
-            latency: 0.34499049186706543
+            latency: 0.343111515045166
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -22,8 +22,8 @@ requests.sessions:
               "<!doctype html><html itemscope=\"\" itemtype=\"http://schema.org/WebPage\"\
               \ lang=\"cs\"><head><meta content=\"text/html; charset=UTF-8\" http-equiv=\"\
               Content-Type\"><meta content=\"/images/branding/googleg/1x/googleg_standard_color_128dp.png\"\
-              \ itemprop=\"image\"><title>Google</title><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\"\
-              >(function(){window.google={kEI:'9wA1X_2ANY_yapuwlbAC',kEXPI:'0,202123,3,4,32,4,31,1151549,5663,731,223,755,2355,1995,206,3204,10,1226,364,1499,612,92,113,383,246,5,1354,648,3451,315,3,543,508,90,192,381,466,48,87,103,342,397,290,1119902,1197751,329516,13677,4855,32691,15248,867,6057,22627,9188,8384,4858,1362,283,9008,3029,4738,11033,1808,4998,7931,5297,516,1538,920,873,1217,2975,2784,3646,14528,234,4283,2777,919,2277,8,85,2711,1593,1279,2212,239,291,149,1103,840,517,1522,4258,312,1137,2,2669,2023,2297,1947,2229,93,328,1284,16,2927,2247,1812,1787,3227,2846,6,2903,1908,1257,6286,4454,642,2450,3684,1743,4928,108,3407,908,2,941,2614,2397,7468,2179,1098,3,346,230,1835,4625,148,189,3312,744,1747,2249,3943,1791,4,1528,375,1929,1228,8,1,270,874,405,1860,4184,52,1416,961,463,460,1342,213,1714,2353,293,742,1230,86,3,2406,874,1426,69,2415,200,2529,282,1235,518,690,1968,416,75,54,119,1818,1572,108,80,321,198,25,887,254,310,682,7,102,273,4,51,31,1303,759,337,1370,223,153,503,103,2,554,23,346,592,79,87,653,650,278,62,52,535,244,2,993,51,1205,255,152,1059,997,352,197,137,170,12,192,451,88,341,371,5,483,33,278,110,3,56,337,957,271,71,133,2,92,19,928,29,415,43,113,1746,199,515,380,5775163,13,1860,1650,3,8797067,1323,549,333,444,1,2,80,1,900,896,1,9,2,2551,1,748,141,59,736,563,1,4265,1,1,2,1017,9,305,3299,240,8,213,78,64,1,1,1,1,1,2,32,7,1,138,3,3501654,17238640,3220020,2704830',kBL:'RY_K'};google.sn='webhp';google.kHL='cs';})();(function(){google.lc=[];google.li=0;google.getEI=function(a){for(var\
+              \ itemprop=\"image\"><title>Google</title><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\"\
+              >(function(){window.google={kEI:'Hw5jX4KZKYq_UsSCucAN',kEXPI:'0,202162,1151585,5662,730,224,756,4348,207,3204,10,1226,364,1499,612,205,383,246,5,1129,225,648,3452,133,5,133,43,3,65,309,286,180,210,131,153,980,44,409,319,301,652,252,240,199,1118619,1197765,501,329001,13677,4855,32691,16115,17444,11240,9188,8384,1326,3532,1362,9291,3025,4736,6,11033,1808,4998,7931,5297,2054,622,298,873,4192,2693,3737,14528,4517,2779,917,2277,8,87,2709,1593,1279,2212,530,149,1103,840,517,1522,4258,108,204,1137,2,2669,2023,1733,43,521,1947,244,1985,93,328,1284,16,2927,2246,1813,1787,3227,2845,7,6068,6286,4454,642,6134,1405,337,4929,108,2855,552,908,2,941,714,1900,2397,1386,7788,1571,3,576,970,876,4614,148,189,890,2422,2042,8,439,2252,3989,126,1618,4,499,1029,2304,1236,1,270,874,405,1861,96,392,1327,577,1510,281,52,2377,463,460,1555,632,3435,1035,717,599,3,2108,175,997,1426,69,1667,436,13,499,2069,456,286,932,821,690,315,1039,614,1213,192,345,1286,1018,189,518,912,564,689,431,30,384,644,145,130,2551,138,877,662,1556,990,53,11,523,1126,114,992,16,502,1076,144,994,849,449,1,297,709,6,632,142,523,2,827,62,68,360,106,2,576,1008,64,1026,1520,268,526,992,1367,4,499,298,1997,1085,605,243,79,51,488,2,2,136,404,300,106,658,64,196,217,11,169,28,571,99,142,101,94,192,96,25,133,44,982,3,920,1005,4,6,4,151,78,555,5759457,8801916,549,333,444,1,2,80,1,900,896,1,9,2,2551,1,748,141,59,736,563,1,4265,1,1,2,1017,9,305,3299,248,595,1,423,3,2,4,1,21,27,4,3,4,6,4,8,1,1,6,19,23959724,53,2685648,10717,19719',kBL:'cktB'};google.sn='webhp';google.kHL='cs';})();(function(){google.lc=[];google.li=0;google.getEI=function(a){for(var\
               \ c;a&&(!a.getAttribute||!(c=a.getAttribute(\"eid\")));)a=a.parentNode;return\
               \ c||google.kEI};google.getLEI=function(a){for(var c=null;a&&(!a.getAttribute||!(c=a.getAttribute(\"\
               leid\")));)a=a.parentNode;return c};google.ml=function(){return null};google.time=function(){return\
@@ -54,12 +54,12 @@ requests.sessions:
               \ 0 4px;margin-left:4px}input{font-family:inherit}body{background:#fff;color:#000}a{color:#11c;text-decoration:none}a:hover,a:active{text-decoration:underline}.fl\
               \ a{color:#36c}a:visited{color:#551a8b}.sblc{padding-top:5px}.sblc a{display:block;margin:2px\
               \ 0;margin-left:13px;font-size:11px}.lsbb{background:#eee;border:solid\
-              \ 1px;border-color:#ccc #999 #999 #ccc;height:30px}.lsbb{display:block}#fll\
+              \ 1px;border-color:#ccc #999 #999 #ccc;height:30px}.lsbb{display:block}#WqQANb\
               \ a{display:inline-block;margin:0 12px}.lsb{background:url(/images/nav_logo229.png)\
               \ 0 -261px repeat-x;border:none;color:#000;cursor:pointer;height:30px;margin:0;outline:0;font:15px\
               \ arial,sans-serif;vertical-align:top}.lsb:active{background:#ccc}.lst:focus{outline:none}.tiah{width:458px}</style><script\
-              \ nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\"></script></head><body bgcolor=\"\
-              #fff\"><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\">(function(){var src='/images/nav_logo229.png';var\
+              \ nonce=\"c3ao7Il/na8WSoHUWqgjpA==\"></script></head><body bgcolor=\"\
+              #fff\"><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\">(function(){var src='/images/nav_logo229.png';var\
               \ iesg=false;document.body.onload = function(){window.n && window.n();if\
               \ (document.images){new Image().src=src;}\nif (!iesg){document.f&&document.f.q.focus();document.gbqf&&document.gbqf.q.focus();}\n\
               }\n})();</script><div id=\"mngb\"><div id=gbar><nobr><b class=gb1>Vyhled\xE1\
@@ -75,7 +75,7 @@ requests.sessions:
               \ id=gbn class=gbi></span><span id=gbf class=gbf></span><span id=gbe></span><a\
               \ href=\"http://www.google.cz/history/optout?hl=cs\" class=gb4>Webov\xE1\
               \ historie</a> | <a  href=\"/preferences?hl=cs\" class=gb4>Nastaven\xED\
-              </a> | <a target=_top id=gb_70 href=\"https://accounts.google.com/ServiceLogin?hl=cs&passive=true&continue=https://www.google.com/&ec=GAVAAQ\"\
+              </a> | <a target=_top id=gb_70 href=\"https://accounts.google.com/ServiceLogin?hl=cs&passive=true&continue=https://www.google.com/&ec=GAZAAQ\"\
               \ class=gb4>P&#345;ihl\xE1sit se</a></nobr></div><div class=gbh style=left:0></div><div\
               \ class=gbh style=right:0></div></div><center><br clear=\"all\" id=\"\
               lgpd\"><div id=\"lga\"><img alt=\"Google\" height=\"92\" src=\"/images/branding/googlelogo/1x/googlelogo_white_background_color_272x92dp.png\"\
@@ -92,22 +92,22 @@ requests.sessions:
               2048\" name=\"q\" size=\"57\"><img src=\"/textinputassistant/tia.png\"\
               \ style=\"position:absolute;cursor:pointer;right:5px;top:4px;z-index:300\"\
               \ data-script-url=\"/textinputassistant/11/cs_tia.js\" id=\"tsuid1\" alt=\"\
-              \" height=\"23\" width=\"27\"><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\"\
+              \" height=\"23\" width=\"27\"><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\"\
               >(function(){var id='tsuid1';document.getElementById(id).onclick = function(){var\
               \ s = document.createElement('script');s.src = this.getAttribute('data-script-url');(document.getElementById('xjsc')||document.body).appendChild(s);};})();</script></div></div><br\
               \ style=\"line-height:0\"><span class=\"ds\"><span class=\"lsbb\"><input\
               \ class=\"lsb\" value=\"Hledat Googlem\" name=\"btnG\" type=\"submit\"\
               ></span></span><span class=\"ds\"><span class=\"lsbb\"><input class=\"\
               lsb\" id=\"tsuid2\" value=\"Zkus\xEDm &#353;t&#283;st\xED\" name=\"btnI\"\
-              \ type=\"submit\"><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\">(function(){var\
+              \ type=\"submit\"><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\">(function(){var\
               \ id='tsuid2';document.getElementById(id).onclick = function(){if (this.form.q.value){this.checked\
               \ = 1;if (this.form.iflsig)this.form.iflsig.disabled = false;}\nelse top.location='/doodles/';};})();</script><input\
-              \ value=\"AINFCbYAAAAAXzUPB9n3631WrjuIA7yHDJHQcr14I6bE\" name=\"iflsig\"\
+              \ value=\"AINFCbYAAAAAX2McL7ryJU0v4dj4h8bfzwZIzjtoetrE\" name=\"iflsig\"\
               \ type=\"hidden\"></span></span></td><td class=\"fl sblc\" align=\"left\"\
               \ nowrap=\"\" width=\"25%\"><a href=\"/advanced_search?hl=cs&amp;authuser=0\"\
               >Roz&#353;\xED&#345;en\xE9 vyhled\xE1v\xE1n\xED</a></td></tr></table><input\
               \ id=\"gbv\" name=\"gbv\" type=\"hidden\" value=\"1\"><script nonce=\"\
-              Bl6etPsc/R2PzLdhKuMcyg==\">(function(){var a,b=\"1\";if(document&&document.getElementById)if(\"\
+              c3ao7Il/na8WSoHUWqgjpA==\">(function(){var a,b=\"1\";if(document&&document.getElementById)if(\"\
               undefined\"!=typeof XMLHttpRequest)b=\"2\";else if(\"undefined\"!=typeof\
               \ ActiveXObject){var c,d,e=[\"MSXML2.XMLHTTP.6.0\",\"MSXML2.XMLHTTP.3.0\"\
               ,\"MSXML2.XMLHTTP\",\"Microsoft.XMLHTTP\"];for(c=0;d=e[c++];)try{new ActiveXObject(d),b=\"\
@@ -115,22 +115,22 @@ requests.sessions:
               )){var f=google.gbvu,g=document.getElementById(\"gbv\");g&&(g.value=a);f&&window.setTimeout(function(){location.href=f},0)};}).call(this);</script></form><div\
               \ id=\"gac_scont\"></div><div style=\"font-size:83%;min-height:3.5em\"\
               ><br></div><span id=\"footer\"><div style=\"font-size:10pt\"><div style=\"\
-              margin:19px auto;text-align:center\" id=\"fll\"><a href=\"/intl/cs/ads/\"\
+              margin:19px auto;text-align:center\" id=\"WqQANb\"><a href=\"/intl/cs/ads/\"\
               >Inzerujte s Googlem</a><a href=\"http://www.google.cz/intl/cs/services/\"\
               >&#344;e&#353;en\xED pro firmy</a><a href=\"/intl/cs/about.html\">V&#353;e\
-              \ o Googlu</a><a href=\"https://www.google.com/setprefdomain?prefdom=CZ&amp;prev=https://www.google.cz/&amp;sig=K_CHiflze03Q1tfA8UUFAjVQTuhiY%3D\"\
+              \ o Googlu</a><a href=\"https://www.google.com/setprefdomain?prefdom=CZ&amp;prev=https://www.google.cz/&amp;sig=K_LvOBsOA0VcLA2dcE6RBCnGUx4Xg%3D\"\
               >Google.cz</a></div></div><p style=\"font-size:8pt;color:#767676\">&copy;\
               \ 2020 - <a href=\"/intl/cs/policies/privacy/\">Ochrana soukrom\xED</a>\
               \ - <a href=\"/intl/cs/policies/terms/\">Smluvn\xED podm\xEDnky</a></p></span></center><script\
-              \ nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\">(function(){window.google.cdo={height:0,width:0};(function(){var\
+              \ nonce=\"c3ao7Il/na8WSoHUWqgjpA==\">(function(){window.google.cdo={height:0,width:0};(function(){var\
               \ a=window.innerWidth,b=window.innerHeight;if(!a||!b){var c=window.document,d=\"\
               CSS1Compat\"==c.compatMode?c.documentElement:c.body;a=d.clientWidth;b=d.clientHeight}a&&b&&(a!=google.cdo.width||b!=google.cdo.height)&&google.log(\"\
               \",\"\",\"/client_204?&atyp=i&biw=\"+a+\"&bih=\"+b+\"&ei=\"+google.kEI);}).call(this);})();(function(){var\
-              \ u='/xjs/_/js/k\\x3dxjs.hp.en.gKd1zkdP6sA.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\\
-              x3d1/rs\\x3dACT90oHJGXUg5AOEReOxCTCEtNev7PHKSw';\nsetTimeout(function(){var\
+              \ u='/xjs/_/js/k\\x3dxjs.hp.en.lcgq6nIXGYY.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\\
+              x3d1/rs\\x3dACT90oGGSfa-LBAel11ctwhwquu64lh_EQ';\nsetTimeout(function(){var\
               \ b=document;var a=\"SCRIPT\";\"application/xhtml+xml\"===b.contentType&&(a=a.toLowerCase());a=b.createElement(a);a.src=u;google.timers&&google.timers.load&&google.tick&&google.tick(\"\
               load\",\"xjsls\");document.body.appendChild(a)},0);})();(function(){window.google.xjsu='/xjs/_/js/k\\\
-              x3dxjs.hp.en.gKd1zkdP6sA.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\x3d1/rs\\x3dACT90oHJGXUg5AOEReOxCTCEtNev7PHKSw';})();function\
+              x3dxjs.hp.en.lcgq6nIXGYY.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\x3d1/rs\\x3dACT90oGGSfa-LBAel11ctwhwquu64lh_EQ';})();function\
               \ _DumpException(e){throw e;}\nfunction _F_installCss(c){}\n(function(){google.jl={dw:false,em:[],emw:false,lls:'default',pdt:0,snet:true,uwp:true};})();(function(){var\
               \ pmc='{\\x22d\\x22:{},\\x22sb_he\\x22:{\\x22agen\\x22:true,\\x22cgen\\\
               x22:true,\\x22client\\x22:\\x22heirloom-hp\\x22,\\x22dh\\x22:true,\\x22dhqt\\\
@@ -146,28 +146,27 @@ requests.sessions:
               x22sbit\\x22:\\x22Vyhled\xE1v\xE1n\xED pomoc\xED obr\xE1zku\\x22,\\x22srch\\\
               x22:\\x22Hledat Googlem\\x22},\\x22ovr\\x22:{},\\x22pq\\x22:\\x22\\x22,\\\
               x22refpd\\x22:true,\\x22rfs\\x22:[],\\x22sbpl\\x22:16,\\x22sbpr\\x22:16,\\\
-              x22scd\\x22:10,\\x22stok\\x22:\\x22C1pVkTqQQaOt3KNBMH_g1gSzgxw\\x22,\\\
+              x22scd\\x22:10,\\x22stok\\x22:\\x22C7enUYhuuNv6oJ-PgNpRYU2izZo\\x22,\\\
               x22uhde\\x22:false}}';google.pmc=JSON.parse(pmc);})();</script>      \
               \  </body></html>"
             _next: null
-            elapsed: 0.173632
+            elapsed: 0.184555
             encoding: ISO-8859-1
             headers:
               Alt-Svc:
-                h3-29=":443"; ma=2592000,h3-27=":443"; ma=2592000,h3-T050=":443";
-                ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
-                ma=2592000,quic=":443"; ma=2592000; v="46,43"
+                h3-29=":443"; ma=2592000,h3-27=":443"; ma=2592000,h3-T051=":443";
+                ma=2592000,h3-T050=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+                ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
               Cache-Control: private, max-age=0
               Content-Encoding: gzip
               Content-Type: text/html; charset=ISO-8859-1
-              Date: Thu, 13 Aug 2020 08:59:35 GMT
+              Date: Thu, 17 Sep 2020 07:19:59 GMT
               Expires: "-1"
               P3P: CP="This is not a P3P policy! See g.co/p3phelp for more info."
               Server: gws
               Set-Cookie:
-                1P_JAR=2020-08-13-08; expires=Sat, 12-Sep-2020 08:59:35 GMT;
-                path=/; domain=.google.com; Secure, NID=204=ya9IrURjRxK_mOhiGL1lKOT-wvMbZW6REYLF3hjeQpO2PfASMRKx-heQQuNcAa36etWnWt4v2HeaBHp7rd45u0DdfzqzamysJEfocG0u-QohFm3sAapg6BHmNUJc9udeicVJnGtSJk7eaiwPahrdgEIO14NLuJZXDgBzHcvM4MY;
-                expires=Fri, 12-Feb-2021 08:59:35 GMT; path=/; domain=.google.com; HttpOnly
+                NID=204=d3oGUxwz9VuKXWHQsc8rwAREA8TWZJ0rZvJg8LxLWmEYStsxyQX0Ut9AedQaJJArinajKATmI-VbWHUDbzUAeIhkF2inFua9nk3UGqlphQ_LJfnEehtgQUgkxALVfoZ2Un-gEeZ3ruoxVqI7BgRhv7JaCyQK76jDGXz86xYnruc;
+                expires=Fri, 19-Mar-2021 07:19:59 GMT; path=/; domain=.google.com; HttpOnly
               Transfer-Encoding: chunked
               X-Frame-Options: SAMEORIGIN
               X-XSS-Protection: "0"
@@ -176,7 +175,7 @@ requests.sessions:
             status_code: 200
       https://www.google.com/:
         - metadata:
-            latency: 0.17588043212890625
+            latency: 0.18565821647644043
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -193,8 +192,8 @@ requests.sessions:
               "<!doctype html><html itemscope=\"\" itemtype=\"http://schema.org/WebPage\"\
               \ lang=\"cs\"><head><meta content=\"text/html; charset=UTF-8\" http-equiv=\"\
               Content-Type\"><meta content=\"/images/branding/googleg/1x/googleg_standard_color_128dp.png\"\
-              \ itemprop=\"image\"><title>Google</title><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\"\
-              >(function(){window.google={kEI:'9wA1X_2ANY_yapuwlbAC',kEXPI:'0,202123,3,4,32,4,31,1151549,5663,731,223,755,2355,1995,206,3204,10,1226,364,1499,612,92,113,383,246,5,1354,648,3451,315,3,543,508,90,192,381,466,48,87,103,342,397,290,1119902,1197751,329516,13677,4855,32691,15248,867,6057,22627,9188,8384,4858,1362,283,9008,3029,4738,11033,1808,4998,7931,5297,516,1538,920,873,1217,2975,2784,3646,14528,234,4283,2777,919,2277,8,85,2711,1593,1279,2212,239,291,149,1103,840,517,1522,4258,312,1137,2,2669,2023,2297,1947,2229,93,328,1284,16,2927,2247,1812,1787,3227,2846,6,2903,1908,1257,6286,4454,642,2450,3684,1743,4928,108,3407,908,2,941,2614,2397,7468,2179,1098,3,346,230,1835,4625,148,189,3312,744,1747,2249,3943,1791,4,1528,375,1929,1228,8,1,270,874,405,1860,4184,52,1416,961,463,460,1342,213,1714,2353,293,742,1230,86,3,2406,874,1426,69,2415,200,2529,282,1235,518,690,1968,416,75,54,119,1818,1572,108,80,321,198,25,887,254,310,682,7,102,273,4,51,31,1303,759,337,1370,223,153,503,103,2,554,23,346,592,79,87,653,650,278,62,52,535,244,2,993,51,1205,255,152,1059,997,352,197,137,170,12,192,451,88,341,371,5,483,33,278,110,3,56,337,957,271,71,133,2,92,19,928,29,415,43,113,1746,199,515,380,5775163,13,1860,1650,3,8797067,1323,549,333,444,1,2,80,1,900,896,1,9,2,2551,1,748,141,59,736,563,1,4265,1,1,2,1017,9,305,3299,240,8,213,78,64,1,1,1,1,1,2,32,7,1,138,3,3501654,17238640,3220020,2704830',kBL:'RY_K'};google.sn='webhp';google.kHL='cs';})();(function(){google.lc=[];google.li=0;google.getEI=function(a){for(var\
+              \ itemprop=\"image\"><title>Google</title><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\"\
+              >(function(){window.google={kEI:'Hw5jX4KZKYq_UsSCucAN',kEXPI:'0,202162,1151585,5662,730,224,756,4348,207,3204,10,1226,364,1499,612,205,383,246,5,1129,225,648,3452,133,5,133,43,3,65,309,286,180,210,131,153,980,44,409,319,301,652,252,240,199,1118619,1197765,501,329001,13677,4855,32691,16115,17444,11240,9188,8384,1326,3532,1362,9291,3025,4736,6,11033,1808,4998,7931,5297,2054,622,298,873,4192,2693,3737,14528,4517,2779,917,2277,8,87,2709,1593,1279,2212,530,149,1103,840,517,1522,4258,108,204,1137,2,2669,2023,1733,43,521,1947,244,1985,93,328,1284,16,2927,2246,1813,1787,3227,2845,7,6068,6286,4454,642,6134,1405,337,4929,108,2855,552,908,2,941,714,1900,2397,1386,7788,1571,3,576,970,876,4614,148,189,890,2422,2042,8,439,2252,3989,126,1618,4,499,1029,2304,1236,1,270,874,405,1861,96,392,1327,577,1510,281,52,2377,463,460,1555,632,3435,1035,717,599,3,2108,175,997,1426,69,1667,436,13,499,2069,456,286,932,821,690,315,1039,614,1213,192,345,1286,1018,189,518,912,564,689,431,30,384,644,145,130,2551,138,877,662,1556,990,53,11,523,1126,114,992,16,502,1076,144,994,849,449,1,297,709,6,632,142,523,2,827,62,68,360,106,2,576,1008,64,1026,1520,268,526,992,1367,4,499,298,1997,1085,605,243,79,51,488,2,2,136,404,300,106,658,64,196,217,11,169,28,571,99,142,101,94,192,96,25,133,44,982,3,920,1005,4,6,4,151,78,555,5759457,8801916,549,333,444,1,2,80,1,900,896,1,9,2,2551,1,748,141,59,736,563,1,4265,1,1,2,1017,9,305,3299,248,595,1,423,3,2,4,1,21,27,4,3,4,6,4,8,1,1,6,19,23959724,53,2685648,10717,19719',kBL:'cktB'};google.sn='webhp';google.kHL='cs';})();(function(){google.lc=[];google.li=0;google.getEI=function(a){for(var\
               \ c;a&&(!a.getAttribute||!(c=a.getAttribute(\"eid\")));)a=a.parentNode;return\
               \ c||google.kEI};google.getLEI=function(a){for(var c=null;a&&(!a.getAttribute||!(c=a.getAttribute(\"\
               leid\")));)a=a.parentNode;return c};google.ml=function(){return null};google.time=function(){return\
@@ -225,12 +224,12 @@ requests.sessions:
               \ 0 4px;margin-left:4px}input{font-family:inherit}body{background:#fff;color:#000}a{color:#11c;text-decoration:none}a:hover,a:active{text-decoration:underline}.fl\
               \ a{color:#36c}a:visited{color:#551a8b}.sblc{padding-top:5px}.sblc a{display:block;margin:2px\
               \ 0;margin-left:13px;font-size:11px}.lsbb{background:#eee;border:solid\
-              \ 1px;border-color:#ccc #999 #999 #ccc;height:30px}.lsbb{display:block}#fll\
+              \ 1px;border-color:#ccc #999 #999 #ccc;height:30px}.lsbb{display:block}#WqQANb\
               \ a{display:inline-block;margin:0 12px}.lsb{background:url(/images/nav_logo229.png)\
               \ 0 -261px repeat-x;border:none;color:#000;cursor:pointer;height:30px;margin:0;outline:0;font:15px\
               \ arial,sans-serif;vertical-align:top}.lsb:active{background:#ccc}.lst:focus{outline:none}.tiah{width:458px}</style><script\
-              \ nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\"></script></head><body bgcolor=\"\
-              #fff\"><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\">(function(){var src='/images/nav_logo229.png';var\
+              \ nonce=\"c3ao7Il/na8WSoHUWqgjpA==\"></script></head><body bgcolor=\"\
+              #fff\"><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\">(function(){var src='/images/nav_logo229.png';var\
               \ iesg=false;document.body.onload = function(){window.n && window.n();if\
               \ (document.images){new Image().src=src;}\nif (!iesg){document.f&&document.f.q.focus();document.gbqf&&document.gbqf.q.focus();}\n\
               }\n})();</script><div id=\"mngb\"><div id=gbar><nobr><b class=gb1>Vyhled\xE1\
@@ -246,7 +245,7 @@ requests.sessions:
               \ id=gbn class=gbi></span><span id=gbf class=gbf></span><span id=gbe></span><a\
               \ href=\"http://www.google.cz/history/optout?hl=cs\" class=gb4>Webov\xE1\
               \ historie</a> | <a  href=\"/preferences?hl=cs\" class=gb4>Nastaven\xED\
-              </a> | <a target=_top id=gb_70 href=\"https://accounts.google.com/ServiceLogin?hl=cs&passive=true&continue=https://www.google.com/&ec=GAVAAQ\"\
+              </a> | <a target=_top id=gb_70 href=\"https://accounts.google.com/ServiceLogin?hl=cs&passive=true&continue=https://www.google.com/&ec=GAZAAQ\"\
               \ class=gb4>P&#345;ihl\xE1sit se</a></nobr></div><div class=gbh style=left:0></div><div\
               \ class=gbh style=right:0></div></div><center><br clear=\"all\" id=\"\
               lgpd\"><div id=\"lga\"><img alt=\"Google\" height=\"92\" src=\"/images/branding/googlelogo/1x/googlelogo_white_background_color_272x92dp.png\"\
@@ -263,22 +262,22 @@ requests.sessions:
               2048\" name=\"q\" size=\"57\"><img src=\"/textinputassistant/tia.png\"\
               \ style=\"position:absolute;cursor:pointer;right:5px;top:4px;z-index:300\"\
               \ data-script-url=\"/textinputassistant/11/cs_tia.js\" id=\"tsuid1\" alt=\"\
-              \" height=\"23\" width=\"27\"><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\"\
+              \" height=\"23\" width=\"27\"><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\"\
               >(function(){var id='tsuid1';document.getElementById(id).onclick = function(){var\
               \ s = document.createElement('script');s.src = this.getAttribute('data-script-url');(document.getElementById('xjsc')||document.body).appendChild(s);};})();</script></div></div><br\
               \ style=\"line-height:0\"><span class=\"ds\"><span class=\"lsbb\"><input\
               \ class=\"lsb\" value=\"Hledat Googlem\" name=\"btnG\" type=\"submit\"\
               ></span></span><span class=\"ds\"><span class=\"lsbb\"><input class=\"\
               lsb\" id=\"tsuid2\" value=\"Zkus\xEDm &#353;t&#283;st\xED\" name=\"btnI\"\
-              \ type=\"submit\"><script nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\">(function(){var\
+              \ type=\"submit\"><script nonce=\"c3ao7Il/na8WSoHUWqgjpA==\">(function(){var\
               \ id='tsuid2';document.getElementById(id).onclick = function(){if (this.form.q.value){this.checked\
               \ = 1;if (this.form.iflsig)this.form.iflsig.disabled = false;}\nelse top.location='/doodles/';};})();</script><input\
-              \ value=\"AINFCbYAAAAAXzUPB9n3631WrjuIA7yHDJHQcr14I6bE\" name=\"iflsig\"\
+              \ value=\"AINFCbYAAAAAX2McL7ryJU0v4dj4h8bfzwZIzjtoetrE\" name=\"iflsig\"\
               \ type=\"hidden\"></span></span></td><td class=\"fl sblc\" align=\"left\"\
               \ nowrap=\"\" width=\"25%\"><a href=\"/advanced_search?hl=cs&amp;authuser=0\"\
               >Roz&#353;\xED&#345;en\xE9 vyhled\xE1v\xE1n\xED</a></td></tr></table><input\
               \ id=\"gbv\" name=\"gbv\" type=\"hidden\" value=\"1\"><script nonce=\"\
-              Bl6etPsc/R2PzLdhKuMcyg==\">(function(){var a,b=\"1\";if(document&&document.getElementById)if(\"\
+              c3ao7Il/na8WSoHUWqgjpA==\">(function(){var a,b=\"1\";if(document&&document.getElementById)if(\"\
               undefined\"!=typeof XMLHttpRequest)b=\"2\";else if(\"undefined\"!=typeof\
               \ ActiveXObject){var c,d,e=[\"MSXML2.XMLHTTP.6.0\",\"MSXML2.XMLHTTP.3.0\"\
               ,\"MSXML2.XMLHTTP\",\"Microsoft.XMLHTTP\"];for(c=0;d=e[c++];)try{new ActiveXObject(d),b=\"\
@@ -286,22 +285,22 @@ requests.sessions:
               )){var f=google.gbvu,g=document.getElementById(\"gbv\");g&&(g.value=a);f&&window.setTimeout(function(){location.href=f},0)};}).call(this);</script></form><div\
               \ id=\"gac_scont\"></div><div style=\"font-size:83%;min-height:3.5em\"\
               ><br></div><span id=\"footer\"><div style=\"font-size:10pt\"><div style=\"\
-              margin:19px auto;text-align:center\" id=\"fll\"><a href=\"/intl/cs/ads/\"\
+              margin:19px auto;text-align:center\" id=\"WqQANb\"><a href=\"/intl/cs/ads/\"\
               >Inzerujte s Googlem</a><a href=\"http://www.google.cz/intl/cs/services/\"\
               >&#344;e&#353;en\xED pro firmy</a><a href=\"/intl/cs/about.html\">V&#353;e\
-              \ o Googlu</a><a href=\"https://www.google.com/setprefdomain?prefdom=CZ&amp;prev=https://www.google.cz/&amp;sig=K_CHiflze03Q1tfA8UUFAjVQTuhiY%3D\"\
+              \ o Googlu</a><a href=\"https://www.google.com/setprefdomain?prefdom=CZ&amp;prev=https://www.google.cz/&amp;sig=K_LvOBsOA0VcLA2dcE6RBCnGUx4Xg%3D\"\
               >Google.cz</a></div></div><p style=\"font-size:8pt;color:#767676\">&copy;\
               \ 2020 - <a href=\"/intl/cs/policies/privacy/\">Ochrana soukrom\xED</a>\
               \ - <a href=\"/intl/cs/policies/terms/\">Smluvn\xED podm\xEDnky</a></p></span></center><script\
-              \ nonce=\"Bl6etPsc/R2PzLdhKuMcyg==\">(function(){window.google.cdo={height:0,width:0};(function(){var\
+              \ nonce=\"c3ao7Il/na8WSoHUWqgjpA==\">(function(){window.google.cdo={height:0,width:0};(function(){var\
               \ a=window.innerWidth,b=window.innerHeight;if(!a||!b){var c=window.document,d=\"\
               CSS1Compat\"==c.compatMode?c.documentElement:c.body;a=d.clientWidth;b=d.clientHeight}a&&b&&(a!=google.cdo.width||b!=google.cdo.height)&&google.log(\"\
               \",\"\",\"/client_204?&atyp=i&biw=\"+a+\"&bih=\"+b+\"&ei=\"+google.kEI);}).call(this);})();(function(){var\
-              \ u='/xjs/_/js/k\\x3dxjs.hp.en.gKd1zkdP6sA.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\\
-              x3d1/rs\\x3dACT90oHJGXUg5AOEReOxCTCEtNev7PHKSw';\nsetTimeout(function(){var\
+              \ u='/xjs/_/js/k\\x3dxjs.hp.en.lcgq6nIXGYY.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\\
+              x3d1/rs\\x3dACT90oGGSfa-LBAel11ctwhwquu64lh_EQ';\nsetTimeout(function(){var\
               \ b=document;var a=\"SCRIPT\";\"application/xhtml+xml\"===b.contentType&&(a=a.toLowerCase());a=b.createElement(a);a.src=u;google.timers&&google.timers.load&&google.tick&&google.tick(\"\
               load\",\"xjsls\");document.body.appendChild(a)},0);})();(function(){window.google.xjsu='/xjs/_/js/k\\\
-              x3dxjs.hp.en.gKd1zkdP6sA.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\x3d1/rs\\x3dACT90oHJGXUg5AOEReOxCTCEtNev7PHKSw';})();function\
+              x3dxjs.hp.en.lcgq6nIXGYY.O/m\\x3dsb_he,d/am\\x3dAJ5gcw/d\\x3d1/rs\\x3dACT90oGGSfa-LBAel11ctwhwquu64lh_EQ';})();function\
               \ _DumpException(e){throw e;}\nfunction _F_installCss(c){}\n(function(){google.jl={dw:false,em:[],emw:false,lls:'default',pdt:0,snet:true,uwp:true};})();(function(){var\
               \ pmc='{\\x22d\\x22:{},\\x22sb_he\\x22:{\\x22agen\\x22:true,\\x22cgen\\\
               x22:true,\\x22client\\x22:\\x22heirloom-hp\\x22,\\x22dh\\x22:true,\\x22dhqt\\\
@@ -317,28 +316,27 @@ requests.sessions:
               x22sbit\\x22:\\x22Vyhled\xE1v\xE1n\xED pomoc\xED obr\xE1zku\\x22,\\x22srch\\\
               x22:\\x22Hledat Googlem\\x22},\\x22ovr\\x22:{},\\x22pq\\x22:\\x22\\x22,\\\
               x22refpd\\x22:true,\\x22rfs\\x22:[],\\x22sbpl\\x22:16,\\x22sbpr\\x22:16,\\\
-              x22scd\\x22:10,\\x22stok\\x22:\\x22C1pVkTqQQaOt3KNBMH_g1gSzgxw\\x22,\\\
+              x22scd\\x22:10,\\x22stok\\x22:\\x22C7enUYhuuNv6oJ-PgNpRYU2izZo\\x22,\\\
               x22uhde\\x22:false}}';google.pmc=JSON.parse(pmc);})();</script>      \
               \  </body></html>"
             _next: null
-            elapsed: 0.173632
+            elapsed: 0.184555
             encoding: ISO-8859-1
             headers:
               Alt-Svc:
-                h3-29=":443"; ma=2592000,h3-27=":443"; ma=2592000,h3-T050=":443";
-                ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
-                ma=2592000,quic=":443"; ma=2592000; v="46,43"
+                h3-29=":443"; ma=2592000,h3-27=":443"; ma=2592000,h3-T051=":443";
+                ma=2592000,h3-T050=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+                ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
               Cache-Control: private, max-age=0
               Content-Encoding: gzip
               Content-Type: text/html; charset=ISO-8859-1
-              Date: Thu, 13 Aug 2020 08:59:35 GMT
+              Date: Thu, 17 Sep 2020 07:19:59 GMT
               Expires: "-1"
               P3P: CP="This is not a P3P policy! See g.co/p3phelp for more info."
               Server: gws
               Set-Cookie:
-                1P_JAR=2020-08-13-08; expires=Sat, 12-Sep-2020 08:59:35 GMT;
-                path=/; domain=.google.com; Secure, NID=204=ya9IrURjRxK_mOhiGL1lKOT-wvMbZW6REYLF3hjeQpO2PfASMRKx-heQQuNcAa36etWnWt4v2HeaBHp7rd45u0DdfzqzamysJEfocG0u-QohFm3sAapg6BHmNUJc9udeicVJnGtSJk7eaiwPahrdgEIO14NLuJZXDgBzHcvM4MY;
-                expires=Fri, 12-Feb-2021 08:59:35 GMT; path=/; domain=.google.com; HttpOnly
+                NID=204=d3oGUxwz9VuKXWHQsc8rwAREA8TWZJ0rZvJg8LxLWmEYStsxyQX0Ut9AedQaJJArinajKATmI-VbWHUDbzUAeIhkF2inFua9nk3UGqlphQ_LJfnEehtgQUgkxALVfoZ2Un-gEeZ3ruoxVqI7BgRhv7JaCyQK76jDGXz86xYnruc;
+                expires=Fri, 19-Mar-2021 07:19:59 GMT; path=/; domain=.google.com; HttpOnly
               Transfer-Encoding: chunked
               X-Frame-Options: SAMEORIGIN
               X-XSS-Protection: "0"
