@@ -1,7 +1,7 @@
 %global srcname requre
 
 Name:           python-%{srcname}
-Version:        0.2.4
+Version:        0.2.5
 Release:        1%{?dist}
 Summary:        Python library what allows re/store output of various objects for testing
 
