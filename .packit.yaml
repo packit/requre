@@ -1,22 +1,47 @@
-specfile_path: python-requre.spec
+---
+specfile_path: fedora/python-requre.spec
 synced_files:
-  - python-requre.spec
-  - .packit.yaml
-# package project name what correspond to package name in setup.py
-upstream_package_name: requre
-# name what you used as name in specfile (for python packages it starts with python-)
+  - fedora/changelog
+# https://packit.dev/docs/configuration/#top-level-keys
 downstream_package_name: python-requre
-
+upstream_project_url: https://github.com/packit/requre
+# we are setting this so we can use packit from requre's dist-git
+# packit can't know what's the upstream name when running from distgit
+upstream_package_name: requre
 actions:
+  # we need this b/c `git archive` doesn't put all the metadata in the tarball:
+  #   LookupError: setuptools-scm was unable to detect version for '/builddir/build/BUILD/requre-0.11.1'.
+  #   Make sure you're either building from a fully intact git repository or PyPI tarballs.
   create-archive:
-    - "python3 setup.py sdist --dist-dir ."
-    - "sh -c 'echo requre-$(python3 setup.py --version).tar.gz'"
-  get-current-version:
-    - "python3 setup.py --version"
-
+    - python3 setup.py sdist --dist-dir ./fedora/
+    - bash -c "ls -1t ./fedora/*.tar.gz | head -n 1"
+  get-current-version: python3 setup.py --version
 jobs:
-  - job: tests
+  - job: sync_from_downstream
+    trigger: commit
+  - job: propose_downstream
+    trigger: release
+    metadata:
+      dist_git_branches: fedora-all
+  - job: copr_build
     trigger: pull_request
     metadata:
       targets:
+        - fedora-all
+  - job: copr_build
+    trigger: commit
+    metadata:
+      branch: master
+      targets:
         - fedora-stable
+      project: packit-master
+      list_on_homepage: True
+      preserve_project: True
+  - job: copr_build
+    trigger: release
+    metadata:
+      targets:
+        - fedora-stable
+      project: packit-releases
+      list_on_homepage: True
+      preserve_project: True
