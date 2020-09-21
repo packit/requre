@@ -53,8 +53,8 @@ rm -rf %{srcname}.egg-info
 %license LICENSE
 %doc README.md
 %{_bindir}/requre-patch
-%{python3_sitelib}/%{pypi_name}/
-%{python3_sitelib}/%{pypi_name}-%{version}-py%{python3_version}.egg-info/
+%{python3_sitelib}/%{srcname}
+%{python3_sitelib}/%{srcname}-%{version}-py%{python3_version}.egg-info
 
 %changelog
 * Wed Jan 15 2020 Jan Ščotka <jscotka@redhat.com> - 0.2.0-1
