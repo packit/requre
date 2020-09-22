@@ -57,5 +57,7 @@ rm -rf %{srcname}.egg-info
 %{python3_sitelib}/%{srcname}-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Wed Sep 22 2020 Jan Ščotka <jscotka@redhat.com> - 0.4.0-1
+- New upstream release 0.4.0
 * Wed Jan 15 2020 Jan Ščotka <jscotka@redhat.com> - 0.2.0-1
 - Initial package.
