@@ -33,13 +33,13 @@ jobs:
     metadata:
       branch: master
       targets:
-        - fedora-stable
+        - fedora-all
       list_on_homepage: True
       preserve_project: True
   - job: copr_build
     trigger: release
     metadata:
       targets:
-        - fedora-stable
+        - fedora-all
       list_on_homepage: True
       preserve_project: True
