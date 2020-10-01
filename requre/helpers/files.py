@@ -46,6 +46,42 @@ class StoreFiles(ObjectStorage):
     def _test_identifier(cassette):
         return os.path.basename(cassette.storage_file)
 
+    @staticmethod
+    def store_file_content(cassette: Cassette, content: Any, file_name: str):
+        generated = f"{os.path.basename(cassette.storage_file)}.{file_name}_"
+        target_dir = os.path.realpath(os.path.dirname(cassette.storage_file))
+        # generate unique number for each file store to avoid rewrite current content
+        # increase highest number
+        suffix = f".tar.{StoreFiles.tar_compression}"
+        existing_nums = sorted(
+            [
+                int(x.replace(generated, "").replace(suffix, ""))
+                for x in os.listdir(target_dir)
+                if x.startswith(generated)
+            ]
+        )
+        next_num = 1 if not existing_nums else existing_nums[-1] + 1
+        file_path = os.path.join(target_dir, f"{generated}{next_num}{suffix}")
+        with open(file_path, "wb") as outfile:
+            outfile.write(content)
+        # return properly generated unique file name
+        return os.path.basename(file_path)
+
+    @staticmethod
+    def read_file_content(
+        cassette: Cassette, file_name: str, root_dir: Optional[str] = None
+    ):
+        file_path = os.path.realpath(
+            os.path.join(os.path.dirname(cassette.storage_file), file_name)
+        )
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(
+                f"requre cannot read from file {file_path}, does not existsin dir: {root_dir})"
+            )
+        with open(file_path, "rb") as infile:
+            content = infile.read()
+        return content
+
     @classmethod
     def _copy_logic(cls, cassette: Cassette, pathname: str, keys: list) -> None:
         """
@@ -65,18 +101,23 @@ class StoreFiles(ObjectStorage):
                         mode=f"x:{cls.tar_compression}", fileobj=fileobj
                     ) as tar_store:
                         tar_store.add(name=artifact_name)
-                    fileobj.seek(0)
                     metadata = {cassette.data_miner.LATENCY_KEY: 0}
+                    file_name = cls.store_file_content(
+                        cassette=cassette,
+                        file_name=os.path.basename(pathname),
+                        content=fileobj.getvalue(),
+                    )
                     cassette.store(
                         keys=cls.basic_ps_keys + keys,
-                        values=fileobj.read(),
+                        values=file_name,
                         metadata=metadata,
                     )
             finally:
                 os.chdir(original_cwd)
         else:
             value = cassette[cls.basic_ps_keys + keys]
-            with BytesIO(value) as fileobj:
+            content = cls.read_file_content(cassette=cassette, file_name=value)
+            with BytesIO(content) as fileobj:
                 with tarfile.open(
                     mode=f"r:{cls.tar_compression}", fileobj=fileobj
                 ) as tar_store:
