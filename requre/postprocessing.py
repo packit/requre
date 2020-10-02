@@ -123,13 +123,20 @@ class DictProcessing:
                     self.simplify(internal_object=v, ignore_list=ignore_list)
 
 
-class tarFilesSimilarity:
+class TarFilesSimilarity:
     def __init__(self, path, hash_function=None):
-        self.mapping_table = {}
+        self._mapping_table = None
         self.path = path
-        for tar_file in self.list_files(path):
-            current_hash = self.untar_and_return_hash(tar_file, hash_function)
-            self.mapping_table[tar_file] = current_hash
+        self.hash_function = hash_function
+
+    @property
+    def mapping_table(self):
+        if self._mapping_table is None:
+            self._mapping_table = dict()
+            for tar_file in self.list_files(self.path):
+                current_hash = self.untar_and_return_hash(tar_file, self.hash_function)
+                self._mapping_table[tar_file] = current_hash
+        return self._mapping_table
 
     @staticmethod
     def md5_update_from_file(filename: Union[str, Path], hash: Hash) -> Hash:
@@ -143,7 +150,7 @@ class tarFilesSimilarity:
     @staticmethod
     def md5_file(filename: Union[str, Path]) -> str:
         return str(
-            tarFilesSimilarity.md5_update_from_file(filename, hashlib.md5()).hexdigest()
+            TarFilesSimilarity.md5_update_from_file(filename, hashlib.md5()).hexdigest()
         )
 
     @staticmethod
@@ -152,15 +159,15 @@ class tarFilesSimilarity:
         for path in sorted(Path(directory).iterdir(), key=lambda p: str(p).lower()):
             hash.update(path.name.encode())
             if path.is_file():
-                hash = tarFilesSimilarity.md5_update_from_file(path, hash)
+                hash = TarFilesSimilarity.md5_update_from_file(path, hash)
             elif path.is_dir():
-                hash = tarFilesSimilarity.md5_update_from_dir(path, hash)
+                hash = TarFilesSimilarity.md5_update_from_dir(path, hash)
         return hash
 
     @staticmethod
     def md5_dir(directory: Union[str, Path]) -> str:
         return str(
-            tarFilesSimilarity.md5_update_from_dir(directory, hashlib.md5()).hexdigest()
+            TarFilesSimilarity.md5_update_from_dir(directory, hashlib.md5()).hexdigest()
         )
 
     @staticmethod
@@ -174,13 +181,13 @@ class tarFilesSimilarity:
                 os.chdir(content)
                 return "git-sha", check_output(["git", "rev-parse", "HEAD"])
             except (FileNotFoundError, CalledProcessError):
-                return "md5-dir", tarFilesSimilarity.md5_dir(content)
+                return "md5-dir", TarFilesSimilarity.md5_dir(content)
         else:
-            return "md5-file", tarFilesSimilarity.md5_file(content)
+            return "md5-file", TarFilesSimilarity.md5_file(content)
 
     @staticmethod
     def untar_and_return_hash(tar_archive_path, hash_funciton):
-        hash_funciton = hash_funciton or tarFilesSimilarity.hash_fn
+        hash_funciton = hash_funciton or TarFilesSimilarity.hash_fn
         tempdir = tempfile.mkdtemp()
         currentdir = os.getcwd()
         try:

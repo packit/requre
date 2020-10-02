@@ -11,7 +11,7 @@ import yaml
 import builtins
 
 from requre.import_system import upgrade_import_system, UpgradeImportSystem
-from requre.postprocessing import DictProcessing, tarFilesSimilarity
+from requre.postprocessing import DictProcessing, TarFilesSimilarity
 from requre.storage import PersistentObjectStorage
 from requre.constants import (
     ENV_REPLACEMENT_FILE,
@@ -256,7 +256,7 @@ def purge(replaces, files, dry_run, simplify):
 )
 def create_symlinks(base_dir, dry_run):
     click.echo(f"Processing base dir: {base_dir}")
-    tar_dict = tarFilesSimilarity(base_dir)
+    tar_dict = TarFilesSimilarity(base_dir)
     similar = tar_dict.find_same()
     for k, v in similar.items():
         if k is not None:
