@@ -11,7 +11,7 @@ import yaml
 import builtins
 
 from requre.import_system import upgrade_import_system, UpgradeImportSystem
-from requre.postprocessing import DictProcessing
+from requre.postprocessing import DictProcessing, TarFilesSimilarity
 from requre.storage import PersistentObjectStorage
 from requre.constants import (
     ENV_REPLACEMENT_FILE,
@@ -247,6 +247,27 @@ def purge(replaces, files, dry_run, simplify):
             click.echo(f"Writing content back to file: {one_file.name}")
             with open(one_file.name, mode="w") as outfile:
                 outfile.write(yaml.safe_dump(object_representation))
+
+
+@requre_base.command()
+@click.argument("base_dir", nargs=1, type=click.Path())
+@click.option(
+    "--dry-run", is_flag=True, default=False, help="Do not write changes back"
+)
+def create_symlinks(base_dir, dry_run):
+    click.echo(f"Processing base dir: {base_dir}")
+    tar_dict = TarFilesSimilarity(base_dir)
+    similar = tar_dict.find_same()
+    for k, v in similar.items():
+        if k is not None:
+            click.echo(f"hash: {k}")
+            for item in v:
+                click.echo(f"\t{item.replace(base_dir, '').strip(os.path.sep)}")
+    if dry_run:
+        click.echo("dry-run mode: just listing similar files")
+        return
+    click.echo("Created symlinks for listed files")
+    tar_dict.symlink_same_files()
 
 
 if __name__ == "__main__" or not (__file__ and __file__.endswith(FILE_NAME)):
