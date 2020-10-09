@@ -119,7 +119,7 @@ def _parse_and_replace_sys_modules(
     logger.info(f"\n++++++ SEARCH {what} decorator={decorate} replace={replace}")
     original_module_items: Dict[str, Dict] = {}
     # go over all modules, and try to find match
-    for module_name, module in sys.modules.items():
+    for module_name, module in sys.modules.copy().items():
         full_module_list = what.split(".")
         # avoid to deep dive into
         # if not matched, try to find just part, if not imported as full path
