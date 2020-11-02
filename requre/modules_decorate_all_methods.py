@@ -12,13 +12,14 @@ from requre.helpers.git.fetchinfo import FetchInfoStorageList
 from requre.helpers.git.pushinfo import PushInfoStorageList
 from requre.helpers.files import StoreFiles
 
-module_requests = record_requests_for_all_methods
+# to keep backward compatibility and use consistent naming
+record_requests_module = record_requests_for_all_methods
 
 
-def __generic(
+def __replace_module_match_with_multiple_decorators(
+    *decorators: List,
     _func=None,
     cassette: Optional[Cassette] = None,
-    decorators: Optional[List] = None,
     regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     if not decorators:
@@ -30,17 +31,17 @@ def __generic(
         )
     if _func is None:
         return apply_decorator_to_all_methods(
-            decorator_list,
+            *decorator_list,
             regexp_method_pattern=regexp_method_pattern,
         )
 
     return apply_decorator_to_all_methods(
-        decorator_list,
+        *decorator_list,
         regexp_method_pattern=regexp_method_pattern,
     )(_func)
 
 
-def module_tempfile(
+def record_tempfile_module(
     _func=None,
     cassette: Optional[Cassette] = None,
     regexp_method_pattern=TEST_METHOD_REGEXP,
@@ -49,15 +50,15 @@ def module_tempfile(
         ["tempfile.mkdtemp", TempFile.mkdtemp()],
         ["tempfile.mktemp", TempFile.mktemp()],
     ]
-    return __generic(
+    return __replace_module_match_with_multiple_decorators(
+        *decorators,
         _func=_func,
         cassette=cassette,
-        decorators=decorators,
         regexp_method_pattern=regexp_method_pattern,
     )
 
 
-def module_git(
+def record_git_module(
     _func=None,
     cassette: Optional[Cassette] = None,
     regexp_method_pattern=TEST_METHOD_REGEXP,
@@ -75,9 +76,9 @@ def module_git(
         ["git.remote.Remote.fetch", FetchInfoStorageList.decorator_plain()],
         ["git.remote.Remote.pull", FetchInfoStorageList.decorator_plain()],
     ]
-    return __generic(
+    return __replace_module_match_with_multiple_decorators(
+        *decorators,
         _func=_func,
         cassette=cassette,
-        decorators=decorators,
         regexp_method_pattern=regexp_method_pattern,
     )

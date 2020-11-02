@@ -529,14 +529,13 @@ def cassette_setup_and_teardown_decorator(func):
 def apply_decorators_recursively_to_fn(decorator_list, func):
     if not decorator_list:
         return func
-    else:
-        return decorator_list[-1](
-            apply_decorators_recursively_to_fn(decorator_list[:-1], func)
-        )
+    return decorator_list[-1](
+        apply_decorators_recursively_to_fn(decorator_list[:-1], func)
+    )
 
 
 def apply_decorator_to_all_methods(
-    decorator: Union[Callable, List[Callable]], regexp_method_pattern=TEST_METHOD_REGEXP
+    *decorator: Callable, regexp_method_pattern=TEST_METHOD_REGEXP
 ):
     """
     This function works as class decorator and apply decorator to
@@ -549,10 +548,8 @@ def apply_decorator_to_all_methods(
     to be able to manipulate cassette in a method shared between all test cases.
     (We do not have access to cassette from regular setUp/tearDown method.)
     """
-    if not isinstance(decorator, list):
-        decorator = [decorator]
     # append cassette setup and teardown if exist
-    decorator.append(cassette_setup_and_teardown_decorator)
+    decorator += (cassette_setup_and_teardown_decorator,)
 
     def decorate(cls):
         for attr in cls.__dict__:

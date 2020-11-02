@@ -5,15 +5,15 @@ import tempfile
 import os
 from requre.cassette import Cassette
 from requre.modules_decorate_all_methods import (
-    module_requests,
-    module_tempfile,
-    module_git,
+    record_requests_module,
+    record_tempfile_module,
+    record_git_module,
 )
 
 
-@module_git
-@module_tempfile
-@module_requests
+@record_git_module
+@record_tempfile_module
+@record_requests_module
 class ApplyCommonCase(unittest.TestCase):
     def setUp(self) -> None:
         self._tempdir = None
