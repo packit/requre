@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Callable, Optional, Tuple
 from requre.online_replacing import (
     replace_module_match,
     apply_decorator_to_all_methods,
@@ -17,7 +17,7 @@ record_requests_module = record_requests_for_all_methods
 
 
 def __replace_module_match_with_multiple_decorators(
-    *decorators: List,
+    *decorators: Tuple[str, Callable],
     _func=None,
     cassette: Optional[Cassette] = None,
     regexp_method_pattern=TEST_METHOD_REGEXP,
@@ -47,8 +47,8 @@ def record_tempfile_module(
     regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     decorators = [
-        ["tempfile.mkdtemp", TempFile.mkdtemp()],
-        ["tempfile.mktemp", TempFile.mktemp()],
+        ("tempfile.mkdtemp", TempFile.mkdtemp()),
+        ("tempfile.mktemp", TempFile.mktemp()),
     ]
     return __replace_module_match_with_multiple_decorators(
         *decorators,
@@ -64,17 +64,17 @@ def record_git_module(
     regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     decorators = [
-        [
+        (
             "git.repo.base.Repo.clone_from",
             StoreFiles.where_arg_references(
                 key_position_params_dict={"to_path": 2},
                 return_decorator=Repo.decorator_plain,
                 cassette=cassette,
             ),
-        ],
-        ["git.remote.Remote.push", PushInfoStorageList.decorator_plain()],
-        ["git.remote.Remote.fetch", FetchInfoStorageList.decorator_plain()],
-        ["git.remote.Remote.pull", FetchInfoStorageList.decorator_plain()],
+        ),
+        ("git.remote.Remote.push", PushInfoStorageList.decorator_plain()),
+        ("git.remote.Remote.fetch", FetchInfoStorageList.decorator_plain()),
+        ("git.remote.Remote.pull", FetchInfoStorageList.decorator_plain()),
     ]
     return __replace_module_match_with_multiple_decorators(
         *decorators,
