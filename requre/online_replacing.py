@@ -12,6 +12,7 @@ from requre.cassette import StorageKeysInspectSimple
 from requre.constants import (
     REQURE_CASSETTE_ATTRIBUTE_NAME,
     REQURE_SETUP_APPLIED_ATTRIBUTE_NAME,
+    TEST_METHOD_REGEXP,
 )
 from requre.helpers.requests_response import RequestResponseHandling
 from requre.objects import ObjectStorage
@@ -525,7 +526,17 @@ def cassette_setup_and_teardown_decorator(func):
     return cassette_setup_inner
 
 
-def apply_decorator_to_all_methods(decorator, regexp_method_pattern="test.*"):
+def apply_decorators_recursively_to_fn(decorator_list, func):
+    if not decorator_list:
+        return func
+    return decorator_list[-1](
+        apply_decorators_recursively_to_fn(decorator_list[:-1], func)
+    )
+
+
+def apply_decorator_to_all_methods(
+    *decorator: Callable, regexp_method_pattern=TEST_METHOD_REGEXP
+):
     """
     This function works as class decorator and apply decorator to
     all matched methods via regexp, primary usage is to use it for
@@ -537,6 +548,8 @@ def apply_decorator_to_all_methods(decorator, regexp_method_pattern="test.*"):
     to be able to manipulate cassette in a method shared between all test cases.
     (We do not have access to cassette from regular setUp/tearDown method.)
     """
+    # append cassette setup and teardown if exist
+    decorator += (cassette_setup_and_teardown_decorator,)
 
     def decorate(cls):
         for attr in cls.__dict__:
@@ -544,8 +557,8 @@ def apply_decorator_to_all_methods(decorator, regexp_method_pattern="test.*"):
                 setattr(
                     cls,
                     attr,
-                    decorator(
-                        cassette_setup_and_teardown_decorator(getattr(cls, attr))
+                    apply_decorators_recursively_to_fn(
+                        decorator_list=decorator, func=getattr(cls, attr)
                     ),
                 )
         return cls
@@ -557,7 +570,7 @@ def record_requests_for_all_methods(
     _func=None,
     cassette: Optional[Cassette] = None,
     response_headers_to_drop: Optional[List[str]] = None,
-    regexp_method_pattern="test.*",
+    regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     """
     Apply @recording_requests decorator to all (test) methods.
