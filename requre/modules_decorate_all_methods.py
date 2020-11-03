@@ -17,7 +17,7 @@ record_requests_module = record_requests_for_all_methods
 
 
 def __replace_module_match_with_multiple_decorators(
-    *decorators: Callable,
+    *decorators: List,
     _func=None,
     cassette: Optional[Cassette] = None,
     regexp_method_pattern=TEST_METHOD_REGEXP,
