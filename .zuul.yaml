@@ -9,9 +9,6 @@
     gate:
       jobs:
         - pre-commit
-        - requre-tests
-        - requre-reverse-dep-ogr-tests
-        - requre-reverse-dep-packit-tests
 
 - job:
     name: requre-tests
