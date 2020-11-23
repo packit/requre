@@ -7,7 +7,7 @@ from requre.helpers.requests_response import (
     remove_password_from_url,
 )
 from requre.utils import StorageMode
-from tests.testbase import BaseClass, network_connection_avalilable
+from tests.testbase import BaseClass, network_connection_available
 
 
 class StoreAnyRequest(BaseClass):
@@ -22,7 +22,7 @@ class StoreAnyRequest(BaseClass):
         super().tearDown()
         setattr(self.requests, "post", self.post_orig)
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testRawCall(self):
         """
         Test if is class is able to explicitly write and read request handling
@@ -37,7 +37,7 @@ class StoreAnyRequest(BaseClass):
         self.assertNotIn("Example Domain", str(sess.get_cassette().storage_object))
         self.assertIn("Example Domain", response_after.text)
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testExecuteWrapper(self):
         """
         test if it is able to use explicit decorator_all_keys for storing request handling
@@ -60,7 +60,7 @@ class StoreAnyRequest(BaseClass):
             cassette=self.cassette,
         )
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testFunctionDecorator(self):
         """
         Test main purpose of the class, decorate post function and use it then
@@ -76,7 +76,7 @@ class StoreAnyRequest(BaseClass):
         self.assertEqual(response_before.text, response_after.text)
         self.assertRaises(Exception, self.requests.post, self.domain)
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testFunctionDecoratorNotFound(self):
         """
         Check if it fails with Exception in case request is not stored
@@ -88,7 +88,7 @@ class StoreAnyRequest(BaseClass):
         self.cassette.mode = StorageMode.read
         self.assertRaises(Exception, self.requests.post, self.domain, data={"a": "b"})
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testFunctionCustomFields(self):
         """
         Test if it is able to use partial storing of args, kwargs
@@ -110,7 +110,7 @@ class StoreAnyRequest(BaseClass):
         self.assertEqual(response_google_before.text, response_google_after.text)
         self.assertRaises(Exception, self.requests.post, self.domain)
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testFunctionCustomFieldsWrong(self):
         """
         Check exceptions if using partial keys storing
@@ -128,7 +128,7 @@ class StoreAnyRequest(BaseClass):
         response_2_after = self.requests.post(self.domain, data={"c": "d"})
         self.assertEqual(response_2.text, response_2_after.text)
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testFunctionCustomFieldsCheckKeys(self):
         self.requests.post = RequestResponseHandling.decorator(
             item_list=["url", "data"], map_function_to_item={"url": lambda x: x[0:10]}
@@ -151,7 +151,7 @@ class StoreAnyRequest(BaseClass):
             ]["requre.objects"]["requre.cassette"]["requests.api"]["post"],
         )
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testFunctionFilterHeaders(self):
         self.requests.post = RequestResponseHandling.decorator(
             item_list=["url"],
@@ -173,7 +173,7 @@ class StoreAnyRequest(BaseClass):
         self.assertIn("headers", saved_item["output"])
         self.assertIsNone(saved_item["output"]["headers"]["Date"])
 
-    @unittest.skipIf(not network_connection_avalilable(), "No network connection")
+    @unittest.skipIf(not network_connection_available(), "No network connection")
     def testFunctionFilterUnknownHeaders(self):
         self.requests.post = RequestResponseHandling.decorator(
             item_list=["url"],

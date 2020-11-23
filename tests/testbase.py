@@ -7,10 +7,12 @@ import socket
 from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
 
+EXAMPLE_COM_IP = "93.184.216.34"
 
-def network_connection_avalilable():
+
+def network_connection_available():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    if sock.connect_ex(("example.com", 80)) == 0:
+    if sock.connect_ex((EXAMPLE_COM_IP, 80)) == 0:
         return True
     return False
 
