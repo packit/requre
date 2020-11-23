@@ -1,12 +1,12 @@
 import pytest
 
 from requre.storage import PersistentObjectStorage
-from tests.testbase import network_connection_avalilable
+from tests.testbase import network_connection_available
 
 pytest_plugins = ["requre.pytest_fixtures"]
 
 
-@pytest.mark.skipif(not network_connection_avalilable(), reason="No network connection")
+@pytest.mark.skipif(not network_connection_available(), reason="No network connection")
 def test_record_requests_fixture(record_requests_fixture):
     import requests
 
@@ -21,7 +21,7 @@ def test_record_requests_fixture(record_requests_fixture):
     requests.get("https://google.com")
 
 
-@pytest.mark.skipif(not network_connection_avalilable(), reason="No network connection")
+@pytest.mark.skipif(not network_connection_available(), reason="No network connection")
 def test_record_requests_fixture_different_call(record_requests_fixture):
     import requests
 
@@ -32,7 +32,7 @@ def test_record_requests_fixture_different_call(record_requests_fixture):
     requests.get("https://fedoraproject.org")
 
 
-@pytest.mark.skipif(not network_connection_avalilable(), reason="No network connection")
+@pytest.mark.skipif(not network_connection_available(), reason="No network connection")
 def test_record_requests_fixture_write(
     remove_storage_file, record_requests_fixture, remove_storage_file_after
 ):
@@ -47,7 +47,7 @@ def test_record_requests_fixture_write(
     requests.get("https://google.com")
 
 
-@pytest.mark.skipif(not network_connection_avalilable(), reason="No network connection")
+@pytest.mark.skipif(not network_connection_available(), reason="No network connection")
 def test_record_requests_fixture_different_call_write(
     remove_storage_file, record_requests_fixture, remove_storage_file_after
 ):
