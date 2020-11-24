@@ -1,15 +1,14 @@
-import os
-from requre.storage import PersistentObjectStorage
-from requre.helpers.requests_response import RequestResponseHandling
 import requests
+import unittest
+from requre.online_replacing import record_requests_for_all_methods
 
-requests.Session.send = RequestResponseHandling.decorator_plain(requests.Session.send)
 
-PersistentObjectStorage().storage_file = "github.yaml"
+@record_requests_for_all_methods()
+class BaseTest(unittest.TestCase):
+    def cassette_setup(self, cassette):
+        pass
+        # do what ever you want with cassette setup
 
-import github
-
-g = github.Github(os.getenv("TOKEN", "EMPTY"))
-print("Count of your repos: ", len(list(g.get_user().get_repos())))
-
-PersistentObjectStorage().dump()
+    def test(self):
+        response = requests.get("http://example.com")
+        self.assertIn("This domain is for use", response.text)
