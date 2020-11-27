@@ -1,15 +1,17 @@
 from requre.objects import ObjectStorage
-from requre.storage import PersistentObjectStorage
+from requre.cassette import Cassette
+
+cassette = Cassette()
 
 
-@ObjectStorage.decorator_plain
+@ObjectStorage.decorator_plain(cassette=cassette)
 def return_result():
     return {"value": input("insert value: ")}
 
 
-PersistentObjectStorage().storage_file = "values.yaml"
+cassette.storage_file = "values.yaml"
 value = return_result()
 
-ObjectStorage.persistent_storage.dump()
-print(PersistentObjectStorage().storage_object)
+cassette.dump()
+print(cassette.storage_object)
 print(value)
