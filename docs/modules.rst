@@ -1,14 +1,10 @@
 Modules
 ========
 
-.. automodule:: requre
-    :members:
-    :undoc-members:
-
-Persistent storage
+Cassette
 ------------------
 
-.. automodule:: requre.storage
+.. automodule:: requre.cassette
     :members:
     :undoc-members:
 
@@ -18,6 +14,21 @@ Base Storage Object
 .. automodule:: requre.objects
     :members:
     :undoc-members:
+
+Shortcuts for class decorators
+------------------------------
+
+.. automodule:: requre.modules_decorate_all_methods
+    :members:
+    :undoc-members:
+
+Replace module decorators
+-------------------------
+
+.. automodule:: requre.online_replacing
+    :members:
+    :undoc-members:
+
 
 Import System
 -------------

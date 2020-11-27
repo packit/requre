@@ -14,6 +14,23 @@ back.
 Although **Requre** is python library it also provides command-line tool
 to include itself to python interpreter to be able to run transparently
 
+Basic Example
+=============
+
+.. code-block:: python
+
+   import requests
+   import unittest
+   from requre.online_replacing import record_requests_for_all_methods
+
+
+   @record_requests_for_all_methods()
+   class BaseTest(unittest.TestCase):
+       def test(self):
+           response = requests.get("http://example.com")
+           self.assertIn("This domain is for use", response.text)
+
+
 
 Content
 =======
