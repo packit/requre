@@ -37,14 +37,14 @@ It applies selected decorator to all methods of class. Structure is:
 
 Shortcuts for selected modules
 ______________________________
-Most user friedly way how to work with requre, but just some modules or their parts are hadled by these
-(focused on usage requre in packit projects)
+The most user-friendly way how to work with requre, but just some modules or their parts are handled by these
+(focused on usage requre in packit projects).
 
-They are stored in ``requre/modules_decorate_all_methods.py``   file
+They are stored in ``requre/modules_decorate_all_methods.py`` file.
 
- - **record_tempfile_module** -  workaround random file names via tempfile module. It changes it to use predictable names
- - **record_git_module** - git module handling, it able to restore remote git opetarions like fetch, push, pull
- - **record_requests_module** - store all remote operations via requests module, it changes ``requests.Session.send`` method, so it should be very generic
+ - **record_tempfile_module** -  Workaround random file names via tempfile module. It changes it to use predictable names.
+ - **record_git_module** - The git module handling, it allows to restore remote git operations like fetch, push, pull.
+ - **record_requests_module** - Store all remote operations via requests module, it changes ``requests.Session.send`` method, so it should be very generic.
 
 
 Test methods decorators
