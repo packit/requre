@@ -49,7 +49,7 @@ They are stored in ``requre/modules_decorate_all_methods.py`` file.
 
 Test methods decorators
 -----------------------
-These decorators apply decorator to test method
+These decorators apply a decorator to the test method.
 
 .. code-block:: python
 
