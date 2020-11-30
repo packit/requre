@@ -2,7 +2,7 @@ Recording decorators & Filter formats
 =====================================
 There are two types of decorators, **be aware** to not mix these.
 
- - **Decorators for modification of loaded libraries** - These decorators are in online_replacing and  modules_decorate_all_methods files
+ - **Decorators for modification of loaded libraries** - These decorators are in online_replacing and  modules_decorate_all_methods files.
     - Shortcut of decorators for some sets applicable to the whole class.
     - Class decorators - Apply replacements decorators to all methods.
     - Method decorators - Apply replacements decorators to the method.
