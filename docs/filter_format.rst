@@ -3,9 +3,9 @@ Recording decorators & Filter formats
 There are two types of decorators, **be aware** to not mix these.
 
  - **Decorators for modification of loaded libraries** - These decorators are in online_replacing and  modules_decorate_all_methods files
-    - Shortcut of decorators for some sets applicable to whole class
-    - Class decorators - applies replacements decorators to all methods
-    - Method decorators - applies replacements decorators to method
+    - Shortcut of decorators for some sets applicable to the whole class.
+    - Class decorators - Apply replacements decorators to all methods.
+    - Method decorators - Apply replacements decorators to the method.
  - **Replacement decorators wokflow** - These decorators are part of helpers subdirectory and objects file where is the base class with main implementation.
     - Decorators for functions what should be modified (basic unit for working with object storage)
 
