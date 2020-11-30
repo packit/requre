@@ -11,11 +11,11 @@ There are two types of decorators, **be aware** to not mix these.
 
 Class decorators
 ---------------------
-There are shortcuts to decorate whole class by decorators for tests methods.
+There are shortcuts for decorating the whole class by decorators for tests methods.
 You can define also setup and teardown methods for cassette as callback methods:
 
- - ``cassette_setup(self, cassette)`` - Setup cassette before test execution. It is executed after ``self.setUp`` method of unittest
- - ``cassette_teardown(self, cassette)`` - Tear down method for cassette after test execution. It is executed before ``self.tearDown`` method of unittest
+ - ``cassette_setup(self, cassette)`` - Setup cassette before test execution. It is executed after ``self.setUp`` method of unittest.
+ - ``cassette_teardown(self, cassette)`` - Tear down method for cassette after test execution. It is executed before ``self.tearDown`` method of unittest.
 
 
 Generic usage
