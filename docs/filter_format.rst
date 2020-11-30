@@ -22,10 +22,10 @@ Generic usage
 _______________________
 It applies selected decorator to all methods of class. Structure is:
 
- - **class decorator** - apply_decorator_to_all_methods - it applies argument to all test methods  (``test.*``)
- - **type of matching** - replace_module_match - decorating already loaded modules via modify of ``sys.modules``
- - **what will be decorated** - ``math.sin`` - which module method will be decorated
- - **decorated by** - ``Simple.decorator_plain()`` - this is the decorator for selected method in module
+ - **class decorator** - apply_decorator_to_all_methods - Applies argument to all test methods  (``test.*``).
+ - **type of matching** - replace_module_match - Decorates already loaded modules via modify of ``sys.modules``
+ - **what will be decorated** - ``math.sin`` - Which module method will be decorated.
+ - **decorated by** - ``Simple.decorator_plain()`` - This is the decorator for selected method in module.
 
 .. code-block:: python
 
