@@ -101,7 +101,7 @@ class RequestResponseHandling(ObjectStorage):
                 what_store = response._content  # type: ignore
                 encoding = response.encoding or self.__implicit_encoding
                 try:
-                    what_store = what_store.decode(encoding)
+                    what_store = what_store.decode(encoding)  # type: ignore
                     try:
                         what_store = json.loads(what_store)
                         indicator = 2
