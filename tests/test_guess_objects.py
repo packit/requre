@@ -1,7 +1,11 @@
+import unittest
+import math
+import os
 from requre.objects import ObjectStorage
 from requre.utils import StorageMode
 from requre.helpers.guess_object import Guess, GUESS_STR
 from requre.helpers.simple_object import Void, Simple
+from requre.online_replacing import apply_decorator_to_all_methods, replace_module_match
 from tests.testbase import BaseClass
 from tests.test_object import OwnClass
 import sys
@@ -41,7 +45,6 @@ class Store(BaseClass):
         before4 = decorated_own(3, sys.__stdin__)
         self.cassette.dump()
         self.cassette.mode = StorageMode.read
-        print(self.cassette.storage_object)
 
         after2 = decorated_own(2, OwnClass(2))
         self.assertEqual(
@@ -62,3 +65,29 @@ class Store(BaseClass):
         self.assertEqual(after2.__class__.__name__, "OwnClass")
         self.assertEqual(before4.__class__.__name__, "TextIOWrapper")
         self.assertEqual(after4.__class__.__name__, "str")
+
+
+@apply_decorator_to_all_methods(replace_module_match(what="math.sin"))
+class ApplyDefaultDecorator(unittest.TestCase):
+    SIN_OUTPUT = 0.9974949866040544
+
+    def cassette_setup(self, cassette):
+        self.assertEqual(cassette.storage_object, {})
+        # workaround to have cassette accesible inside test
+        self.cassette = cassette
+
+    def tearDown(self) -> None:
+        os.remove(self.cassette.storage_file)
+
+    def test(self):
+        math.sin(1.5)
+        self.assertEqual(len(self.cassette.storage_object["math"]["sin"]), 1)
+        self.assertAlmostEqual(
+            self.SIN_OUTPUT,
+            self.cassette.storage_object["math"]["sin"][0]["output"],
+            delta=0.0005,
+        )
+        self.assertEqual(
+            self.cassette.storage_object["math"]["sin"][0]["metadata"][GUESS_STR],
+            "Simple",
+        )

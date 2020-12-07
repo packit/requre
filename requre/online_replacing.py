@@ -15,8 +15,8 @@ from requre.constants import (
     TEST_METHOD_REGEXP,
 )
 from requre.helpers.requests_response import RequestResponseHandling
-from requre.objects import ObjectStorage
 from requre.utils import get_datafile_filename
+from requre.helpers.guess_object import Guess
 
 logger = logging.getLogger(__name__)
 
@@ -290,7 +290,8 @@ def replace_module_match(
     if (decorate is None and replace is None) or (
         decorate is not None and replace is not None
     ):
-        raise ValueError("right one from [decorate, replace] parameter has to be set.")
+        logger.info(f"Using default decorator for {what}")
+        decorate = Guess.decorator_plain(cassette=cassette)
 
     def decorator_cover(func):
         func_cassette = (
@@ -357,9 +358,7 @@ def record(
     cassette.storage_file = storage_file
 
     def _record_inner(func):
-        return replace_module_match(
-            what=what, cassette=cassette, decorate=ObjectStorage.decorator_all_keys
-        )(func)
+        return replace_module_match(what=what, cassette=cassette)(func)
 
     return _record_inner
 
@@ -443,6 +442,12 @@ def recording(
     cassette.data_miner.key_stategy_cls = storage_keys_strategy
     # ensure that directory structure exists already
     os.makedirs(os.path.dirname(cassette.storage_file), exist_ok=True)
+    # use default decorator for context manager if not given.
+    if (decorate is None and replace is None) or (
+        decorate is not None and replace is not None
+    ):
+        logger.info(f"Using default decorator for {what}")
+        decorate = Guess.decorator_plain(cassette=cassette)
     # Store values and their replacements for modules to be able to revert changes back
     original_module_items = _parse_and_replace_sys_modules(
         what=what, cassette=cassette, decorate=decorate, replace=replace
