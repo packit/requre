@@ -287,11 +287,11 @@ def replace_module_match(
     :param storage_keys_strategy: you can change key strategy for storing data
                                   default simple one avoid to store stack information
     """
-    if (decorate is None and replace is None) or (
-        decorate is not None and replace is not None
-    ):
+    if decorate is None and replace is None:
         logger.info(f"Using default decorator for {what}")
         decorate = Guess.decorator_plain(cassette=cassette)
+    elif decorate is not None and replace is not None:
+        raise ValueError("right one from [decorate, replace] parameter has to be set.")
 
     def decorator_cover(func):
         func_cassette = (
@@ -443,11 +443,11 @@ def recording(
     # ensure that directory structure exists already
     os.makedirs(os.path.dirname(cassette.storage_file), exist_ok=True)
     # use default decorator for context manager if not given.
-    if (decorate is None and replace is None) or (
-        decorate is not None and replace is not None
-    ):
+    if decorate is None and replace is None:
         logger.info(f"Using default decorator for {what}")
         decorate = Guess.decorator_plain(cassette=cassette)
+    elif decorate is not None and replace is not None:
+        raise ValueError("right one from [decorate, replace] parameter has to be set.")
     # Store values and their replacements for modules to be able to revert changes back
     original_module_items = _parse_and_replace_sys_modules(
         what=what, cassette=cassette, decorate=decorate, replace=replace

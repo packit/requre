@@ -6,6 +6,7 @@ from requre.utils import StorageMode
 from requre.helpers.guess_object import Guess, GUESS_STR
 from requre.helpers.simple_object import Void, Simple
 from requre.online_replacing import apply_decorator_to_all_methods, replace_module_match
+from requre.cassette import Cassette
 from tests.testbase import BaseClass
 from tests.test_object import OwnClass
 import sys
@@ -73,21 +74,19 @@ class ApplyDefaultDecorator(unittest.TestCase):
 
     def cassette_setup(self, cassette):
         self.assertEqual(cassette.storage_object, {})
-        # workaround to have cassette accesible inside test
-        self.cassette = cassette
 
-    def tearDown(self) -> None:
-        os.remove(self.cassette.storage_file)
+    def cassette_teardown(self, cassette):
+        os.remove(cassette.storage_file)
 
-    def test(self):
+    def test(self, cassette: Cassette):
         math.sin(1.5)
-        self.assertEqual(len(self.cassette.storage_object["math"]["sin"]), 1)
+        self.assertEqual(len(cassette.storage_object["math"]["sin"]), 1)
         self.assertAlmostEqual(
             self.SIN_OUTPUT,
-            self.cassette.storage_object["math"]["sin"][0]["output"],
+            cassette.storage_object["math"]["sin"][0]["output"],
             delta=0.0005,
         )
         self.assertEqual(
-            self.cassette.storage_object["math"]["sin"][0]["metadata"][GUESS_STR],
+            cassette.storage_object["math"]["sin"][0]["metadata"][GUESS_STR],
             "Simple",
         )
