@@ -26,14 +26,22 @@ import logging
 import os
 import tarfile
 from io import BytesIO
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union, Callable, Type
 
 from requre.exceptions import PersistentStorageException
 from requre.helpers.simple_object import Simple
+from requre.helpers.guess_object import Guess
 from requre.objects import ObjectStorage
 from requre.cassette import Cassette, CassetteExecution, StorageMode
 
 logger = logging.getLogger(__name__)
+
+
+def return_cls_type(cassette) -> Union[Type[Simple], Type[Guess]]:
+    if cassette.storage_file_version < 3:
+        return Simple
+    else:
+        return Guess
 
 
 class StoreFiles(ObjectStorage):
@@ -145,7 +153,7 @@ class StoreFiles(ObjectStorage):
     def where_file_as_return_value(
         cls,
         cassette: Optional[Cassette] = None,
-        return_decorator=Simple.decorator_plain,
+        return_decorator: Optional[Callable] = None,
     ) -> Any:
         """
         Decorator what will store return value of function/method as file and will store content
@@ -157,6 +165,8 @@ class StoreFiles(ObjectStorage):
         casex = CassetteExecution()
         casex.cassette = cassette or cls.get_cassette()
         casex.obj_cls = cls
+        if not return_decorator:
+            return_decorator = return_cls_type(casex.cassette).decorator_plain
 
         def internal(func):
             @functools.wraps(func)
@@ -180,7 +190,7 @@ class StoreFiles(ObjectStorage):
     def guess_files_from_parameters(
         cls,
         cassette: Optional[Cassette] = None,
-        return_decorator=Simple.decorator_plain,
+        return_decorator: Optional[Callable] = None,
     ) -> Any:
         """
         Decorator what try to guess, which arg is file or directory and store its content
@@ -191,6 +201,8 @@ class StoreFiles(ObjectStorage):
         casex = CassetteExecution()
         casex.cassette = cassette or cls.get_cassette()
         casex.obj_cls = cls
+        if not return_decorator:
+            return_decorator = return_cls_type(casex.cassette).decorator_plain
 
         def internal(func):
             @functools.wraps(func)
@@ -240,7 +252,7 @@ class StoreFiles(ObjectStorage):
         cls,
         key_position_params_dict: Dict,
         cassette: Optional[Cassette] = None,
-        return_decorator=Simple.decorator_plain,
+        return_decorator: Optional[Callable] = None,
     ) -> Any:
         """
         Decorator what will store files or directory based on arguments,
@@ -254,6 +266,8 @@ class StoreFiles(ObjectStorage):
         casex = CassetteExecution()
         casex.cassette = cassette or cls.get_cassette()
         casex.obj_cls = cls
+        if not return_decorator:
+            return_decorator = return_cls_type(casex.cassette).decorator_plain
 
         def internal(func):
             @functools.wraps(func)
@@ -294,7 +308,7 @@ class StoreFiles(ObjectStorage):
         file_param: str,
         dest_key: str = "default",
         cassette: Optional[Cassette] = None,
-        return_decorator=Simple.decorator_plain,
+        return_decorator: Optional[Callable] = None,
     ) -> Any:
         """
         Method to store explicitly path file_param to persistent storage
@@ -305,6 +319,8 @@ class StoreFiles(ObjectStorage):
         casex = CassetteExecution()
         casex.cassette = cassette or cls.get_cassette()
         casex.obj_cls = cls
+        if not return_decorator:
+            return_decorator = return_cls_type(casex.cassette).decorator_plain
 
         def internal(func):
             @functools.wraps(func)
