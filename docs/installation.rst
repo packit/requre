@@ -17,12 +17,12 @@ Install from GitHub
 
    git clone https://github.com/packit-service/requre.git
 
-2. Install (important to use ``sudo`` to install requre binaries  )
+2. Install
 
 .. code-block:: bash
 
    cd requre
-   sudo pip3 install .
+   pip3 install --user .
 
 
 Requre as transparent tool
