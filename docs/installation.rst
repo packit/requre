@@ -9,8 +9,8 @@ Install and update using pip:
    pip install -U requre
 
 
-Github master
-----------------
+Install from GitHub
+-------------------
 1. Download sources code
 
 .. code-block:: bash

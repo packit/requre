@@ -30,7 +30,7 @@ Or from PyPI:
 $ pip3 install --user requre
 ```
 
-You can also install `requre` from `master` branch, if you are brave enough:
+You can also install `requre` from `main` branch, if you are brave enough:
 
 You can use our [`packit/packit-requre-master` Copr repository](https://copr.fedorainfracloud.org/coprs/packit/packit-requre-master/):
 
