@@ -31,7 +31,7 @@ jobs:
   - job: copr_build
     trigger: commit
     metadata:
-      branch: master
+      branch: main
       targets:
         - fedora-all
       list_on_homepage: True

@@ -279,7 +279,7 @@ ___________________________
 See example in `Ogr project`_ how to use it.
 Paste ``requre`` code as ``__init__.py`` in your eg. ``pytest`` tests
 
-.. _Ogr project: https://github.com/packit-service/ogr/blob/master/tests/integration/__init__.py
+.. _Ogr project: https://github.com/packit-service/ogr/blob/main/tests/integration/__init__.py
 
 .. code-block:: python
 
