@@ -568,7 +568,7 @@ class Cassette:
         if self.mode == StorageMode.read and not os.path.exists(storage_file):
             raise PersistentStorageException(
                 "Requre can't work in this setup: we are meant to read"
-                f" recorded responses but the storage file ({self._storage_file}) "
+                f" recorded responses but the storage file ({storage_file}) "
                 "does not exist."
             )
 
