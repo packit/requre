@@ -5,7 +5,7 @@ import os
 import re
 import sys
 from contextlib import contextmanager
-from typing import List, Callable, Optional, Dict, Any, Union
+from typing import List, Callable, Optional, Any, Union
 
 from requre.cassette import Cassette, CassetteExecution
 from requre.cassette import StorageKeysInspectSimple
@@ -15,10 +15,162 @@ from requre.constants import (
     TEST_METHOD_REGEXP,
 )
 from requre.helpers.requests_response import RequestResponseHandling
-from requre.utils import get_datafile_filename
+from requre.utils import get_datafile_filename, get_module_of_previous_context
 from requre.helpers.guess_object import Guess
 
 logger = logging.getLogger(__name__)
+
+
+class ModuleRecord:
+    """
+    Store data entry for replacement system, to be able to _revert_modules changes
+    back after execution finishes.
+    """
+
+    def __init__(self, what, parent, original, replacement, add_revert_list=None):
+        self.what = what
+        self.parent = parent
+        self.original = original
+        self.replacement = replacement
+        self.add_revert_list = add_revert_list or []
+        self.caller_module = get_module_of_previous_context()
+
+    def __str__(self):
+        return (
+            f"ModuleRecord({self.what}, {self.parent}, {self.original},"
+            f" {self.replacement}) {self.caller_module}"
+        )
+
+
+def _apply_module_replacement(
+    what,
+    module,
+    cassette,
+    decorate,
+    replace,
+    module_record_list: List[ModuleRecord],
+    add_revert_list: List,
+) -> Optional[ModuleRecord]:
+    """
+    Internal method what finds inside module if the what string matches.
+    If yes, apply the  replacement, otherwise return None
+
+    :param what: What will be replaced
+    :param module: the module where we try to find match for "what"
+    :param cassette: Cassette instance
+    :param decorate: decorator to be applied
+    :param replace: replace function to be applied
+    :param module_record_list: list of modules what was already applied
+    :return: None or ModuleRecord
+    """
+    full_module_list = what.split(".")
+    module_name = module.__name__
+    # avoid to deep dive into
+    # if not matched, try to find just part, if not imported as full path
+    for depth, _ in enumerate(full_module_list):
+        original_obj = module
+        parent_obj = None
+        # rest of list has to match object path
+        for module_path in full_module_list[depth:]:
+            parent_obj = original_obj
+            try:
+                original_obj = getattr(original_obj, module_path)
+            except AttributeError:
+                # this is used also for indication that match of path passed
+                # in case it match partial path, make it None
+                parent_obj = None
+                break
+            original_obj_text = (
+                original_obj.__name__
+                if hasattr(original_obj, "__name__")
+                else str(original_obj)
+            )
+            logger.debug(
+                f"\tmodule {module_name} -> {module_path} in "
+                f"{original_obj_text} ({full_module_list[depth:]})"
+            )
+        # continue if parent is empty or module of function did not match
+        # path inside what avoid replace something else with same path
+        # eg, you define what "re.search", and it matches "search" as
+        # part of your module but it does not come from re module
+
+        try:
+            # TODO: this part should be improved, theoretically
+            #  join(full_module_list).startswith( original_obj.__module__)
+            #  could lead to issue, that it matches another module path
+            if not parent_obj:
+                continue
+            if original_obj.__module__ and not ".".join(full_module_list).startswith(
+                original_obj.__module__
+            ):
+                logger.debug(
+                    f"SIMILAR MATCH module {module_name} "
+                    f"in {parent_obj.__name__} -> {original_obj.__name__} "
+                    f"from {original_obj.__module__} ({full_module_list[depth:]})"
+                )
+                continue
+        except AttributeError as e:
+            logger.debug(e)
+            continue
+        logger.info(
+            f"MATCH module {module_name} "
+            f"in {parent_obj.__name__} -> {original_obj.__name__} "
+            f"from {original_obj.__module__} ({full_module_list[depth:]})"
+        )
+        if replace is not None:
+            if isinstance(replace, CassetteExecution):
+                new_function = replace.function
+                replace.cassette = cassette
+                replace.obj_cls.set_cassette(cassette)
+            else:
+                new_function = replace
+            replacement = new_function
+        elif decorate is not None:
+            if not isinstance(decorate, list):
+                new_function = [decorate]
+            else:
+                new_function = decorate
+            replacement = original_obj
+            for item in new_function:
+                if isinstance(item, CassetteExecution):
+                    item.cassette = cassette
+                    item.obj_cls.set_cassette(cassette)
+                    replacement = item.function(replacement)
+                else:
+                    replacement = item(replacement)
+        else:
+            continue
+        # check if already replaced, then continue
+        if original_obj in [x.replacement for x in module_record_list]:
+            logger.info(f"\talready replaced {what} in {module_name}")
+            continue
+        # TODO: have to try to investigate how to do multiple replacements of same
+        #  change the module string in replacements, to be able to do multiple
+        #  replacements this is tricky and may be confusing, but also make it
+        #  clear what has to be replaced
+        #  replacement.__module__ = original_obj.__module__
+        setattr(
+            parent_obj,
+            original_obj.__name__,
+            replacement,
+        )
+        fn_str = (
+            new_function.__name__
+            if not isinstance(new_function, list)
+            else new_function
+        )
+        logger.info(
+            f"\tREPLACES {what} in {module_name}"
+            f" by function {fn_str} {original_obj}"
+        )
+        return ModuleRecord(
+            what=what,
+            parent=parent_obj,
+            original=original_obj,
+            replacement=replacement,
+            add_revert_list=add_revert_list,
+        )
+    return None
 
 
 def _parse_and_replace_sys_modules(
@@ -26,121 +178,28 @@ def _parse_and_replace_sys_modules(
     cassette: Cassette,
     decorate: Any = None,
     replace: Any = None,
-) -> Dict:
+    add_revert_list: Optional[List] = None,
+) -> List[ModuleRecord]:
     """
     Internal fucntion what will check all sys.modules, and try to find there implementation of
     "what" and replace or decorate it by given value(s)
     """
     logger.info(f"\n++++++ SEARCH {what} decorator={decorate} replace={replace}")
-    original_module_items: Dict[str, Dict] = {}
+    module_list: List[ModuleRecord] = []
     # go over all modules, and try to find match
-    for module_name, module in sys.modules.copy().items():
-        full_module_list = what.split(".")
-        # avoid to deep dive into
-        # if not matched, try to find just part, if not imported as full path
-        for depth, _ in enumerate(full_module_list):
-            original_obj = module
-            parent_obj = None
-            # rest of list has to match object path
-            for module_path in full_module_list[depth:]:
-                parent_obj = original_obj
-                try:
-                    original_obj = getattr(original_obj, module_path)
-                except AttributeError:
-                    # this is used also for indication that match of path passed
-                    # in case it match partial path, make it None
-                    parent_obj = None
-                    break
-                original_obj_text = (
-                    original_obj.__name__
-                    if hasattr(original_obj, "__name__")
-                    else str(original_obj)
-                )
-                logger.debug(
-                    f"\tmodule {module_name} -> {module_path} in "
-                    f"{original_obj_text} ({full_module_list[depth:]})"
-                )
-            # continue if parent is empty or module of function did not match
-            # path inside what avoid replace something else with same path
-            # eg, you define what "re.search", and it matches "search" as
-            # part of your module but it does not come from re module
-
-            try:
-                # TODO: this part should be improved, theoretically
-                #  join(full_module_list).startswith( original_obj.__module__)
-                #  could lead to issue, that it matches another module path
-                if not parent_obj:
-                    continue
-                if not ".".join(full_module_list).startswith(original_obj.__module__):
-                    logger.debug(
-                        f"SIMILAR MATCH module {module_name} "
-                        f"in {parent_obj.__name__} -> {original_obj.__name__} "
-                        f"from {original_obj.__module__} ({full_module_list[depth:]})"
-                    )
-                    continue
-            except AttributeError as e:
-                logger.debug(e)
-                continue
-            logger.info(
-                f"MATCH module {module_name} "
-                f"in {parent_obj.__name__} -> {original_obj.__name__} "
-                f"from {original_obj.__module__} ({full_module_list[depth:]})"
-            )
-            if replace is not None:
-                if isinstance(replace, CassetteExecution):
-                    new_function = replace.function
-                    replace.cassette = cassette
-                    replace.obj_cls.set_cassette(cassette)
-                else:
-                    new_function = replace
-                replacement = new_function
-            elif decorate is not None:
-                if not isinstance(decorate, list):
-                    new_function = [decorate]
-                else:
-                    new_function = decorate
-                replacement = original_obj
-                for item in new_function:
-                    if isinstance(item, CassetteExecution):
-                        item.cassette = cassette
-                        item.obj_cls.set_cassette(cassette)
-                        replacement = item.function(replacement)
-                    else:
-                        replacement = item(replacement)
-            else:
-                continue
-            # check if already replaced, then continue
-            if original_obj in [
-                x["replacement"] for x in original_module_items.values()
-            ]:
-                logger.info(f"\talready replaced {what} in {module_name}")
-                continue
-            # TODO: have to try to investigate how to do multiple replacements of same
-            #  change the module string in replacements, to be able to do multiple
-            #  replacements this is tricky and may be confusing, but also make it
-            #  clear what has to be replaced
-            #  replacement.__module__ = original_obj.__module__
-            setattr(
-                parent_obj,
-                original_obj.__name__,
-                replacement,
-            )
-            fn_str = (
-                new_function.__name__
-                if not isinstance(new_function, list)
-                else new_function
-            )
-            logger.info(
-                f"\tREPLACES {what} in {module_name}"
-                f" by function {fn_str} {original_obj}"
-            )
-            original_module_items[module_name] = {
-                "what": what,
-                "parent_obj": parent_obj,
-                "original_obj": original_obj,
-                "replacement": replacement,
-            }
-    return original_module_items
+    for module in sys.modules.copy().values():
+        out = _apply_module_replacement(
+            what=what,
+            module=module,
+            cassette=cassette,
+            decorate=decorate,
+            replace=replace,
+            module_record_list=module_list,
+            add_revert_list=add_revert_list,
+        )
+        if out:
+            module_list.append(out)
+    return module_list
 
 
 def _change_storage_file(
@@ -164,6 +223,46 @@ def _change_storage_file(
             cassette.storage_file = get_datafile_filename(func)
     original_storage_file = cassette.storage_file
     return original_storage_file
+
+
+def _revert_modules(module_list: List[ModuleRecord]):
+    """
+    Revert modules to original functions
+
+    :param module_list: list of modules
+    :return:
+    """
+    for module_info in module_list:
+        setattr(
+            module_info.parent,
+            module_info.original.__name__,
+            module_info.original,
+        )
+        if not module_info.add_revert_list:
+            return
+        for item in module_info.add_revert_list:
+            found = False
+            main_key = item.split(".")[-1]
+            module_key = ".".join(item.split(".")[:-1])
+            for module_name, module in sys.modules.copy().items():
+                # go through all modules and try to find if item is stored there
+                if module_key.startswith(module_name):
+                    parent_obj = module
+                    try:
+                        for key in module_key.lstrip(module_name)[1:].split("."):
+                            parent_obj = getattr(parent_obj, key)
+                        setattr(
+                            parent_obj,
+                            main_key,
+                            module_info.original,
+                        )
+                        found = True
+                    except AttributeError:
+                        pass
+            if not found:
+                raise AttributeError(
+                    "You've want to revert item, but not found anywhere inside loaded modules"
+                )
 
 
 def replace(
@@ -223,8 +322,9 @@ def replace(
             cassette_int.data_miner.key_stategy_cls = storage_keys_strategy
             # ensure that directory structure exists already
             os.makedirs(os.path.dirname(cassette_int.storage_file), exist_ok=True)
-            # Store values and their replacements for modules to be able to revert changes back
-            original_module_items = _parse_and_replace_sys_modules(
+            # Store values and their replacements for modules
+            # to be able to _revert_modules changes back
+            module_list = _parse_and_replace_sys_modules(
                 what=what, cassette=cassette_int, decorate=decorate, replace=replace
             )
             try:
@@ -242,13 +342,7 @@ def replace(
             finally:
                 # dump data to storage file
                 cassette_int.dump()
-                # revert back changed functions
-                for module_name, item_list in original_module_items.items():
-                    setattr(
-                        item_list["parent_obj"],
-                        item_list["original_obj"].__name__,
-                        item_list["original_obj"],
-                    )
+                _revert_modules(module_list)
             return output
 
         setattr(_internal, REQURE_CASSETTE_ATTRIBUTE_NAME, cassette_int)
@@ -366,8 +460,8 @@ def recording(
         decorate = Guess.decorator_plain(cassette=cassette)
     elif decorate is not None and replace is not None:
         raise ValueError("right one from [decorate, replace] parameter has to be set.")
-    # Store values and their replacements for modules to be able to revert changes back
-    original_module_items = _parse_and_replace_sys_modules(
+    # Store values and their replacements for modules to be able to _revert_modules changes back
+    module_list = _parse_and_replace_sys_modules(
         what=what, cassette=cassette, decorate=decorate, replace=replace
     )
     try:
@@ -375,13 +469,7 @@ def recording(
     finally:
         # dump data to storage file
         cassette.dump()
-        # revert back changed functions
-        for module_name, item_list in original_module_items.items():
-            setattr(
-                item_list["parent_obj"],
-                item_list["original_obj"].__name__,
-                item_list["original_obj"],
-            )
+        _revert_modules(module_list)
 
 
 @contextmanager

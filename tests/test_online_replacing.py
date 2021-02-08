@@ -6,7 +6,7 @@ import unittest
 import requests
 
 import tests.data.special_requre_module
-from requre.cassette import Cassette
+from requre.cassette import Cassette, StorageMode
 from requre.helpers.requests_response import RequestResponseHandling
 from requre.helpers.simple_object import Simple
 from requre.online_replacing import (
@@ -137,9 +137,10 @@ class CassetteSelection(unittest.TestCase):
         decorate=RequestResponseHandling.decorator(item_list=["method", "url"]),
     )
     def testRead(self, cassette: Cassette):
-        # uncomment it and remove storage file to regenerate data
-        # self.reset()
-        self.assertTrue(os.path.exists(cassette.storage_file))
+        if cassette.mode == StorageMode.read:
+            self.assertTrue(os.path.exists(cassette.storage_file))
+        else:
+            self.reset()
         response = requests.get("http://example.com")
         self.assertIn("This domain is for use", response.text)
 
@@ -150,11 +151,11 @@ class CassetteSelection(unittest.TestCase):
     @replace_module_match(what="math.sin", decorate=Simple.decorator(item_list=[]))
     def testReadMultiple(self, cassette: Cassette):
         assert cassette
-        # uncomment it and remove storage file to regenerate data
-        # self.reset()
-        # sin_output = math.sin(1.5)
-        # comment out this line for regeneration (output is another than this number)
-        sin_output = math.sin(4)
+        if cassette.mode == StorageMode.write:
+            self.reset()
+            sin_output = math.sin(1.5)
+        else:
+            sin_output = math.sin(4)
         response = requests.get("http://example.com")
         self.assertIn("This domain is for use", response.text)
         self.assertAlmostEqual(0.9974949866040544, sin_output, delta=0.0005)
@@ -174,8 +175,9 @@ class DecoratorClassApply(unittest.TestCase):
     def setUp(self):
         new_cassette.storage_file = None
 
-    def test0(self):
-        self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 1)
+    def test0(self, cassette: Cassette):
+        if cassette.mode == StorageMode.read:
+            self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 1)
         sin_output = math.sin(1.5)
         response = requests.get("http://example.com")
         self.assertIn("This domain is for use", response.text)
@@ -187,7 +189,9 @@ class DecoratorClassApply(unittest.TestCase):
         self.assertIn("This domain is for use", response.text)
         self.assertAlmostEqual(0.9974949866040544, sin_output, delta=0.0005)
 
-    def test2(self):
-        self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 2)
+    def test2(self, cassette: Cassette):
+        if cassette.mode == StorageMode.read:
+            self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 2)
         self.test1()
-        self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 1)
+        if cassette.mode == StorageMode.read:
+            self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 1)
