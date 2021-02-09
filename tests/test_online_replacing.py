@@ -52,9 +52,8 @@ def decorated_exact():
 class TestOnlinePatchingModuleMatch(unittest.TestCase):
     def testDecoratorImport(self):
         self.assertEqual(decorated_exact(), "decorator_c Hi! decorator_c Hi! exact")
-        # test revenrting
+        # test reverting one decorators
         self.assertEqual(tests.data.special_requre_module.hello(), "Hi! ")
-
         self.assertEqual(hello(), "Hi! ")
 
     @replace_module_match(

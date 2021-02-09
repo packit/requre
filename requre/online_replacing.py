@@ -239,7 +239,8 @@ def _revert_modules(module_list: List[ModuleRecord]):
             module_info.original,
         )
         if not module_info.add_revert_list:
-            return
+            continue
+        # revert also items on additional places if necessarry
         for item in module_info.add_revert_list:
             found = False
             main_key = item.split(".")[-1]
