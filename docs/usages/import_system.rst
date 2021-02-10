@@ -36,7 +36,7 @@ The best way how to use it in your integration tests.
 You have full control of PersistentStorage and you have
 store whatever you want.
 
-Paste ``requre`` import update code as ``__init__.py`` in your eg. ``pytest`` tests
-Example in `Filter format ogr example`_.
+Using decorators is the best option. like (``@replace(what="math.sin", decorate=Simple.plain())``)
 
-.. _Filter format ogr example: ../filter_format.html#full-example-in-ogr-project
+
+Paste ``requre`` import update code as ``__init__.py`` in your eg. ``pytest`` tests.
