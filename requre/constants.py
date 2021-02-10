@@ -1,3 +1,5 @@
+import builtins
+
 VERSION_REQURE_FILE = 3
 ENV_STORAGE_FILE = "RESPONSE_FILE"
 ENV_REPLACEMENT_FILE = "REPLACEMENT_FILE"
@@ -13,3 +15,5 @@ DEFAULT_SUFIX = "yaml"
 REQURE_CASSETTE_ATTRIBUTE_NAME = "_requre_cassette"
 REQURE_SETUP_APPLIED_ATTRIBUTE_NAME = "_requre_cassette_setup_applied"
 TEST_METHOD_REGEXP = "test.*"
+
+IMPORT_FN = builtins.__import__

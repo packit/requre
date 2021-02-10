@@ -4,7 +4,7 @@ from pathlib import Path
 
 import requests
 
-from requre.cassette import Cassette
+from requre.cassette import Cassette, StorageMode
 from requre.helpers.simple_object import Simple
 from requre.online_replacing import (
     record_requests_for_all_methods,
@@ -26,8 +26,9 @@ class DecoratorClassApplyMultipleDecorators(unittest.TestCase):
         self.assertIn("This domain is for use", response.text)
 
     def test_read(self, cassette: Cassette):
-        self.assertIn("math", cassette.storage_object)
-        self.assertIn("requests.sessions", cassette.storage_object)
+        if cassette.mode == StorageMode.read:
+            self.assertIn("math", cassette.storage_object)
+            self.assertIn("requests.sessions", cassette.storage_object)
         # move the following call to the beginning when regenerating
         self.use_math_and_requests()
 
@@ -76,11 +77,11 @@ class DecoratorClassApplyMultipleDecoratorsCassetteSetupTearDown(unittest.TestCa
         self.assertIn("This domain is for use", response.text)
 
     def test_read(self, cassette: Cassette):
-        self.assertEqual(self.count_cassette_setup_triggered, 1)
-        self.assertEqual(self.count_cassette_teardown_triggered, 0)
-
-        self.assertIn("math", cassette.storage_object)
-        self.assertIn("requests.sessions", cassette.storage_object)
+        if cassette.mode == StorageMode.read:
+            self.assertEqual(self.count_cassette_setup_triggered, 1)
+            self.assertEqual(self.count_cassette_teardown_triggered, 0)
+            self.assertIn("math", cassette.storage_object)
+            self.assertIn("requests.sessions", cassette.storage_object)
         # move the following call to the beginning when regenerating
         self.use_math_and_requests()
 
@@ -125,10 +126,10 @@ class DecoratorRecordRequestForAllMethodsCassetteSetupTearDown(unittest.TestCase
         self.assertIn("This domain is for use", response.text)
 
     def test_read(self, cassette: Cassette):
-        self.assertEqual(self.count_cassette_setup_triggered, 1)
-        self.assertEqual(self.count_cassette_teardown_triggered, 0)
-
-        self.assertIn("requests.sessions", cassette.storage_object)
+        if cassette.mode == StorageMode.read:
+            self.assertEqual(self.count_cassette_setup_triggered, 1)
+            self.assertEqual(self.count_cassette_teardown_triggered, 0)
+            self.assertIn("requests.sessions", cassette.storage_object)
         # move the following call to the beginning when regenerating
         self.use_requests()
 
@@ -154,8 +155,8 @@ class DecoratorRecordRequestForAllMethods(unittest.TestCase):
         self.assertIn("This domain is for use", response.text)
 
     def test_read(self, cassette: Cassette):
-        self.assertIn("requests.sessions", cassette.storage_object)
-        # move the following call to the beginning when regenerating
+        if cassette.mode == StorageMode.read:
+            self.assertIn("requests.sessions", cassette.storage_object)
         self.use_requests()
 
     def test_write(self, cassette: Cassette):
@@ -178,8 +179,8 @@ class DecoratorRecordRequestForAllMethodsWithoutParenthesis(unittest.TestCase):
         self.assertIn("This domain is for use", response.text)
 
     def test_read(self, cassette: Cassette):
-        self.assertIn("requests.sessions", cassette.storage_object)
-        # move the following call to the beginning when regenerating
+        if cassette.mode == StorageMode.read:
+            self.assertIn("requests.sessions", cassette.storage_object)
         self.use_requests()
 
     def test_write(self, cassette: Cassette):
@@ -208,8 +209,8 @@ class DecoratorRecordRequestForAllMethodsDifferentRegex(unittest.TestCase):
         self.assertIsNone(cassette)
 
     def test_regex_read(self, cassette: Cassette):
-        self.assertIn("requests.sessions", cassette.storage_object)
-        # move the following call to the beginning when regenerating
+        if cassette.mode == StorageMode.read:
+            self.assertIn("requests.sessions", cassette.storage_object)
         self.use_requests()
 
     def test_regex_write(self, cassette: Cassette):
