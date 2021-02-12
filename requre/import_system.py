@@ -24,7 +24,7 @@
 import builtins
 import functools
 from enum import Enum
-from requre.constants import IMPORT_FN
+from requre.constants import DEFAULT_IMPORT_FUNCTION
 from typing import Optional, Any, Callable, List
 
 from requre.storage import PersistentObjectStorage
@@ -88,7 +88,7 @@ class UpgradeImportSystem:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        builtins.__import__ = IMPORT_FN
+        builtins.__import__ = DEFAULT_IMPORT_FUNCTION
         self.revert()
 
     def revert(self) -> "UpgradeImportSystem":
@@ -97,7 +97,7 @@ class UpgradeImportSystem:
 
         :return: self (chaining is supported)
         """
-        builtins.__import__ = IMPORT_FN
+        builtins.__import__ = DEFAULT_IMPORT_FUNCTION
         _revert_modules(self.module_list)
         # TODO: fix reverting of 'from' modules
         self.module_list.clear()
@@ -126,19 +126,26 @@ class UpgradeImportSystem:
 
     def upgrade(self, what, replace_type, replacement, add_revert_list=[]):
         """
-        Apply the upgrade to import system in internal-tuple format.
+        Apply the upgrade of modules (already loaded or when import of the module comes)
 
         :param what: what to update
         :param replace_type: type of replacement ReplaceType
         :param replacement: replaced or decorator to be applied
+        :param add_revert_list: append anoher part where revert has to happen.
+                                In case of some from statements it may lead that
+                                they are not properly reverted as well.
         :return: self (chaining is supported)
         """
-
         self._upgrade_filter(what, replace_type, replacement, add_revert_list)
         return self
 
     def _upgrade_filter(
-        self, what, replace_type, replacement, add_revert_list, func=IMPORT_FN
+        self,
+        what,
+        replace_type,
+        replacement,
+        add_revert_list,
+        func=DEFAULT_IMPORT_FUNCTION,
     ):
         replace = None
         decorate = None
@@ -156,22 +163,22 @@ class UpgradeImportSystem:
         )
         if recorded_items:
             self.module_list += recorded_items
-        else:
+            return
 
-            @functools.wraps(func)
-            def new_import(*args, **kwargs):
-                with open("debug.file", "w") as fd:
-                    fd.write("eee", what, args, kwargs)
-                out = func(*args, **kwargs)
-                recorded_items = _parse_and_replace_sys_modules(
-                    what=what,
-                    cassette=self.cassette,
-                    decorate=decorate,
-                    replace=replace,
-                    add_revert_list=add_revert_list,
-                )
-                if recorded_items:
-                    self.module_list += recorded_items
-                return out
+        @functools.wraps(func)
+        def new_import(*args, **kwargs):
+            with open("debug.file", "w") as fd:
+                fd.write("eee", what, args, kwargs)
+            out = func(*args, **kwargs)
+            recorded_items = _parse_and_replace_sys_modules(
+                what=what,
+                cassette=self.cassette,
+                decorate=decorate,
+                replace=replace,
+                add_revert_list=add_revert_list,
+            )
+            if recorded_items:
+                self.module_list += recorded_items
+            return out
 
-            func = new_import
+        func = new_import

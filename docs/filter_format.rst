@@ -67,15 +67,7 @@ These decorators apply a decorator to the test method.
 Filters for transparent mode
 ----------------------------
 This filters are used for transparent mode as part of improved import system,
-also deprecated usage for normal tests.
-
-
-Plain
-_____
-Filter is based representation of the mechanism of
-replacing modules, functions or decorating functions.
-
-eg.
+also deprecated usage for normal tests. The file could look like:
 
 .. code-block:: python
 
