@@ -1,6 +1,4 @@
-from requre.import_system import ReplaceType
+from requre.import_system import UpgradeImportSystem
 from requre.helpers.simple_object import Simple
 
-FILTERS: list = [
-    ("^time$", {}, {"sleep": [ReplaceType.DECORATOR, Simple.decorator_plain()]})
-]
+FILTERS = UpgradeImportSystem().decorate("time.sleep", Simple.decorator_plain())

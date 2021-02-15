@@ -10,7 +10,7 @@ from typing import Any
 import yaml
 import builtins
 
-from requre.import_system import upgrade_import_system, UpgradeImportSystem
+from requre.import_system import UpgradeImportSystem
 from requre.postprocessing import DictProcessing, TarFilesSimilarity
 from requre.storage import PersistentObjectStorage
 from requre.constants import (
@@ -102,6 +102,7 @@ def apply_fn():
         spec = importlib.util.spec_from_file_location("replacements", replacement_file)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
+        replacement = None
         if hasattr(module, replacement_var):
             replacement = getattr(module, replacement_var)
             debug_print(f"Replaces: {replacement}")
@@ -109,11 +110,6 @@ def apply_fn():
                 debug_print(
                     f"{replacement_var} is {UpgradeImportSystem.__name__} object"
                 )
-            elif isinstance(replacement, list):
-                debug_print(
-                    f"{replacement_var} is list of replacements, apply upgrading"
-                )
-                upgrade_import_system(filters=replacement)
             else:
                 raise_error(126, f"Bad type of {replacement_var}, see documentation")
         else:
@@ -122,7 +118,8 @@ def apply_fn():
                 f"in {replacement_file} there is not defined '{replacement_var}' variable",
             )
         # register dump command, when python finish
-        atexit.register(PersistentObjectStorage().cassette.dump)
+        if replacement:
+            atexit.register(replacement.cassette.dump)
 
 
 def get_current_python_version():

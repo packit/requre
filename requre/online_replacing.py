@@ -50,7 +50,7 @@ def _apply_module_replacement(
     replace,
     module_record_list: List[ModuleRecord],
     add_revert_list: List,
-) -> Optional[ModuleRecord]:
+) -> List[ModuleRecord]:
     """
     Internal method what finds inside module if the what string matches.
     If yes, apply the  replacement, otherwise return None
@@ -65,6 +65,7 @@ def _apply_module_replacement(
     """
     full_module_list = what.split(".")
     module_name = module.__name__
+    output_record_list: List[ModuleRecord] = list()
     # avoid to deep dive into
     # if not matched, try to find just part, if not imported as full path
     for depth, _ in enumerate(full_module_list):
@@ -163,14 +164,16 @@ def _apply_module_replacement(
             f"\tREPLACES {what} in {module_name}"
             f" by function {fn_str} {original_obj}"
         )
-        return ModuleRecord(
-            what=what,
-            parent=parent_obj,
-            original=original_obj,
-            replacement=replacement,
-            add_revert_list=add_revert_list,
+        output_record_list.append(
+            ModuleRecord(
+                what=what,
+                parent=parent_obj,
+                original=original_obj,
+                replacement=replacement,
+                add_revert_list=add_revert_list,
+            )
         )
-    return None
+    return output_record_list
 
 
 def _parse_and_replace_sys_modules(
@@ -188,7 +191,7 @@ def _parse_and_replace_sys_modules(
     module_list: List[ModuleRecord] = []
     # go over all modules, and try to find match
     for module in sys.modules.copy().values():
-        out = _apply_module_replacement(
+        module_list += _apply_module_replacement(
             what=what,
             module=module,
             cassette=cassette,
@@ -197,8 +200,6 @@ def _parse_and_replace_sys_modules(
             module_record_list=module_list,
             add_revert_list=add_revert_list,
         )
-        if out:
-            module_list.append(out)
     return module_list
 
 

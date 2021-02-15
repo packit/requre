@@ -191,13 +191,15 @@ class Latency(unittest.TestCase):
             f"{ENV_APPLY_LATENCY}={apply_latency}"
         )
         cmd = f"""bash -c '{envs} {self.test_command}'"""
+        print(cmd)
         self.assertFalse(os.path.exists(self.storage_file))
         before = time.time()
         run_command(cmd=cmd, output=True)
         after = time.time()
-        self.assertAlmostEqual(2, after - before, delta=delta)
-
+        print(open(self.storage_file).readlines())
         self.assertTrue(os.path.exists(self.storage_file))
+
+        self.assertAlmostEqual(2, after - before, delta=delta)
         before = time.time()
         run_command(cmd=cmd, output=True)
         after = time.time()
@@ -208,9 +210,6 @@ class Latency(unittest.TestCase):
 
     def test_enabled_plain(self):
         self.check("e2e_latency_replacements.py", "YES", 2, 1)
-
-    def test_enabled_object_model(self):
-        self.check("e2e_latency_replacements_object.py", "YES", 2, 1)
 
 
 class ReplacementVariable(unittest.TestCase):
