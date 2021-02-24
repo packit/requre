@@ -60,3 +60,11 @@ class Void(Simple):
             metadata=metadata,
         )
         return obj
+
+
+class Tuple(Simple):
+    def to_serializable(self, obj):
+        return list(obj)
+
+    def from_serializable(self, data):
+        return tuple(data)

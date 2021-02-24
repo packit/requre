@@ -8,7 +8,7 @@ import warnings
 
 from typing import Any, Dict, Optional
 from requre.objects import ObjectStorage
-from requre.helpers.simple_object import Simple, Void
+from requre.helpers.simple_object import Simple, Void, Tuple
 
 logger = logging.getLogger(__name__)
 GUESS_STR = "guess_type"
@@ -26,6 +26,8 @@ class Guess(Simple):
 
     @staticmethod
     def guess_type(value):
+        if isinstance(value, tuple):
+            return Tuple
         try:
             # Try to use type for storing simple output (list, dict, str, nums, etc...)
             yaml.safe_dump(value)
@@ -77,6 +79,8 @@ class Guess(Simple):
             return data
         elif guess_type == Void.__name__:
             return data
+        elif guess_type == Tuple.__name__:
+            return tuple(data)
         else:
             raise ValueError(
                 f"Unsupported type of stored object inside cassette: {guess_type}"
