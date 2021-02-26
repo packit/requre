@@ -1,0 +1,19 @@
+_requre:
+  DataTypes: 1
+  key_strategy: StorageKeysInspectSimple
+  version_storage_file: 3
+tests.testbase:
+  ret:
+    - metadata:
+        latency: 9.5367431640625e-07
+        module_call_list:
+          - unittest.case
+          - requre.online_replacing
+          - tests.test_tuple
+          - requre.objects
+          - requre.cassette
+          - tests.testbase
+          - ret
+      output:
+        - ret
+        - 2
