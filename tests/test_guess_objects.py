@@ -44,6 +44,13 @@ class Store(BaseClass):
         before2 = decorated_own(2, OwnClass(2))
         before3 = decorated_own(2, OwnClass(3))
         before4 = decorated_own(3, sys.__stdin__)
+        before5 = decorated_own(
+            4,
+            (
+                1,
+                2,
+            ),
+        )
         self.cassette.dump()
         self.cassette.mode = StorageMode.read
 
@@ -59,6 +66,15 @@ class Store(BaseClass):
         self.assertEqual(self.cassette.data_miner.metadata[GUESS_STR], Simple.__name__)
         after4 = decorated_own(3, sys.__stdin__)
         self.assertEqual(self.cassette.data_miner.metadata[GUESS_STR], Void.__name__)
+        after5 = decorated_own(4, (3,))
+        self.assertEqual(
+            after5,
+            (
+                1,
+                2,
+            ),
+        )
+        self.assertTrue(isinstance(after5, tuple))
 
         self.assertEqual(before1, after1)
         self.assertEqual(before2.__class__.__name__, after2.__class__.__name__)
@@ -66,6 +82,8 @@ class Store(BaseClass):
         self.assertEqual(after2.__class__.__name__, "OwnClass")
         self.assertEqual(before4.__class__.__name__, "TextIOWrapper")
         self.assertEqual(after4.__class__.__name__, "str")
+        self.assertEqual(before5.__class__.__name__, "tuple")
+        self.assertEqual(before5, after5)
 
 
 @apply_decorator_to_all_methods(replace_module_match(what="math.sin"))

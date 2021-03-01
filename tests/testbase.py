@@ -10,6 +10,11 @@ from requre.utils import StorageMode
 EXAMPLE_COM_IP = "93.184.216.34"
 
 
+class RetTuple:
+    def ret(self, value):
+        return "ret", value
+
+
 def network_connection_available():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if sock.connect_ex((EXAMPLE_COM_IP, 80)) == 0:
