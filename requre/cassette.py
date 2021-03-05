@@ -218,7 +218,7 @@ class StorageKeysInspectUnique(StorageKeysInspect):
         return list(reversed(output))
 
 
-StorageKeysInspectDefault = StorageKeysInspectFull
+StorageKeysInspectDefault = StorageKeysInspectSimple
 
 
 class DataStructure:
@@ -447,6 +447,9 @@ class Cassette:
         self.storage_object: dict = {}
         self._storage_file: Optional[str] = None
         self.data_miner = DataMiner()
+        # backward compatibility with default Storage key default
+        if self.storage_file_version < 4:
+            self.data_miner.key_stategy_cls = StorageKeysInspectFull
         self.mode = StorageMode.default
 
     def __init__(self) -> None:

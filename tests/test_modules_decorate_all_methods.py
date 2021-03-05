@@ -30,8 +30,11 @@ class ApplyCommonCase(unittest.TestCase):
 
     def cassette_teardown(self, cassette: Cassette):
         self.assertIn(
-            "tests.test_modules_decorate_all_methods.ApplyCommonCase.test_git.yaml",
+            "ApplyCommonCase.test_git.yaml",
             str(cassette.storage_file),
+        )
+        self.assertNotIn(
+            "tests.test_modules_decorate_all_methods", str(cassette.storage_file)
         )
 
     def test_git(self):

@@ -140,15 +140,11 @@ class StoreAnyRequest(BaseClass):
         print(">>>", self.cassette.storage_object)
         self.assertIn(
             "https://ex",
-            self.cassette.storage_object["unittest.case"][
-                "tests.test_request_response"
-            ]["requre.objects"]["requre.cassette"]["requests.api"]["post"],
+            self.cassette.storage_object["requests.api"]["post"],
         )
         self.assertIn(
             "http://www",
-            self.cassette.storage_object["unittest.case"][
-                "tests.test_request_response"
-            ]["requre.objects"]["requre.cassette"]["requests.api"]["post"],
+            self.cassette.storage_object["requests.api"]["post"],
         )
 
     @unittest.skipIf(not network_connection_available(), "No network connection")
@@ -162,13 +158,9 @@ class StoreAnyRequest(BaseClass):
         self.cassette.dump()
         self.cassette.mode = StorageMode.read
 
-        saved_item = self.cassette.storage_object["unittest.case"][
-            "tests.test_request_response"
-        ]["requre.objects"]["requre.cassette"]["requests.api"]["post"][
+        saved_item = self.cassette.storage_object["requests.api"]["post"][
             "http://www.google.com"
-        ][
-            0
-        ]
+        ][0]
 
         self.assertIn("headers", saved_item["output"])
         self.assertIsNone(saved_item["output"]["headers"]["Date"])
@@ -184,13 +176,9 @@ class StoreAnyRequest(BaseClass):
         self.cassette.dump()
         self.cassette.mode = StorageMode.read
 
-        saved_item = self.cassette.storage_object["unittest.case"][
-            "tests.test_request_response"
-        ]["requre.objects"]["requre.cassette"]["requests.api"]["post"][
+        saved_item = self.cassette.storage_object["requests.api"]["post"][
             "http://www.google.com"
-        ][
-            0
-        ]
+        ][0]
 
         self.assertIn("headers", saved_item["output"])
         self.assertNotIn("NotKnownHeader", saved_item["output"]["headers"])
