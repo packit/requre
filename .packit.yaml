@@ -28,12 +28,14 @@ jobs:
     metadata:
       targets:
         - fedora-all
+        - epel-8
   - job: copr_build
     trigger: commit
     metadata:
       branch: main
       targets:
         - fedora-all
+        - epel-8
       list_on_homepage: True
       preserve_project: True
   - job: copr_build
@@ -41,5 +43,6 @@ jobs:
     metadata:
       targets:
         - fedora-all
+        - epel-8
       list_on_homepage: True
       preserve_project: True
