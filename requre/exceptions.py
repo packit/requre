@@ -26,7 +26,7 @@ Exceptions for requre project
 
 
 class PersistentStorageException(Exception):
-    """ Exceptions for persistent storage of objects """
+    """Exceptions for persistent storage of objects"""
 
 
 class ItemNotInStorage(PersistentStorageException):
