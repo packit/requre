@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import os
 import inspect
 import logging
 import shlex
@@ -148,9 +147,10 @@ def get_datafile_filename(obj, suffix=DEFAULT_SUFIX):
 
     real_path_dir = Path(current_fn_file_name).parent.absolute()
     test_file_name = Path(current_fn_file_name).name.rsplit(".", 1)[0]
+    old_test_name = None
     try:
         # try to use object.id() function (it is defined inside pytest unittests)
-        test_name = obj.id()
+        old_test_name = test_name = obj.id()
         # use just class and function as indentifier of file
         cls_name = obj.__class__.__name__
         test_name = cls_name + test_name.rsplit(cls_name, 1)[1]
@@ -166,9 +166,9 @@ def get_datafile_filename(obj, suffix=DEFAULT_SUFIX):
             # if not possible, use this name as name of data file
             test_name = "static_test_data_name"
     testdata_dirname = real_path_dir / RELATIVE_TEST_DATA_DIRECTORY / test_file_name
-    # BACKWARD COMPATIBIULITY (read mode): find files if there is used full self.id
-    if os.path.isdir(testdata_dirname):
-        for item in os.listdir(testdata_dirname):
-            if item.endswith(f"{test_name}.{suffix}"):
-                return testdata_dirname / item
+    # BACKWARD COMPATIBILITY (read mode): check if a file using a full self.id is present
+    if old_test_name:
+        old_store_path = testdata_dirname / f"{old_test_name}.{suffix}"
+        if old_store_path.exists():
+            return old_store_path
     return testdata_dirname / f"{test_name}.{suffix}"
