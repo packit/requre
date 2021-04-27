@@ -11,7 +11,7 @@ repos:
     rev: v2.2.1
     hooks:
       - id: prettier
-        exclude: tests/data/*
+        exclude: tests/data/.+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
     hooks:
