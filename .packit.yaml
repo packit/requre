@@ -1,7 +1,5 @@
 ---
 specfile_path: fedora/python-requre.spec
-synced_files:
-  - fedora/changelog
 # https://packit.dev/docs/configuration/#top-level-keys
 downstream_package_name: python-requre
 upstream_project_url: https://github.com/packit/requre
