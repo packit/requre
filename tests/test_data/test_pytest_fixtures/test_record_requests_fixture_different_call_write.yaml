@@ -1,13 +1,13 @@
 _requre:
   DataTypes: 1
   key_strategy: StorageKeysInspectSimple
-  version_storage_file: 2
+  version_storage_file: 3
 requests.sessions:
   send:
     GET:
       https://fedoraproject.org/:
         - metadata:
-            latency: 0.9681727886199951
+            latency: 1.0128254890441895
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -32,14 +32,14 @@ requests.sessions:
               twitter:site\" content=\"@fedora\"><meta name=\"twitter:title\" content=\"\
               Choose Freedom. Choose Fedora.\"><meta name=\"twitter:description\" content=\"\
               Pick a flavor of Fedora streamlined for your needs, and get to work right\
-              \ away.\"><meta name=\"twitter:image\" content=\"https://getfedora.org/static/images/fedora.png\"\
+              \ away.\"><meta name=\"twitter:image\" content=\"https://getfedora.org/static/images/fedora-twitter-card.png\"\
               ><link rel=\"shortcut icon\" href=\"/static/images/favicon.ico\"><link\
               \ rel=\"stylesheet\" media=\"screen\" href=\"https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&subset=latin,latin-ext\"\
               ><link rel=\"stylesheet\" media=\"screen\" href=\"https://fonts.googleapis.com/css?family=Montserrat:400,700\"\
-              ><link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/bundle.css?7e6aa320\"\
+              ><link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/bundle.css?ee8c995b\"\
               ><link rel=\"shortcut icon\" href=\"/static/images/favicon.ico\" sizes=\"\
               16x16 32x32\" type=\"image/vnd.microsoft.icon\"><title>Fedora</title></head>\
-              \ <body> <div class=\"bg-fedora-blue border-bottom border-fedora-dark-blue\
+              \ <body> <div class=\"bg-fedora-new-blue border-bottom border-fedora-new-blue\
               \ border-width-2\"> <div class=\"container\"> <nav class=\"navbar navbar-dark\
               \ navbar-expand-sm bg-none p-0\"> <a class=\"navbar-brand pb-2\" href=\"\
               /en/\"><img src=\"/static/images/fedora-logotext-white.png\" height=\"\
@@ -54,8 +54,9 @@ requests.sessions:
               false\"> Editions </a> <div class=\"dropdown-menu\" aria-labelledby=\"\
               navbarDropdownMenuLink\"> <span class=\"dropdown-header\">Official Editions</span>\
               \ <a class=\"dropdown-item\" href=\"/en/workstation/\">Fedora Workstation</a>\
-              \ <a class=\"dropdown-item\" href=\"/en/server/\">Fedora Server</a> </div>\
-              \ </li> <li class=\"nav-item dropdown\"> <a class=\"nav-link dropdown-toggle\"\
+              \ <a class=\"dropdown-item\" href=\"/en/server/\">Fedora Server</a> <a\
+              \ class=\"dropdown-item\" href=\"/en/iot/\">Fedora IoT</a> </div> </li>\
+              \ <li class=\"nav-item dropdown\"> <a class=\"nav-link dropdown-toggle\"\
               \ href=\"#\" id=\"navbarDropdownSubMenuLink\" role=\"button\" data-toggle=\"\
               dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"> Help </a> <div\
               \ class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownSubMenuLink\"\
@@ -66,8 +67,8 @@ requests.sessions:
               \ </li> </ul> </div> </nav> </div> </div> <div id=\"site-content\"> <div\
               \ class=\"container-fluid\"> <div class=\"row justify-content-end\"> <div\
               \ class=\"col-auto bg-fedora-purple text-white rounded-left-1 px-3 py-1\
-              \ mt-3\"> <a href=\"https://fedoramagazine.org/announcing-fedora-32\"\
-              \ class=\"text-white font-weight-bold\"> Fedora 32 released! </a> </div>\
+              \ mt-3\"> <a href=\"https://fedoramagazine.org/announcing-fedora-34\"\
+              \ class=\"text-white font-weight-bold\"> Fedora 34 released! </a> </div>\
               \ </div> </div> <div class=\"bg-tranparent pt-5\"> <div class=\"container\
               \ py-3 position-relative\"> <div class=\"row align-items-center\"> <div\
               \ class=\"col-lg-5 col-md-6 pb-4 pb-md-0 text-center\"> <img class=\"\
@@ -105,53 +106,55 @@ requests.sessions:
               row align-items-end flex-grow-1\"> <div class=\"col-sm-6 font-weight-normal\
               \ pb-1\"> <a href=\"/en/server/\">Learn more.</a> </div> <div class=\"\
               col-sm-6 text-right\"> <a href=\"/en/server/download/\" class=\"btn btn-outline-fedora-orange\"\
-              >Download Now</a> </div> </div> </div> </div> </div> </div> </div> <div\
-              \ class=\"bg-gray-200 py-5\"> <div class=\"container\"> <div class=\"\
-              row\"> <div class=\"col-12 text-center\"> <h2 class=\"font-weight-light\"\
-              >Emerging Fedora Editions</h2> <p class=\"lead\">Preview the future of\
-              \ Fedora.</p> </div> </div> <div class=\"row\"> <div class=\"col-lg-4\
-              \ mt-5\"> <div class=\"d-flex flex-column h-100 p-3 bg-white rounded border\"\
-              > <div class=\"row\"> <div class=\"col-12\"> <a href=\"/en/coreos/\"><img\
-              \ alt=\"logo\" src=\"/static/images/fedora-coreos-logo.png\" class=\"\
-              mt-n5\"></a> </div> </div> <div class=\"row py-3\"> <div class=\"col-12\
-              \ font-weight-light\"> Fedora CoreOS is an automatically updating, minimal,\
-              \ container-focused operating system. </div> </div> <div class=\"row align-items-end\
-              \ flex-grow-1\"> <div class=\"col-12 lead  text-right font-weight-normal\"\
-              > <a href=\"/en/coreos/\"> Learn more. </a> </div> </div> </div> </div>\
-              \ <div class=\"col-lg-4 mt-5\"> <div class=\"d-flex flex-column h-100\
-              \ p-3 bg-white rounded border\"> <div class=\"row\"> <div class=\"col-12\"\
-              > <a href=\"https://silverblue.fedoraproject.org/\"><img alt=\"logo\"\
-              \ src=\"/static/images/fedora-silverblue-logo.png\" class=\"mt-n5\"></a>\
-              \ </div> </div> <div class=\"row py-3\"> <div class=\"col-12 font-weight-light\"\
-              > Fedora Silverblue is an immutable desktop operating system aimed at\
-              \ good support for container-focused workflows. </div> </div> <div class=\"\
-              row align-items-end flex-grow-1\"> <div class=\"col-12 lead  text-right\
-              \ font-weight-normal\"> <a href=\"https://silverblue.fedoraproject.org/\"\
-              > Learn more. </a> </div> </div> </div> </div> <div class=\"col-lg-4 mt-5\"\
+              >Download Now</a> </div> </div> </div> </div> <div class=\"col-lg-6 mt-5\"\
               > <div class=\"d-flex flex-column h-100 p-3 bg-white rounded border\"\
-              > <div class=\"row\"> <div class=\"col-12\"> <a href=\"https://iot.fedoraproject.org/\"\
-              ><img alt=\"logo\" src=\"/static/images/fedora-iot-logo.png\" class=\"\
+              > <div class=\"row\"> <div class=\"col-9\"> <a href=\"/en/iot/\"><img\
+              \ alt=\"logo\" src=\"/static/images/fedora-iot-logo.png\" class=\"mt-n5\"\
+              ></a> </div> <div class=\"col-3 line-height-1 text-muted text-right d-none\
+              \ d-sm-block\"> <span class=\"text-uppercase\"> Official Edition </span>\
+              \ </div> </div> <div class=\"row py-3\"> <div class=\"col-10 font-weight-light\"\
+              > Fedora IoT provides a trusted open source platform as a strong foundation\
+              \ for IoT ecosystems. </div> </div> <div class=\"row align-items-end flex-grow-1\"\
+              > <div class=\"col-sm-6 font-weight-normal pb-1\"> <a href=\"/en/iot/\"\
+              >Learn more.</a> </div> <div class=\"col-sm-6 text-right\"> <a href=\"\
+              /en/iot/download/\" class=\"btn btn-outline-fedora-purple\">Download Now</a>\
+              \ </div> </div> </div> </div> </div> </div> </div> <div class=\"bg-gray-200\
+              \ py-5\"> <div class=\"container\"> <div class=\"row\"> <div class=\"\
+              col-12 text-center\"> <h2 class=\"font-weight-light\">Emerging Fedora\
+              \ Editions</h2> <p class=\"lead\">Preview the future of Fedora.</p> </div>\
+              \ </div> <div class=\"row\"> <div class=\"col-lg-4 mt-5\"> <div class=\"\
+              d-flex flex-column h-100 p-3 bg-white rounded border\"> <div class=\"\
+              row\"> <div class=\"col-12\"> <a href=\"/en/coreos/\"><img alt=\"logo\"\
+              \ src=\"/static/images/fedora-coreos-logo.png\" class=\"mt-n5\"></a> </div>\
+              \ </div> <div class=\"row py-3\"> <div class=\"col-12 font-weight-light\"\
+              > Fedora CoreOS is an automatically updating, minimal, container-focused\
+              \ operating system. </div> </div> <div class=\"row align-items-end flex-grow-1\"\
+              > <div class=\"col-12 lead  text-right font-weight-normal\"> <a href=\"\
+              /en/coreos/\"> Learn more. </a> </div> </div> </div> </div> <div class=\"\
+              col-lg-4 mt-5\"> <div class=\"d-flex flex-column h-100 p-3 bg-white rounded\
+              \ border\"> <div class=\"row\"> <div class=\"col-12\"> <a href=\"https://silverblue.fedoraproject.org/\"\
+              ><img alt=\"logo\" src=\"/static/images/fedora-silverblue-logo.png\" class=\"\
               mt-n5\"></a> </div> </div> <div class=\"row py-3\"> <div class=\"col-12\
-              \ font-weight-light\"> Fedora IoT provides a trusted open source platform\
-              \ as a strong foundation for IoT ecosystems. </div> </div> <div class=\"\
-              row align-items-end flex-grow-1\"> <div class=\"col-12 lead  text-right\
-              \ font-weight-normal\"> <a href=\"https://iot.fedoraproject.org/\"> Learn\
-              \ more. </a> </div> </div> </div> </div> </div> </div> </div> <div class=\"\
-              bg-light border\"> <div class=\"container\"> <div class=\"row mb-4\">\
-              \ <div class=\"col-4\"> <a href=\"https://fedoramagazine.org/\"><img src=\"\
-              /static/images/fmag-ribbon.png\" alt=\"Fedora Magazine\"></a> </div> <div\
-              \ class=\"col-lg-8 pt-5 d-none d-lg-block\"> <h2 class=\"pt-4 text-right\
-              \ font-weight-light\">Make the most of using Fedora.</h2> </div> </div>\
-              \ <div class=\"row\"> <div class=\"col-12 mb-4\"> <div class=\"card-deck\"\
-              \ id=\"magazineposts\"> </div> </div> </div> <div class=\"row mb-4\">\
-              \ <div class=\"col-12 text-right\"> <p> View more articles on <a href=\"\
-              https://fedoramagazine.org/\">Fedora Magazine &raquo;</a> </p> </div>\
-              \ </div> </div> </div> <div class=\"bg-gray-200 py-5\"> <div class=\"\
-              container\"> <div class=\"row\"> <div class=\"col-12 text-center\"> <h2\
-              \ class=\"font-weight-light\">Want more Fedora options?</h2> </div> </div>\
-              \ <div class=\"row\"> <div class=\"col-lg-4 mt-5\"> <div class=\"d-flex\
-              \ flex-column h-100 p-3 bg-white rounded border\"> <div class=\"row\"\
-              > <div class=\"col-12\"> <a href=\"https://spins.fedoraproject.org/\"\
+              \ font-weight-light\"> Fedora Silverblue is an immutable desktop operating\
+              \ system aimed at good support for container-focused workflows. </div>\
+              \ </div> <div class=\"row align-items-end flex-grow-1\"> <div class=\"\
+              col-12 lead  text-right font-weight-normal\"> <a href=\"https://silverblue.fedoraproject.org/\"\
+              > Learn more. </a> </div> </div> </div> </div> </div> </div> </div> <div\
+              \ class=\"bg-light border\"> <div class=\"container\"> <div class=\"row\
+              \ mb-4\"> <div class=\"col-4\"> <a href=\"https://fedoramagazine.org/\"\
+              ><img src=\"/static/images/fmag-ribbon.png\" alt=\"Fedora Magazine\"></a>\
+              \ </div> <div class=\"col-lg-8 pt-5 d-none d-lg-block\"> <h2 class=\"\
+              pt-4 text-right font-weight-light\">Make the most of using Fedora.</h2>\
+              \ </div> </div> <div class=\"row\"> <div class=\"col-12 mb-4\"> <div class=\"\
+              card-deck\" id=\"magazineposts\"> </div> </div> </div> <div class=\"row\
+              \ mb-4\"> <div class=\"col-12 text-right\"> <p> View more articles on\
+              \ <a href=\"https://fedoramagazine.org/\">Fedora Magazine &raquo;</a>\
+              \ </p> </div> </div> </div> </div> <div class=\"bg-gray-200 py-5\"> <div\
+              \ class=\"container\"> <div class=\"row\"> <div class=\"col-12 text-center\"\
+              > <h2 class=\"font-weight-light\">Want more Fedora options?</h2> </div>\
+              \ </div> <div class=\"row\"> <div class=\"col-lg-4 mt-5\"> <div class=\"\
+              d-flex flex-column h-100 p-3 bg-white rounded border\"> <div class=\"\
+              row\"> <div class=\"col-12\"> <a href=\"https://spins.fedoraproject.org/\"\
               ><img alt=\"logo\" src=\"/static/images/fedora-spins-logo.png\" class=\"\
               mt-n5\"></a> </div> </div> <div class=\"row py-3\"> <div class=\"col-12\
               \ font-weight-light\"> If you prefer an alternative desktop environment\
@@ -201,7 +204,7 @@ requests.sessions:
               \ class=\"text-uppercase h5\"><strong>Support</strong></dt> <dd><a href=\"\
               https://fedoraproject.org/wiki/Communicating_and_getting_help\">Get Help</a></dd>\
               \ <dd><a href=\"https://ask.fedoraproject.org/\">Ask Fedora</a></dd> <dd><a\
-              \ href=\"https://fedoraproject.org/wiki/Common_F32_bugs\">Common Bugs</a></dd>\
+              \ href=\"https://fedoraproject.org/wiki/Common_F34_bugs\">Common Bugs</a></dd>\
               \ <dd><a href=\"https://developer.fedoraproject.org/\">Fedora Developer\
               \ Portal</a></dd> </dl> </div> </div> <div class=\"col-sm-3 col-4 mt-3\"\
               > <div> <dl> <dt class=\"text-uppercase h5\"><strong>Community</strong></dt>\
@@ -254,36 +257,36 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.495449
+            elapsed: 0.613794
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1207
+              AppTime: D=1105
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
               Content-Language: en
-              Content-Length: "4132"
+              Content-Length: "4170"
               Content-Location: index.html.en
               Content-Security-Policy:
                 "default-src 'none'; img-src 'self' https://fedoramagazine.org;
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Thu, 17 Sep 2020 07:20:00 GMT
-              ETag: '"3f8f-5af7c6ec33ece-gzip"'
-              Expires: Thu, 17 Sep 2020 07:50:00 GMT
+              Date: Fri, 07 May 2021 05:36:22 GMT
+              ETag: '"40a2-5c1b62a130471-gzip"'
+              Expires: Fri, 07 May 2021 06:06:22 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Thu, 17 Sep 2020 06:24:12 GMT
+              Last-Modified: Fri, 07 May 2021 04:50:17 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
               TCN: choice
               Upgrade: h2
-              Vary: negotiate,accept-language,Accept-Encoding
+              Vary: negotiate,accept,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
-              X-Fedora-ProxyServer: proxy12.fedoraproject.org
-              X-Fedora-RequestID: X2MOIDrllHHCtoiU6hJ53QAACQk
+              X-Fedora-ProxyServer: proxy10.iad2.fedoraproject.org
+              X-Fedora-RequestID: YJTR1hTl0@wens4j6j1JhAAAAIA
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""
@@ -291,7 +294,7 @@ requests.sessions:
             status_code: 200
       https://getfedora.org/:
         - metadata:
-            latency: 0.49628567695617676
+            latency: 0.6145248413085938
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -318,14 +321,14 @@ requests.sessions:
               twitter:site\" content=\"@fedora\"><meta name=\"twitter:title\" content=\"\
               Choose Freedom. Choose Fedora.\"><meta name=\"twitter:description\" content=\"\
               Pick a flavor of Fedora streamlined for your needs, and get to work right\
-              \ away.\"><meta name=\"twitter:image\" content=\"https://getfedora.org/static/images/fedora.png\"\
+              \ away.\"><meta name=\"twitter:image\" content=\"https://getfedora.org/static/images/fedora-twitter-card.png\"\
               ><link rel=\"shortcut icon\" href=\"/static/images/favicon.ico\"><link\
               \ rel=\"stylesheet\" media=\"screen\" href=\"https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&subset=latin,latin-ext\"\
               ><link rel=\"stylesheet\" media=\"screen\" href=\"https://fonts.googleapis.com/css?family=Montserrat:400,700\"\
-              ><link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/bundle.css?7e6aa320\"\
+              ><link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/bundle.css?ee8c995b\"\
               ><link rel=\"shortcut icon\" href=\"/static/images/favicon.ico\" sizes=\"\
               16x16 32x32\" type=\"image/vnd.microsoft.icon\"><title>Fedora</title></head>\
-              \ <body> <div class=\"bg-fedora-blue border-bottom border-fedora-dark-blue\
+              \ <body> <div class=\"bg-fedora-new-blue border-bottom border-fedora-new-blue\
               \ border-width-2\"> <div class=\"container\"> <nav class=\"navbar navbar-dark\
               \ navbar-expand-sm bg-none p-0\"> <a class=\"navbar-brand pb-2\" href=\"\
               /en/\"><img src=\"/static/images/fedora-logotext-white.png\" height=\"\
@@ -340,8 +343,9 @@ requests.sessions:
               false\"> Editions </a> <div class=\"dropdown-menu\" aria-labelledby=\"\
               navbarDropdownMenuLink\"> <span class=\"dropdown-header\">Official Editions</span>\
               \ <a class=\"dropdown-item\" href=\"/en/workstation/\">Fedora Workstation</a>\
-              \ <a class=\"dropdown-item\" href=\"/en/server/\">Fedora Server</a> </div>\
-              \ </li> <li class=\"nav-item dropdown\"> <a class=\"nav-link dropdown-toggle\"\
+              \ <a class=\"dropdown-item\" href=\"/en/server/\">Fedora Server</a> <a\
+              \ class=\"dropdown-item\" href=\"/en/iot/\">Fedora IoT</a> </div> </li>\
+              \ <li class=\"nav-item dropdown\"> <a class=\"nav-link dropdown-toggle\"\
               \ href=\"#\" id=\"navbarDropdownSubMenuLink\" role=\"button\" data-toggle=\"\
               dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\"> Help </a> <div\
               \ class=\"dropdown-menu\" aria-labelledby=\"navbarDropdownSubMenuLink\"\
@@ -352,8 +356,8 @@ requests.sessions:
               \ </li> </ul> </div> </nav> </div> </div> <div id=\"site-content\"> <div\
               \ class=\"container-fluid\"> <div class=\"row justify-content-end\"> <div\
               \ class=\"col-auto bg-fedora-purple text-white rounded-left-1 px-3 py-1\
-              \ mt-3\"> <a href=\"https://fedoramagazine.org/announcing-fedora-32\"\
-              \ class=\"text-white font-weight-bold\"> Fedora 32 released! </a> </div>\
+              \ mt-3\"> <a href=\"https://fedoramagazine.org/announcing-fedora-34\"\
+              \ class=\"text-white font-weight-bold\"> Fedora 34 released! </a> </div>\
               \ </div> </div> <div class=\"bg-tranparent pt-5\"> <div class=\"container\
               \ py-3 position-relative\"> <div class=\"row align-items-center\"> <div\
               \ class=\"col-lg-5 col-md-6 pb-4 pb-md-0 text-center\"> <img class=\"\
@@ -391,53 +395,55 @@ requests.sessions:
               row align-items-end flex-grow-1\"> <div class=\"col-sm-6 font-weight-normal\
               \ pb-1\"> <a href=\"/en/server/\">Learn more.</a> </div> <div class=\"\
               col-sm-6 text-right\"> <a href=\"/en/server/download/\" class=\"btn btn-outline-fedora-orange\"\
-              >Download Now</a> </div> </div> </div> </div> </div> </div> </div> <div\
-              \ class=\"bg-gray-200 py-5\"> <div class=\"container\"> <div class=\"\
-              row\"> <div class=\"col-12 text-center\"> <h2 class=\"font-weight-light\"\
-              >Emerging Fedora Editions</h2> <p class=\"lead\">Preview the future of\
-              \ Fedora.</p> </div> </div> <div class=\"row\"> <div class=\"col-lg-4\
-              \ mt-5\"> <div class=\"d-flex flex-column h-100 p-3 bg-white rounded border\"\
-              > <div class=\"row\"> <div class=\"col-12\"> <a href=\"/en/coreos/\"><img\
-              \ alt=\"logo\" src=\"/static/images/fedora-coreos-logo.png\" class=\"\
-              mt-n5\"></a> </div> </div> <div class=\"row py-3\"> <div class=\"col-12\
-              \ font-weight-light\"> Fedora CoreOS is an automatically updating, minimal,\
-              \ container-focused operating system. </div> </div> <div class=\"row align-items-end\
-              \ flex-grow-1\"> <div class=\"col-12 lead  text-right font-weight-normal\"\
-              > <a href=\"/en/coreos/\"> Learn more. </a> </div> </div> </div> </div>\
-              \ <div class=\"col-lg-4 mt-5\"> <div class=\"d-flex flex-column h-100\
-              \ p-3 bg-white rounded border\"> <div class=\"row\"> <div class=\"col-12\"\
-              > <a href=\"https://silverblue.fedoraproject.org/\"><img alt=\"logo\"\
-              \ src=\"/static/images/fedora-silverblue-logo.png\" class=\"mt-n5\"></a>\
-              \ </div> </div> <div class=\"row py-3\"> <div class=\"col-12 font-weight-light\"\
-              > Fedora Silverblue is an immutable desktop operating system aimed at\
-              \ good support for container-focused workflows. </div> </div> <div class=\"\
-              row align-items-end flex-grow-1\"> <div class=\"col-12 lead  text-right\
-              \ font-weight-normal\"> <a href=\"https://silverblue.fedoraproject.org/\"\
-              > Learn more. </a> </div> </div> </div> </div> <div class=\"col-lg-4 mt-5\"\
+              >Download Now</a> </div> </div> </div> </div> <div class=\"col-lg-6 mt-5\"\
               > <div class=\"d-flex flex-column h-100 p-3 bg-white rounded border\"\
-              > <div class=\"row\"> <div class=\"col-12\"> <a href=\"https://iot.fedoraproject.org/\"\
-              ><img alt=\"logo\" src=\"/static/images/fedora-iot-logo.png\" class=\"\
+              > <div class=\"row\"> <div class=\"col-9\"> <a href=\"/en/iot/\"><img\
+              \ alt=\"logo\" src=\"/static/images/fedora-iot-logo.png\" class=\"mt-n5\"\
+              ></a> </div> <div class=\"col-3 line-height-1 text-muted text-right d-none\
+              \ d-sm-block\"> <span class=\"text-uppercase\"> Official Edition </span>\
+              \ </div> </div> <div class=\"row py-3\"> <div class=\"col-10 font-weight-light\"\
+              > Fedora IoT provides a trusted open source platform as a strong foundation\
+              \ for IoT ecosystems. </div> </div> <div class=\"row align-items-end flex-grow-1\"\
+              > <div class=\"col-sm-6 font-weight-normal pb-1\"> <a href=\"/en/iot/\"\
+              >Learn more.</a> </div> <div class=\"col-sm-6 text-right\"> <a href=\"\
+              /en/iot/download/\" class=\"btn btn-outline-fedora-purple\">Download Now</a>\
+              \ </div> </div> </div> </div> </div> </div> </div> <div class=\"bg-gray-200\
+              \ py-5\"> <div class=\"container\"> <div class=\"row\"> <div class=\"\
+              col-12 text-center\"> <h2 class=\"font-weight-light\">Emerging Fedora\
+              \ Editions</h2> <p class=\"lead\">Preview the future of Fedora.</p> </div>\
+              \ </div> <div class=\"row\"> <div class=\"col-lg-4 mt-5\"> <div class=\"\
+              d-flex flex-column h-100 p-3 bg-white rounded border\"> <div class=\"\
+              row\"> <div class=\"col-12\"> <a href=\"/en/coreos/\"><img alt=\"logo\"\
+              \ src=\"/static/images/fedora-coreos-logo.png\" class=\"mt-n5\"></a> </div>\
+              \ </div> <div class=\"row py-3\"> <div class=\"col-12 font-weight-light\"\
+              > Fedora CoreOS is an automatically updating, minimal, container-focused\
+              \ operating system. </div> </div> <div class=\"row align-items-end flex-grow-1\"\
+              > <div class=\"col-12 lead  text-right font-weight-normal\"> <a href=\"\
+              /en/coreos/\"> Learn more. </a> </div> </div> </div> </div> <div class=\"\
+              col-lg-4 mt-5\"> <div class=\"d-flex flex-column h-100 p-3 bg-white rounded\
+              \ border\"> <div class=\"row\"> <div class=\"col-12\"> <a href=\"https://silverblue.fedoraproject.org/\"\
+              ><img alt=\"logo\" src=\"/static/images/fedora-silverblue-logo.png\" class=\"\
               mt-n5\"></a> </div> </div> <div class=\"row py-3\"> <div class=\"col-12\
-              \ font-weight-light\"> Fedora IoT provides a trusted open source platform\
-              \ as a strong foundation for IoT ecosystems. </div> </div> <div class=\"\
-              row align-items-end flex-grow-1\"> <div class=\"col-12 lead  text-right\
-              \ font-weight-normal\"> <a href=\"https://iot.fedoraproject.org/\"> Learn\
-              \ more. </a> </div> </div> </div> </div> </div> </div> </div> <div class=\"\
-              bg-light border\"> <div class=\"container\"> <div class=\"row mb-4\">\
-              \ <div class=\"col-4\"> <a href=\"https://fedoramagazine.org/\"><img src=\"\
-              /static/images/fmag-ribbon.png\" alt=\"Fedora Magazine\"></a> </div> <div\
-              \ class=\"col-lg-8 pt-5 d-none d-lg-block\"> <h2 class=\"pt-4 text-right\
-              \ font-weight-light\">Make the most of using Fedora.</h2> </div> </div>\
-              \ <div class=\"row\"> <div class=\"col-12 mb-4\"> <div class=\"card-deck\"\
-              \ id=\"magazineposts\"> </div> </div> </div> <div class=\"row mb-4\">\
-              \ <div class=\"col-12 text-right\"> <p> View more articles on <a href=\"\
-              https://fedoramagazine.org/\">Fedora Magazine &raquo;</a> </p> </div>\
-              \ </div> </div> </div> <div class=\"bg-gray-200 py-5\"> <div class=\"\
-              container\"> <div class=\"row\"> <div class=\"col-12 text-center\"> <h2\
-              \ class=\"font-weight-light\">Want more Fedora options?</h2> </div> </div>\
-              \ <div class=\"row\"> <div class=\"col-lg-4 mt-5\"> <div class=\"d-flex\
-              \ flex-column h-100 p-3 bg-white rounded border\"> <div class=\"row\"\
-              > <div class=\"col-12\"> <a href=\"https://spins.fedoraproject.org/\"\
+              \ font-weight-light\"> Fedora Silverblue is an immutable desktop operating\
+              \ system aimed at good support for container-focused workflows. </div>\
+              \ </div> <div class=\"row align-items-end flex-grow-1\"> <div class=\"\
+              col-12 lead  text-right font-weight-normal\"> <a href=\"https://silverblue.fedoraproject.org/\"\
+              > Learn more. </a> </div> </div> </div> </div> </div> </div> </div> <div\
+              \ class=\"bg-light border\"> <div class=\"container\"> <div class=\"row\
+              \ mb-4\"> <div class=\"col-4\"> <a href=\"https://fedoramagazine.org/\"\
+              ><img src=\"/static/images/fmag-ribbon.png\" alt=\"Fedora Magazine\"></a>\
+              \ </div> <div class=\"col-lg-8 pt-5 d-none d-lg-block\"> <h2 class=\"\
+              pt-4 text-right font-weight-light\">Make the most of using Fedora.</h2>\
+              \ </div> </div> <div class=\"row\"> <div class=\"col-12 mb-4\"> <div class=\"\
+              card-deck\" id=\"magazineposts\"> </div> </div> </div> <div class=\"row\
+              \ mb-4\"> <div class=\"col-12 text-right\"> <p> View more articles on\
+              \ <a href=\"https://fedoramagazine.org/\">Fedora Magazine &raquo;</a>\
+              \ </p> </div> </div> </div> </div> <div class=\"bg-gray-200 py-5\"> <div\
+              \ class=\"container\"> <div class=\"row\"> <div class=\"col-12 text-center\"\
+              > <h2 class=\"font-weight-light\">Want more Fedora options?</h2> </div>\
+              \ </div> <div class=\"row\"> <div class=\"col-lg-4 mt-5\"> <div class=\"\
+              d-flex flex-column h-100 p-3 bg-white rounded border\"> <div class=\"\
+              row\"> <div class=\"col-12\"> <a href=\"https://spins.fedoraproject.org/\"\
               ><img alt=\"logo\" src=\"/static/images/fedora-spins-logo.png\" class=\"\
               mt-n5\"></a> </div> </div> <div class=\"row py-3\"> <div class=\"col-12\
               \ font-weight-light\"> If you prefer an alternative desktop environment\
@@ -487,7 +493,7 @@ requests.sessions:
               \ class=\"text-uppercase h5\"><strong>Support</strong></dt> <dd><a href=\"\
               https://fedoraproject.org/wiki/Communicating_and_getting_help\">Get Help</a></dd>\
               \ <dd><a href=\"https://ask.fedoraproject.org/\">Ask Fedora</a></dd> <dd><a\
-              \ href=\"https://fedoraproject.org/wiki/Common_F32_bugs\">Common Bugs</a></dd>\
+              \ href=\"https://fedoraproject.org/wiki/Common_F34_bugs\">Common Bugs</a></dd>\
               \ <dd><a href=\"https://developer.fedoraproject.org/\">Fedora Developer\
               \ Portal</a></dd> </dl> </div> </div> <div class=\"col-sm-3 col-4 mt-3\"\
               > <div> <dl> <dt class=\"text-uppercase h5\"><strong>Community</strong></dt>\
@@ -540,36 +546,36 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.495449
+            elapsed: 0.613794
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1207
+              AppTime: D=1105
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
               Content-Language: en
-              Content-Length: "4132"
+              Content-Length: "4170"
               Content-Location: index.html.en
               Content-Security-Policy:
                 "default-src 'none'; img-src 'self' https://fedoramagazine.org;
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Thu, 17 Sep 2020 07:20:00 GMT
-              ETag: '"3f8f-5af7c6ec33ece-gzip"'
-              Expires: Thu, 17 Sep 2020 07:50:00 GMT
+              Date: Fri, 07 May 2021 05:36:22 GMT
+              ETag: '"40a2-5c1b62a130471-gzip"'
+              Expires: Fri, 07 May 2021 06:06:22 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Thu, 17 Sep 2020 06:24:12 GMT
+              Last-Modified: Fri, 07 May 2021 04:50:17 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
               TCN: choice
               Upgrade: h2
-              Vary: negotiate,accept-language,Accept-Encoding
+              Vary: negotiate,accept,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
-              X-Fedora-ProxyServer: proxy12.fedoraproject.org
-              X-Fedora-RequestID: X2MOIDrllHHCtoiU6hJ53QAACQk
+              X-Fedora-ProxyServer: proxy10.iad2.fedoraproject.org
+              X-Fedora-RequestID: YJTR1hTl0@wens4j6j1JhAAAAIA
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""

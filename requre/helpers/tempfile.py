@@ -27,14 +27,36 @@ import logging
 from typing import Optional, Any
 from requre.cassette import Cassette, CassetteExecution
 from requre.objects import ObjectStorage
+from requre.helpers.simple_object import Simple
+from warnings import warn
 
 logger = logging.getLogger(__name__)
+
+
+class MkTemp(Simple):
+    """
+    decorate mktemp method wrapper
+    """
+
+    pass
+
+
+class MkDTemp(Simple):
+    """
+    decorate mkdtemp method wrapper
+    """
+
+    def from_serializable(self, data: Any) -> Any:
+        os.makedirs(data, exist_ok=True)
+        return data
 
 
 class TempFile(ObjectStorage):
     """
     replace system tempfile module with own predictable names implementation
      of temp files for mocking
+
+     Warn: Replaced by new implementations MkDTemp and MkTemp classes
     """
 
     root = "/tmp"
@@ -81,6 +103,7 @@ class TempFile(ObjectStorage):
         :return: CassetteExecution class with function and cassette instance
 
         """
+        warn("Please replace it by MkTemp.decorator_plain()")
         casex = CassetteExecution()
         casex.cassette = cassette or cls.get_cassette()
         casex.obj_cls = cls
@@ -105,6 +128,7 @@ class TempFile(ObjectStorage):
         :return: CassetteExecution class with function and cassette instance
 
         """
+        warn("Please replace it by class mkdtemp MkDTemp.decorator_plain()")
         casex = CassetteExecution()
         casex.cassette = cassette or cls.get_cassette()
         casex.obj_cls = cls

@@ -1,8 +1,10 @@
 import os
 
-from requre.helpers.tempfile import TempFile
+import tempfile
+from requre.helpers.tempfile import TempFile, MkTemp, MkDTemp
 from requre.utils import get_datafile_filename
 from tests.testbase import BaseClass
+from requre.online_replacing import replace
 
 
 class TestTempFile(BaseClass):
@@ -43,3 +45,27 @@ class TestTempFile(BaseClass):
             f"/tmp/{os.path.basename(self.cassette.storage_file)}/static_tmp_2",
             output,
         )
+
+
+@replace(what="tempfile.mktemp", decorate=MkTemp.decorator_plain())
+def new_tempfile():
+    return tempfile.mktemp()
+
+
+@replace(what="tempfile.mkdtemp", decorate=MkDTemp.decorator_plain())
+def new_tempdir():
+    return tempfile.mkdtemp()
+
+
+class TempFile_New(BaseClass):
+    def test_tempfile(self):
+        """When regeneration, tempfile will change, so change the expected output"""
+        filename = new_tempfile()
+        self.assertFalse(os.path.exists(filename))
+        self.assertEqual(filename, "/tmp/tmpbn0vx9rk")
+
+    def test_tempdir(self):
+        """When regeneration, tempdir will change, so change the expected output"""
+        filename = new_tempdir()
+        self.assertTrue(os.path.exists(filename))
+        self.assertEqual(filename, "/tmp/tmplpss4q9_")

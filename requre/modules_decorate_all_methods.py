@@ -4,7 +4,7 @@ from requre.online_replacing import (
     apply_decorator_to_all_methods,
     record_requests_for_all_methods,
 )
-from requre.helpers.tempfile import TempFile
+from requre.helpers.tempfile import MkTemp, MkDTemp
 from requre.cassette import Cassette
 from requre.constants import TEST_METHOD_REGEXP
 from requre.helpers.git.repo import Repo
@@ -47,8 +47,8 @@ def record_tempfile_module(
     regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     decorators = [
-        ("tempfile.mkdtemp", TempFile.mkdtemp()),
-        ("tempfile.mktemp", TempFile.mktemp()),
+        ("tempfile.mkdtemp", MkDTemp.decorator_plain()),
+        ("tempfile.mktemp", MkTemp.decorator_plain()),
     ]
     return __replace_module_match_with_multiple_decorators(
         *decorators,
