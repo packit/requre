@@ -1,0 +1,2651 @@
+X:
+  file:
+    tar:
+      StoreFiles:
+        ApplyCommonCase.test_git.yaml:
+          to_path:
+            - metadata:
+                latency: 0
+              output: ApplyCommonCase.test_git.yaml.tmp8ohjdnlq_1.tar.xz
+_requre:
+  DataTypes: 1
+  key_strategy: StorageKeysInspectSimple
+  version_storage_file: 3
+git.remote:
+  fetch:
+    - metadata:
+        latency: 1.6117045879364014
+        module_call_list:
+          - unittest.case
+          - requre.online_replacing
+          - tests.test_modules_decorate_all_methods
+          - requre.objects
+          - requre.cassette
+          - git.remote
+          - fetch
+      output:
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "main                  "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/1/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/10/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/102/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/106/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/107/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/108/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/109/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/11/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/110/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/111/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/112/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/113/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/114/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/115/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/119/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/12/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/120/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/121/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/122/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/123/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/124/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/125/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/126/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/127/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/128/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/129/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/13/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/130/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/131/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/132/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/133/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/134/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/135/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/138/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/139/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/14/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/140/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/141/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/142/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/145/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/146/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/147/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/148/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/149/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/150/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/151/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/152/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/153/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/156/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/157/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/158/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/159/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/16/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/160/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/161/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/162/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/163/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/164/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/165/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/166/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/167/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/168/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/169/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/17/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/170/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/171/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/172/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/173/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/174/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/175/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/176/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/177/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/178/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/179/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/18/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/180/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/181/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/182/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/183/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/184/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/185/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/186/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/187/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/188/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/189/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/190/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/191/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/192/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/193/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/194/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/195/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/196/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/197/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/198/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/199/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/2/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/20/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/200/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/201/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/202/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/203/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/204/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/205/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/206/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/207/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/208/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/209/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/21/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/210/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/211/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/212/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/213/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/214/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/215/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/216/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/217/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/218/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/219/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/22/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/220/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/221/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/222/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/223/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/224/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/225/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/226/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/227/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/228/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/229/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/23/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/230/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/231/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/232/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/233/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/234/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/235/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/236/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/237/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/238/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/239/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/24/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/240/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/241/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/242/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/243/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/244/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/245/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/246/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/247/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/248/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/249/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/25/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/250/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/251/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/252/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/253/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/254/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/255/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/256/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/257/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/258/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/259/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/26/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/260/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/261/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/262/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/263/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/264/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/265/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/266/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/267/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/268/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/269/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/27/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/270/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/271/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/272/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/273/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/274/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/275/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/276/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/277/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/278/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/279/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/28/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/280/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/281/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/282/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/283/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/284/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/285/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/286/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/287/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/288/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/289/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/29/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/290/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/291/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/294/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/295/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/298/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/299/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/3/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/30/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/300/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/301/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/302/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/303/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/304/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/305/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/306/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/307/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/308/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/309/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/31/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/310/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/311/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/312/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/313/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/314/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/315/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/316/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/317/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/318/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/319/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/32/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/320/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/323/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/324/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/325/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/326/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/327/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/328/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/329/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/33/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/330/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/331/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/332/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/333/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/334/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/335/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/34/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/35/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/36/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/37/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/38/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/39/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/4/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/40/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/41/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/42/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/43/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/44/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/45/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/46/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/47/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/48/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/49/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/5/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/50/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/51/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/52/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/53/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/54/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/55/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/56/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/57/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/59/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/6/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/60/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/62/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/63/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/64/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/65/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/66/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/67/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/68/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/69/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/7/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/70/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/71/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/72/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/73/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/74/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/75/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/77/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/78/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/79/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/8/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/80/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/81/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/82/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/83/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/84/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/88/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/9/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/90/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/91/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/93/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/94/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/95/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/96/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/97/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/98/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/99/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: Basic_test_case-copr_build_only
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: basic-test-case_copr-build-only-upstream
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "build-branch          "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "demo                  "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "demo-passed           "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "no-notifs             "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "rfe-new               "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test-for-flock        "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test_case_opened_pr   "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: test_case_push_trigger
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test_source           "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test_target           "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "the-build-branch      "
+  pull:
+    - metadata:
+        latency: 1.9237847328186035
+        module_call_list:
+          - unittest.case
+          - requre.online_replacing
+          - tests.test_modules_decorate_all_methods
+          - requre.objects
+          - requre.cassette
+          - git.remote
+          - pull
+      output:
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "main                  "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/1/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/10/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/102/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/106/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/107/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/108/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/109/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/11/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/110/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/111/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/112/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/113/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/114/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/115/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/119/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/12/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/120/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/121/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/122/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/123/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/124/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/125/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/126/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/127/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/128/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/129/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/13/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/130/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/131/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/132/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/133/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/134/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/135/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/138/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/139/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/14/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/140/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/141/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/142/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/145/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/146/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/147/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/148/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/149/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/150/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/151/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/152/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/153/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/156/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/157/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/158/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/159/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/16/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/160/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/161/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/162/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/163/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/164/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/165/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/166/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/167/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/168/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/169/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/17/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/170/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/171/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/172/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/173/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/174/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/175/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/176/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/177/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/178/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/179/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/18/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/180/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/181/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/182/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/183/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/184/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/185/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/186/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/187/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/188/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/189/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/190/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/191/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/192/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/193/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/194/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/195/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/196/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/197/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/198/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/199/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/2/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/20/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/200/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/201/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/202/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/203/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/204/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/205/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/206/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/207/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/208/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/209/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/21/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/210/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/211/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/212/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/213/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/214/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/215/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/216/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/217/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/218/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/219/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/22/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/220/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/221/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/222/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/223/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/224/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/225/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/226/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/227/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/228/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/229/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/23/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/230/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/231/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/232/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/233/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/234/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/235/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/236/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/237/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/238/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/239/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/24/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/240/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/241/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/242/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/243/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/244/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/245/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/246/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/247/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/248/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/249/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/25/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/250/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/251/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/252/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/253/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/254/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/255/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/256/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/257/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/258/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/259/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/26/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/260/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/261/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/262/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/263/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/264/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/265/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/266/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/267/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/268/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/269/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/27/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/270/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/271/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/272/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/273/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/274/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/275/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/276/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/277/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/278/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/279/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/28/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/280/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/281/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/282/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/283/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/284/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/285/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/286/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/287/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/288/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/289/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/29/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/290/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/291/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/294/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/295/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/298/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/299/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/3/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/30/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/300/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/301/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/302/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/303/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/304/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/305/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/306/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/307/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/308/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/309/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/31/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/310/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/311/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/312/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/313/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/314/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/315/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/316/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/317/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/318/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/319/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/32/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/320/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/323/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/324/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/325/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/326/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/327/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/328/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/329/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/33/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/330/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/331/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/332/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/333/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/334/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/335/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/34/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/35/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/36/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/37/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/38/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/39/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/4/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/40/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/41/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/42/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/43/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/44/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/45/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/46/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/47/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/48/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/49/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/5/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/50/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/51/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/52/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/53/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/54/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/55/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/56/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/57/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/59/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/6/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/60/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/62/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/63/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/64/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/65/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/66/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/67/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/68/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/69/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/7/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/70/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/71/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/72/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/73/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/74/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/75/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/77/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/78/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/79/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/8/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/80/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/81/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/82/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/83/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/84/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/88/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/9/head      "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/90/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/91/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/93/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/94/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/95/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/96/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/97/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/98/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/99/head     "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: Basic_test_case-copr_build_only
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: basic-test-case_copr-build-only-upstream
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "build-branch          "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "demo                  "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "demo-passed           "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "no-notifs             "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "rfe-new               "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test-for-flock        "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test_case_opened_pr   "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: test_case_push_trigger
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test_source           "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "test_target           "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "the-build-branch      "
+  push:
+    - metadata:
+        latency: 1.4629783630371094
+        module_call_list:
+          - unittest.case
+          - requre.online_replacing
+          - tests.test_modules_decorate_all_methods
+          - requre.objects
+          - requre.helpers.git.pushinfo
+          - requre.objects
+          - requre.cassette
+          - git.remote
+          - push
+      output:
+        - _old_commit_sha: null
+          flags: 512
+          local_ref:
+            - /tmp/tmp8ohjdnlq/.git
+            - refs/heads/main
+          remote_ref_string: refs/heads/main
+          summary: "[up to date]
+
+            "
+tempfile:
+  mkdtemp:
+    - metadata:
+        latency: 0.00015020370483398438
+        module_call_list:
+          - unittest.case
+          - requre.online_replacing
+          - tests.test_modules_decorate_all_methods
+          - requre.objects
+          - requre.cassette
+          - tempfile
+          - mkdtemp
+      output: /tmp/tmp8ohjdnlq
+unittest.case:
+  requre.online_replacing:
+    tests.test_modules_decorate_all_methods:
+      requre.helpers.files:
+        requre.objects:
+          requre.cassette:
+            git.repo.base:
+              clone_from:
+                - metadata:
+                    latency: 2.0498409271240234
+                    module_call_list:
+                      - unittest.case
+                      - requre.online_replacing
+                      - tests.test_modules_decorate_all_methods
+                      - requre.helpers.files
+                      - requre.objects
+                      - requre.cassette
+                      - git.repo.base
+                      - clone_from
+                  output:
+                    _bare: false
+                    _common_dir: null
+                    _working_tree_dir: /tmp/tmp8ohjdnlq
+                    git_dir: /tmp/tmp8ohjdnlq/.git
+                    working_dir: /tmp/tmp8ohjdnlq

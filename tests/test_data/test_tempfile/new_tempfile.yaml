@@ -1,0 +1,18 @@
+_requre:
+  DataTypes: 1
+  key_strategy: StorageKeysInspectSimple
+  version_storage_file: 3
+tempfile:
+  mktemp:
+    - metadata:
+        latency: 2.4557113647460938e-05
+        module_call_list:
+          - unittest.case
+          - tests.test_tempfile
+          - requre.online_replacing
+          - tests.test_tempfile
+          - requre.objects
+          - requre.cassette
+          - tempfile
+          - mktemp
+      output: /tmp/tmpbn0vx9rk
