@@ -53,6 +53,7 @@ class ObjectStorage:
     _cassette: Cassette = None
     __response_keys: list = list()
     object_type = object
+    DUPLICATION_KEY = "requre.objects"
 
     def __init__(
         self,
@@ -94,6 +95,7 @@ class ObjectStorage:
         func: Callable,
         *args,
         storage_object_kwargs=None,
+        stack_internal_check=True,
         cassette: Cassette,
         **kwargs,
     ) -> Any:
@@ -121,11 +123,16 @@ class ObjectStorage:
             response = func_exposed(*args, **kwargs)
 
             time_after = original_time()
+            call_stack = StorageKeysInspectFull.get_base_keys(func_exposed)
+            # do not store data of fuction what will be stored by upper decodator
+            if (
+                stack_internal_check
+                and len([x for x in call_stack if x and x == cls.DUPLICATION_KEY]) > 1
+            ):
+                return response
             metadata: Dict = {
                 cassette.data_miner.LATENCY_KEY: time_after - time_before,
-                cassette.data_miner.METADATA_CALLER_LIST: StorageKeysInspectFull.get_base_keys(
-                    func_exposed
-                ),
+                cassette.data_miner.METADATA_CALLER_LIST: call_stack,
             }
             if cassette.data_miner.store_arg_debug_metadata:
                 args_clean = [f"'{x}'" if isinstance(x, str) else str(x) for x in args]
@@ -211,7 +218,10 @@ class ObjectStorage:
 
     @classmethod
     def decorator_all_keys(
-        cls, storage_object_kwargs=None, cassette: Cassette = None
+        cls,
+        storage_object_kwargs=None,
+        stack_internal_check=True,
+        cassette: Cassette = None,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -229,6 +239,7 @@ class ObjectStorage:
                 return cls.decorator(
                     item_list=list(range(len(args))) + list(kwargs.keys()),
                     cassette=cassette,
+                    stack_internal_check=stack_internal_check,
                 )(func)(*args, **kwargs)
 
             return internal_internal
@@ -242,6 +253,7 @@ class ObjectStorage:
         item_list: list,
         map_function_to_item=None,
         storage_object_kwargs=None,
+        stack_internal_check=True,
         cassette: Cassette = None,
     ) -> Any:
         """
@@ -300,6 +312,7 @@ class ObjectStorage:
                     func,
                     *args,
                     storage_object_kwargs=storage_object_kwargs,
+                    stack_internal_check=stack_internal_check,
                     cassette=casex.cassette,
                     **kwargs,
                 )
@@ -311,10 +324,17 @@ class ObjectStorage:
 
     @classmethod
     def decorator_plain(
-        cls, *, cassette: Cassette = None, storage_object_kwargs=None
+        cls,
+        *,
+        cassette: Cassette = None,
+        storage_object_kwargs=None,
+        stack_internal_check=True,
     ) -> Any:
         return cls.decorator(
-            item_list=[], cassette=cassette, storage_object_kwargs=storage_object_kwargs
+            item_list=[],
+            cassette=cassette,
+            storage_object_kwargs=storage_object_kwargs,
+            stack_internal_check=stack_internal_check,
         )
 
     def write(self, obj: Any, metadata: Optional[Dict] = None) -> Any:

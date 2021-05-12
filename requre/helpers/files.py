@@ -171,9 +171,9 @@ class StoreFiles(ObjectStorage):
         def internal(func):
             @functools.wraps(func)
             def store_files_int(*args, **kwargs):
-                output = return_decorator(cassette=casex.cassette)(func)(
-                    *args, **kwargs
-                )
+                output = return_decorator(
+                    cassette=casex.cassette, stack_internal_check=False
+                )(func)(*args, **kwargs)
                 cls._copy_logic(
                     cassette=casex.cassette,
                     pathname=output,
@@ -233,9 +233,9 @@ class StoreFiles(ObjectStorage):
                     cls.__name__,
                     cls._test_identifier(casex.cassette),
                 ]
-                output = return_decorator(cassette=casex.cassette)(func)(
-                    *args, **kwargs
-                )
+                output = return_decorator(
+                    cassette=casex.cassette, stack_internal_check=False
+                )(func)(*args, **kwargs)
                 for position in range(len(args)):
                     int_dec_fn(args[position], class_test_id_list + [position])
                 for k, v in kwargs.items():
@@ -291,9 +291,9 @@ class StoreFiles(ObjectStorage):
                         keys=class_test_id_list + [key],
                     )
                 if casex.cassette.mode == StorageMode.read:
-                    output = return_decorator(cassette=casex.cassette)(func)(
-                        *args, **kwargs
-                    )
+                    output = return_decorator(
+                        cassette=casex.cassette, stack_internal_check=False
+                    )(func)(*args, **kwargs)
 
                 return output
 
@@ -330,9 +330,9 @@ class StoreFiles(ObjectStorage):
                     cls._test_identifier(casex.cassette),
                 ]
                 if casex.cassette.mode != StorageMode.read:
-                    output = return_decorator(cassette=casex.cassette)(func)(
-                        *args, **kwargs
-                    )
+                    output = return_decorator(
+                        cassette=casex.cassette, stack_internal_check=False
+                    )(func)(*args, **kwargs)
                 cls._copy_logic(
                     cassette=casex.cassette,
                     pathname=file_param,

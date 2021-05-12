@@ -147,6 +147,7 @@ class RequestResponseHandling(ObjectStorage):
     def decorator_all_keys(
         cls,
         storage_object_kwargs=None,
+        stack_internal_check=True,
         cassette: Cassette = None,
         response_headers_to_drop=None,
     ) -> Any:
@@ -164,7 +165,11 @@ class RequestResponseHandling(ObjectStorage):
         storage_object_kwargs = storage_object_kwargs or {}
         if response_headers_to_drop:
             storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
-        return super().decorator_all_keys(storage_object_kwargs, cassette=cassette)
+        return super().decorator_all_keys(
+            storage_object_kwargs,
+            cassette=cassette,
+            stack_internal_check=stack_internal_check,
+        )
 
     @classmethod
     def decorator(
@@ -174,7 +179,8 @@ class RequestResponseHandling(ObjectStorage):
         map_function_to_item=None,
         storage_object_kwargs=None,
         cassette: Cassette = None,
-        response_headers_to_drop=None
+        response_headers_to_drop=None,
+        stack_internal_check=True,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -197,6 +203,7 @@ class RequestResponseHandling(ObjectStorage):
             map_function_to_item=map_function_to_item,
             storage_object_kwargs=storage_object_kwargs,
             cassette=cassette,
+            stack_internal_check=stack_internal_check,
         )
 
     @classmethod
@@ -205,6 +212,7 @@ class RequestResponseHandling(ObjectStorage):
         storage_object_kwargs=None,
         cassette: Cassette = None,
         response_headers_to_drop=None,
+        stack_internal_check=True,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -221,5 +229,7 @@ class RequestResponseHandling(ObjectStorage):
         if response_headers_to_drop:
             storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
         return super().decorator_plain(
-            storage_object_kwargs=storage_object_kwargs, cassette=cassette
+            storage_object_kwargs=storage_object_kwargs,
+            cassette=cassette,
+            stack_internal_check=stack_internal_check,
         )
