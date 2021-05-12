@@ -32,5 +32,5 @@ class ApplyCommonCase(unittest.TestCase):
         repo.remotes[0].pull()
         repo.remotes[0].fetch()
         repo.remotes[0].push()
-        self.assertEqual("/tmp/tmp8ohjdnlq", self.tempdir)
+        self.assertIn("static_tmp", self.tempdir)
         self.assertIn("hello.spec", os.listdir(self.tempdir))

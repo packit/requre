@@ -24,7 +24,7 @@
 import os
 import functools
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, Callable
 from requre.cassette import Cassette, CassetteExecution
 from requre.objects import ObjectStorage
 from requre.helpers.simple_object import Simple
@@ -38,17 +38,56 @@ class MkTemp(Simple):
     decorate mktemp method wrapper
     """
 
-    pass
+    root = "/tmp/static_tmp"
+
+    @classmethod
+    def execute(
+        cls,
+        keys: list,
+        func: Callable,
+        *args,
+        storage_object_kwargs=None,
+        cassette: Cassette,
+        **kwargs,
+    ) -> Any:
+        storage_object_kwargs = storage_object_kwargs or {}
+        object_storage = cls(
+            store_keys=keys, cassette=cassette, **storage_object_kwargs
+        )
+
+        base_prefix = os.path.join(
+            cls.root, os.path.basename(object_storage.get_cassette().storage_file)
+        )
+        os.makedirs(os.path.dirname(base_prefix), exist_ok=True)
+        current = 0
+        if os.path.exists(base_prefix):
+            with open(base_prefix) as fd:
+                current = int(fd.read())
+        current += 1
+        with open(base_prefix, mode="w") as fd:
+            fd.write(f"{current}")
+        path = f"{base_prefix}_{current}"
+        return path
 
 
-class MkDTemp(Simple):
+class MkDTemp(MkTemp):
     """
     decorate mkdtemp method wrapper
     """
 
-    def from_serializable(self, data: Any) -> Any:
-        os.makedirs(data, exist_ok=True)
-        return data
+    @classmethod
+    def execute(
+        cls,
+        keys: list,
+        func: Callable,
+        *args,
+        storage_object_kwargs=None,
+        cassette: Cassette,
+        **kwargs,
+    ) -> Any:
+        path = super().execute(keys, func, *args, cassette=cassette, **kwargs)
+        os.makedirs(path, exist_ok=True)
+        return path
 
 
 class TempFile(ObjectStorage):

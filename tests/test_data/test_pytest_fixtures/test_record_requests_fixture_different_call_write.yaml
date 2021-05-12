@@ -7,7 +7,7 @@ requests.sessions:
     GET:
       https://fedoraproject.org/:
         - metadata:
-            latency: 1.0128254890441895
+            latency: 1.02960205078125
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -257,11 +257,11 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.613794
+            elapsed: 0.513471
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1105
+              AppTime: D=1024
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
@@ -273,11 +273,11 @@ requests.sessions:
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Fri, 07 May 2021 05:36:22 GMT
-              ETag: '"40a2-5c1b62a130471-gzip"'
-              Expires: Fri, 07 May 2021 06:06:22 GMT
+              Date: Wed, 12 May 2021 07:30:27 GMT
+              ETag: '"40a2-5c21c6cdb52ae-gzip"'
+              Expires: Wed, 12 May 2021 08:00:27 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Fri, 07 May 2021 04:50:17 GMT
+              Last-Modified: Wed, 12 May 2021 06:50:24 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -286,7 +286,7 @@ requests.sessions:
               Vary: negotiate,accept,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
               X-Fedora-ProxyServer: proxy10.iad2.fedoraproject.org
-              X-Fedora-RequestID: YJTR1hTl0@wens4j6j1JhAAAAIA
+              X-Fedora-RequestID: YJuEExcGmNVB5qmVDiLFoAAAAJc
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""
@@ -294,7 +294,7 @@ requests.sessions:
             status_code: 200
       https://getfedora.org/:
         - metadata:
-            latency: 0.6145248413085938
+            latency: 0.5141961574554443
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -546,11 +546,11 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.613794
+            elapsed: 0.513471
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=1105
+              AppTime: D=1024
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
@@ -562,11 +562,11 @@ requests.sessions:
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Fri, 07 May 2021 05:36:22 GMT
-              ETag: '"40a2-5c1b62a130471-gzip"'
-              Expires: Fri, 07 May 2021 06:06:22 GMT
+              Date: Wed, 12 May 2021 07:30:27 GMT
+              ETag: '"40a2-5c21c6cdb52ae-gzip"'
+              Expires: Wed, 12 May 2021 08:00:27 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Fri, 07 May 2021 04:50:17 GMT
+              Last-Modified: Wed, 12 May 2021 06:50:24 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -575,7 +575,7 @@ requests.sessions:
               Vary: negotiate,accept,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
               X-Fedora-ProxyServer: proxy10.iad2.fedoraproject.org
-              X-Fedora-RequestID: YJTR1hTl0@wens4j6j1JhAAAAIA
+              X-Fedora-RequestID: YJuEExcGmNVB5qmVDiLFoAAAAJc
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""

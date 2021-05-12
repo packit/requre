@@ -6,7 +6,7 @@ X:
           to_path:
             - metadata:
                 latency: 0
-              output: ApplyCommonCase.test_git.yaml.tmp8ohjdnlq_1.tar.xz
+              output: ApplyCommonCase.test_git.yaml.ApplyCommonCase.test_git.yaml_3_1.tar.xz
 _requre:
   DataTypes: 1
   key_strategy: StorageKeysInspectSimple
@@ -14,7 +14,7 @@ _requre:
 git.remote:
   fetch:
     - metadata:
-        latency: 1.6117045879364014
+        latency: 1.3894188404083252
         module_call_list:
           - unittest.case
           - requre.online_replacing
@@ -995,6 +995,22 @@ git.remote:
         - flags: 4
           note: ""
           old_commit: null
+          remote_ref_path: "refs/pull/336/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/337/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/338/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/339/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
           remote_ref_path: "refs/pull/34/head     "
         - flags: 4
           note: ""
@@ -1302,7 +1318,7 @@ git.remote:
           remote_ref_path: "the-build-branch      "
   pull:
     - metadata:
-        latency: 1.9237847328186035
+        latency: 1.463916301727295
         module_call_list:
           - unittest.case
           - requre.online_replacing
@@ -2283,6 +2299,22 @@ git.remote:
         - flags: 4
           note: ""
           old_commit: null
+          remote_ref_path: "refs/pull/336/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/337/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/338/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
+          remote_ref_path: "refs/pull/339/head    "
+        - flags: 4
+          note: ""
+          old_commit: null
           remote_ref_path: "refs/pull/34/head     "
         - flags: 4
           note: ""
@@ -2590,7 +2622,7 @@ git.remote:
           remote_ref_path: "the-build-branch      "
   push:
     - metadata:
-        latency: 1.4629783630371094
+        latency: 1.3576626777648926
         module_call_list:
           - unittest.case
           - requre.online_replacing
@@ -2605,25 +2637,12 @@ git.remote:
         - _old_commit_sha: null
           flags: 512
           local_ref:
-            - /tmp/tmp8ohjdnlq/.git
+            - /tmp/static_tmp/ApplyCommonCase.test_git.yaml_3/.git
             - refs/heads/main
           remote_ref_string: refs/heads/main
           summary: "[up to date]
 
             "
-tempfile:
-  mkdtemp:
-    - metadata:
-        latency: 0.00015020370483398438
-        module_call_list:
-          - unittest.case
-          - requre.online_replacing
-          - tests.test_modules_decorate_all_methods
-          - requre.objects
-          - requre.cassette
-          - tempfile
-          - mkdtemp
-      output: /tmp/tmp8ohjdnlq
 unittest.case:
   requre.online_replacing:
     tests.test_modules_decorate_all_methods:
@@ -2633,7 +2652,7 @@ unittest.case:
             git.repo.base:
               clone_from:
                 - metadata:
-                    latency: 2.0498409271240234
+                    latency: 2.008549690246582
                     module_call_list:
                       - unittest.case
                       - requre.online_replacing
@@ -2646,6 +2665,6 @@ unittest.case:
                   output:
                     _bare: false
                     _common_dir: null
-                    _working_tree_dir: /tmp/tmp8ohjdnlq
-                    git_dir: /tmp/tmp8ohjdnlq/.git
-                    working_dir: /tmp/tmp8ohjdnlq
+                    _working_tree_dir: /tmp/static_tmp/ApplyCommonCase.test_git.yaml_3
+                    git_dir: /tmp/static_tmp/ApplyCommonCase.test_git.yaml_3/.git
+                    working_dir: /tmp/static_tmp/ApplyCommonCase.test_git.yaml_3
