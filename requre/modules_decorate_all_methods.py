@@ -68,11 +68,14 @@ def record_git_module(
             "git.repo.base.Repo.clone_from",
             StoreFiles.where_arg_references(
                 key_position_params_dict={"to_path": 2},
-                return_decorator=Repo.decorator_plain,
+                output_cls=Repo,
                 cassette=cassette,
             ),
         ),
-        ("git.remote.Remote.push", PushInfoStorageList.decorator_plain()),
+        (
+            "git.remote.Remote.push",
+            PushInfoStorageList.decorator_plain(stack_internal_check=False),
+        ),
         ("git.remote.Remote.fetch", FetchInfoStorageList.decorator_plain()),
         ("git.remote.Remote.pull", FetchInfoStorageList.decorator_plain()),
     ]

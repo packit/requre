@@ -62,10 +62,10 @@ class TempFile_New(BaseClass):
         """When regeneration, tempfile will change, so change the expected output"""
         filename = new_tempfile()
         self.assertFalse(os.path.exists(filename))
-        self.assertEqual(filename, "/tmp/tmpbn0vx9rk")
+        self.assertEqual(filename, "/tmp/tmp5hi99k_2")
 
     def test_tempdir(self):
         """When regeneration, tempdir will change, so change the expected output"""
         filename = new_tempdir()
         self.assertTrue(os.path.exists(filename))
-        self.assertEqual(filename, "/tmp/tmplpss4q9_")
+        self.assertEqual(filename, "/tmp/tmpy7vcma7c")

@@ -5,7 +5,7 @@ _requre:
 tempfile:
   mkdtemp:
     - metadata:
-        latency: 4.601478576660156e-05
+        latency: 5.698204040527344e-05
         module_call_list:
           - unittest.case
           - tests.test_tempfile
@@ -15,4 +15,4 @@ tempfile:
           - requre.cassette
           - tempfile
           - mkdtemp
-      output: /tmp/tmplpss4q9_
+      output: /tmp/tmpy7vcma7c

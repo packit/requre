@@ -5,7 +5,7 @@ _requre:
 tempfile:
   mktemp:
     - metadata:
-        latency: 2.5510787963867188e-05
+        latency: 3.814697265625e-05
         module_call_list:
           - unittest.case
           - requre.online_replacing
@@ -14,11 +14,11 @@ tempfile:
           - requre.cassette
           - tempfile
           - mktemp
-      output: /tmp/tmpjd31c1xn
+      output: /tmp/tmpmcr2ults
 tests.test_duplication:
   x:
     - metadata:
-        latency: 0.0020301342010498047
+        latency: 0.001306295394897461
         module_call_list:
           - unittest.case
           - requre.online_replacing
@@ -27,4 +27,4 @@ tests.test_duplication:
           - requre.cassette
           - tests.test_duplication
           - x
-      output: /tmp/tmp9_4nmajr
+      output: /tmp/tmp8kxmzu0w
