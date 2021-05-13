@@ -127,7 +127,7 @@ class ObjectStorage:
             # do not store data of fuction what will be stored by upper decodator
             if (
                 stack_internal_check
-                and len([x for x in call_stack if x and x == cls.DUPLICATION_KEY]) > 1
+                and call_stack.count(cls.DUPLICATION_KEY) > 1
             ):
                 return response
             metadata: Dict = {
