@@ -37,7 +37,7 @@ from requre.cassette import Cassette, CassetteExecution, StorageMode
 logger = logging.getLogger(__name__)
 
 
-def return_cls_type(cassette) -> Union[Type[Simple], Type[Guess]]:
+def return_cls_type(cassette: Optional[Cassette]) -> Union[Type[Simple], Type[Guess]]:
     if cassette and cassette.storage_file_version < 3:
         return Simple
     else:
