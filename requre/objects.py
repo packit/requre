@@ -125,10 +125,7 @@ class ObjectStorage:
             time_after = original_time()
             call_stack = StorageKeysInspectFull.get_base_keys(func_exposed)
             # do not store data of fuction what will be stored by upper decodator
-            if (
-                stack_internal_check
-                and call_stack.count(cls.DUPLICATION_KEY) > 1
-            ):
+            if stack_internal_check and call_stack.count(cls.DUPLICATION_KEY) > 1:
                 return response
             metadata: Dict = {
                 cassette.data_miner.LATENCY_KEY: time_after - time_before,
