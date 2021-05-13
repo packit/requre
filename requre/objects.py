@@ -108,6 +108,8 @@ class ObjectStorage:
         :param storage_object_kwargs: forwarded to the storage object
         :param cassette: Cassette instance to pass inside object to work with
         :param kwargs: parameters of original function
+        :param stack_internal_check: Disable check of already stored data
+                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
@@ -227,6 +229,8 @@ class ObjectStorage:
         :param func: Callable object
         :param storage_object_kwargs: forwarded to the storage object
         :param cassette: Cassette instance to pass inside object to work with
+        :param stack_internal_check: Disable check of already stored data
+                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
 
@@ -262,6 +266,8 @@ class ObjectStorage:
                                   (have to be listed in item_list)
         :param storage_object_kwargs: forwarded to the storage object
         :param cassette: Cassette instance to pass inside object to work with
+        :param stack_internal_check: Disable check of already stored data
+                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
 

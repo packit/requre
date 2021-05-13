@@ -160,6 +160,8 @@ class RequestResponseHandling(ObjectStorage):
         :param response_headers_to_drop: list of header names we don't want to save with response
                                             (Will be replaced to `None`.)
         :param cassette: Cassette instance to pass inside object to work with
+        :param stack_internal_check: Disable check of already stored data
+                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
@@ -193,6 +195,8 @@ class RequestResponseHandling(ObjectStorage):
         :param response_headers_to_drop: list of header names we don't want to save with response
                                         (Will be replaced to `None`.)
         :param cassette: Cassette instance to pass inside object to work with
+        :param stack_internal_check: Disable check of already stored data
+                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
@@ -223,6 +227,8 @@ class RequestResponseHandling(ObjectStorage):
         :param response_headers_to_drop: list of header names we don't want to save with response
                                           (Will be replaced to `None`.)
         :param cassette: Cassette instance to pass inside object to work with
+        :param stack_internal_check: Disable check of already stored data
+                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}

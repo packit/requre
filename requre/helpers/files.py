@@ -91,30 +91,31 @@ class StoreFiles(ObjectStorage):
         return content
 
     @classmethod
-    def __read_file(cls, content, pathname):
+    def __write_file(cls, content, pathname):
         with BytesIO(content) as fileobj:
             with tarfile.open(
                 mode=f"r:{cls.tar_compression}", fileobj=fileobj
             ) as tar_store:
-                tarinfo_1st_member = tar_store.getmembers()[0]
+                members = tar_store.getmembers()
+                tarinfo_1st_member = members[0]
                 if tarinfo_1st_member.isfile():
                     with open(pathname, mode="wb") as output_file:
                         output_file.write(
                             tar_store.extractfile(tarinfo_1st_member).read()
                         )
-                else:
-                    for tar_item in tar_store.getmembers():
-                        # we have to modify path of files to remove topdir
-                        if len(tar_item.name.split(os.path.sep, 1)) > 1:
-                            tar_item.name = tar_item.name.split(os.path.sep, 1)[1]
-                        else:
-                            tar_item.name = "."
-                        try:
-                            tar_store.extract(tar_item, path=pathname)
-                        except IOError:
-                            # rewrite readonly files if necessary
-                            os.remove(os.path.join(pathname, tar_item.name))
-                            tar_store.extract(tar_item, path=pathname)
+                    return
+                for tar_item in members:
+                    # we have to modify path of files to remove topdir
+                    if len(tar_item.name.split(os.path.sep, 1)) > 1:
+                        tar_item.name = tar_item.name.split(os.path.sep, 1)[1]
+                    else:
+                        tar_item.name = "."
+                    try:
+                        tar_store.extract(tar_item, path=pathname)
+                    except IOError:
+                        # rewrite readonly files if necessary
+                        os.remove(os.path.join(pathname, tar_item.name))
+                        tar_store.extract(tar_item, path=pathname)
 
     @classmethod
     def _copy_logic(
@@ -173,12 +174,12 @@ class StoreFiles(ObjectStorage):
             )
             # WORKAROUND: some tools uses old dir and some new one.
             for item in [pathname, output[TARGET_PATH]]:
-                cls.__read_file(content, item)
+                cls.__write_file(content, item)
             return_value = serialization.from_serializable(output[RETURNED])
         return return_value
 
     @classmethod
-    def __common(cls, cassette, output_cls):
+    def __get_executor_and_return_cls(cls, cassette, output_cls):
         casex = CassetteExecution()
         casex.cassette = cassette or cls.get_cassette()
         casex.obj_cls = cls
@@ -199,7 +200,7 @@ class StoreFiles(ObjectStorage):
         :return: CassetteExecution class with function and cassette instance
 
         """
-        casex, output_cls = cls.__common(cassette, output_cls)
+        casex, output_cls = cls.__get_executor_and_return_cls(cassette, output_cls)
 
         def internal(func):
             @functools.wraps(func)
@@ -233,7 +234,7 @@ class StoreFiles(ObjectStorage):
         :param cassette: Cassette instance to pass inside object to work with
         :return: CassetteExecution class with function and cassette instance
         """
-        casex, output_cls = cls.__common(cassette, output_cls)
+        casex, output_cls = cls.__get_executor_and_return_cls(cassette, output_cls)
 
         def internal(func):
             @functools.wraps(func)
@@ -299,7 +300,7 @@ class StoreFiles(ObjectStorage):
         :param cassette: Cassette instance to pass inside object to work with
         :return: CassetteExecution class with function and cassette instance
         """
-        casex, output_cls = cls.__common(cassette, output_cls)
+        casex, output_cls = cls.__get_executor_and_return_cls(cassette, output_cls)
 
         def internal(func):
             @functools.wraps(func)
@@ -345,7 +346,7 @@ class StoreFiles(ObjectStorage):
         :param cassette: Cassette instance to pass inside object to work with
         :return: CassetteExecution class with function and cassette instance
         """
-        casex, output_cls = cls.__common(cassette, output_cls)
+        casex, output_cls = cls.__get_executor_and_return_cls(cassette, output_cls)
 
         def internal(func):
             @functools.wraps(func)
