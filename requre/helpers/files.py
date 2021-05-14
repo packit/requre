@@ -172,7 +172,8 @@ class StoreFiles(ObjectStorage):
             content = cls.read_file_content(
                 cassette=cassette, file_name=output[FILENAME]
             )
-            # WORKAROUND: some tools uses old dir and some new one.
+            # WORKAROUND: some parts expects old dir and some new one. so copy to both to ensure.
+            # mainly when creating complex objects.
             for item in [pathname, output[TARGET_PATH]]:
                 cls.__write_file(content, item)
             return_value = serialization.from_serializable(output[RETURNED])

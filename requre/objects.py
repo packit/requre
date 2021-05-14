@@ -54,6 +54,7 @@ class ObjectStorage:
     __response_keys: list = list()
     object_type = object
     DUPLICATION_KEY = "requre.objects"
+    stack_internal_check = True
 
     def __init__(
         self,
@@ -95,7 +96,6 @@ class ObjectStorage:
         func: Callable,
         *args,
         storage_object_kwargs=None,
-        stack_internal_check=True,
         cassette: Cassette,
         **kwargs,
     ) -> Any:
@@ -108,8 +108,6 @@ class ObjectStorage:
         :param storage_object_kwargs: forwarded to the storage object
         :param cassette: Cassette instance to pass inside object to work with
         :param kwargs: parameters of original function
-        :param stack_internal_check: Disable check of already stored data
-                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
@@ -127,7 +125,7 @@ class ObjectStorage:
             time_after = original_time()
             call_stack = StorageKeysInspectFull.get_base_keys(func_exposed)
             # do not store data of fuction what will be stored by upper decodator
-            if stack_internal_check and call_stack.count(cls.DUPLICATION_KEY) > 1:
+            if cls.stack_internal_check and call_stack.count(cls.DUPLICATION_KEY) > 1:
                 return response
             metadata: Dict = {
                 cassette.data_miner.LATENCY_KEY: time_after - time_before,
@@ -219,7 +217,6 @@ class ObjectStorage:
     def decorator_all_keys(
         cls,
         storage_object_kwargs=None,
-        stack_internal_check=True,
         cassette: Cassette = None,
     ) -> Any:
         """
@@ -229,8 +226,6 @@ class ObjectStorage:
         :param func: Callable object
         :param storage_object_kwargs: forwarded to the storage object
         :param cassette: Cassette instance to pass inside object to work with
-        :param stack_internal_check: Disable check of already stored data
-                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
 
@@ -240,7 +235,6 @@ class ObjectStorage:
                 return cls.decorator(
                     item_list=list(range(len(args))) + list(kwargs.keys()),
                     cassette=cassette,
-                    stack_internal_check=stack_internal_check,
                 )(func)(*args, **kwargs)
 
             return internal_internal
@@ -254,7 +248,6 @@ class ObjectStorage:
         item_list: list,
         map_function_to_item=None,
         storage_object_kwargs=None,
-        stack_internal_check=True,
         cassette: Cassette = None,
     ) -> Any:
         """
@@ -266,8 +259,6 @@ class ObjectStorage:
                                   (have to be listed in item_list)
         :param storage_object_kwargs: forwarded to the storage object
         :param cassette: Cassette instance to pass inside object to work with
-        :param stack_internal_check: Disable check of already stored data
-                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
 
@@ -315,7 +306,6 @@ class ObjectStorage:
                     func,
                     *args,
                     storage_object_kwargs=storage_object_kwargs,
-                    stack_internal_check=stack_internal_check,
                     cassette=casex.cassette,
                     **kwargs,
                 )
@@ -331,13 +321,11 @@ class ObjectStorage:
         *,
         cassette: Cassette = None,
         storage_object_kwargs=None,
-        stack_internal_check=True,
     ) -> Any:
         return cls.decorator(
             item_list=[],
             cassette=cassette,
             storage_object_kwargs=storage_object_kwargs,
-            stack_internal_check=stack_internal_check,
         )
 
     def write(self, obj: Any, metadata: Optional[Dict] = None) -> Any:

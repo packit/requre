@@ -74,7 +74,7 @@ def record_git_module(
         ),
         (
             "git.remote.Remote.push",
-            PushInfoStorageList.decorator_plain(stack_internal_check=False),
+            PushInfoStorageList.decorator_plain(),
         ),
         ("git.remote.Remote.fetch", FetchInfoStorageList.decorator_plain()),
         ("git.remote.Remote.pull", FetchInfoStorageList.decorator_plain()),

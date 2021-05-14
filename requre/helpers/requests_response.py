@@ -147,7 +147,6 @@ class RequestResponseHandling(ObjectStorage):
     def decorator_all_keys(
         cls,
         storage_object_kwargs=None,
-        stack_internal_check=True,
         cassette: Cassette = None,
         response_headers_to_drop=None,
     ) -> Any:
@@ -160,8 +159,6 @@ class RequestResponseHandling(ObjectStorage):
         :param response_headers_to_drop: list of header names we don't want to save with response
                                             (Will be replaced to `None`.)
         :param cassette: Cassette instance to pass inside object to work with
-        :param stack_internal_check: Disable check of already stored data
-                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
@@ -170,7 +167,6 @@ class RequestResponseHandling(ObjectStorage):
         return super().decorator_all_keys(
             storage_object_kwargs,
             cassette=cassette,
-            stack_internal_check=stack_internal_check,
         )
 
     @classmethod
@@ -182,7 +178,6 @@ class RequestResponseHandling(ObjectStorage):
         storage_object_kwargs=None,
         cassette: Cassette = None,
         response_headers_to_drop=None,
-        stack_internal_check=True,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -195,8 +190,6 @@ class RequestResponseHandling(ObjectStorage):
         :param response_headers_to_drop: list of header names we don't want to save with response
                                         (Will be replaced to `None`.)
         :param cassette: Cassette instance to pass inside object to work with
-        :param stack_internal_check: Disable check of already stored data
-                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
@@ -207,7 +200,6 @@ class RequestResponseHandling(ObjectStorage):
             map_function_to_item=map_function_to_item,
             storage_object_kwargs=storage_object_kwargs,
             cassette=cassette,
-            stack_internal_check=stack_internal_check,
         )
 
     @classmethod
@@ -216,7 +208,6 @@ class RequestResponseHandling(ObjectStorage):
         storage_object_kwargs=None,
         cassette: Cassette = None,
         response_headers_to_drop=None,
-        stack_internal_check=True,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -227,8 +218,6 @@ class RequestResponseHandling(ObjectStorage):
         :param response_headers_to_drop: list of header names we don't want to save with response
                                           (Will be replaced to `None`.)
         :param cassette: Cassette instance to pass inside object to work with
-        :param stack_internal_check: Disable check of already stored data
-                 Allows to stored data what seems to be stored on upper decorator level
         :return: CassetteExecution class with function and cassette instance
         """
         storage_object_kwargs = storage_object_kwargs or {}
@@ -237,5 +226,4 @@ class RequestResponseHandling(ObjectStorage):
         return super().decorator_plain(
             storage_object_kwargs=storage_object_kwargs,
             cassette=cassette,
-            stack_internal_check=stack_internal_check,
         )
