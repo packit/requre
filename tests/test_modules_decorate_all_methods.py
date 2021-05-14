@@ -28,9 +28,12 @@ class ApplyCommonCase(unittest.TestCase):
         shutil.rmtree(self.tempdir)
 
     def test_git(self):
+        """When regeneration, tempdir will change, so change the expected output in last assert"""
         repo = git.Repo.clone_from(self.git_url, to_path=self.tempdir)
         repo.remotes[0].pull()
         repo.remotes[0].fetch()
+        print(">>", repo.remotes[0].pull, repo.remotes[0].pull.__module__)
         repo.remotes[0].push()
-        self.assertEqual("/tmp/tmp8ohjdnlq", self.tempdir)
+        print(self.tempdir)
+        self.assertEqual("/tmp/tmpv1xm25f2", self.tempdir)
         self.assertIn("hello.spec", os.listdir(self.tempdir))

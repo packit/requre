@@ -39,6 +39,7 @@ class PushInfoStorageList(ObjectStorage):
     __response_keys = list(
         set(PushInfo.__slots__) - set(__ignored) - set(__response_keys_special)
     )
+    stack_internal_check = False
 
     object_type = IterableList
 

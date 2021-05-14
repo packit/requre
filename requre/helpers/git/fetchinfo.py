@@ -65,6 +65,8 @@ class RemoteFetch(FetchInfoStorageList):
     Use this class for git.remote.Remote.fetch recording
     """
 
+    stack_internal_check = False
+
     @classmethod
     def execute(cls, keys: list, func: Callable, *args, **kwargs) -> Any:
         """

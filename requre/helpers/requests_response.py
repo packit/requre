@@ -164,7 +164,10 @@ class RequestResponseHandling(ObjectStorage):
         storage_object_kwargs = storage_object_kwargs or {}
         if response_headers_to_drop:
             storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
-        return super().decorator_all_keys(storage_object_kwargs, cassette=cassette)
+        return super().decorator_all_keys(
+            storage_object_kwargs,
+            cassette=cassette,
+        )
 
     @classmethod
     def decorator(
@@ -174,7 +177,7 @@ class RequestResponseHandling(ObjectStorage):
         map_function_to_item=None,
         storage_object_kwargs=None,
         cassette: Cassette = None,
-        response_headers_to_drop=None
+        response_headers_to_drop=None,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -221,5 +224,6 @@ class RequestResponseHandling(ObjectStorage):
         if response_headers_to_drop:
             storage_object_kwargs["response_headers_to_drop"] = response_headers_to_drop
         return super().decorator_plain(
-            storage_object_kwargs=storage_object_kwargs, cassette=cassette
+            storage_object_kwargs=storage_object_kwargs,
+            cassette=cassette,
         )

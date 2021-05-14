@@ -53,6 +53,8 @@ class ObjectStorage:
     _cassette: Cassette = None
     __response_keys: list = list()
     object_type = object
+    DUPLICATION_KEY = "requre.objects"
+    stack_internal_check = True
 
     def __init__(
         self,
@@ -121,11 +123,13 @@ class ObjectStorage:
             response = func_exposed(*args, **kwargs)
 
             time_after = original_time()
+            call_stack = StorageKeysInspectFull.get_base_keys(func_exposed)
+            # do not store data of fuction what will be stored by upper decodator
+            if cls.stack_internal_check and call_stack.count(cls.DUPLICATION_KEY) > 1:
+                return response
             metadata: Dict = {
                 cassette.data_miner.LATENCY_KEY: time_after - time_before,
-                cassette.data_miner.METADATA_CALLER_LIST: StorageKeysInspectFull.get_base_keys(
-                    func_exposed
-                ),
+                cassette.data_miner.METADATA_CALLER_LIST: call_stack,
             }
             if cassette.data_miner.store_arg_debug_metadata:
                 args_clean = [f"'{x}'" if isinstance(x, str) else str(x) for x in args]
@@ -211,7 +215,9 @@ class ObjectStorage:
 
     @classmethod
     def decorator_all_keys(
-        cls, storage_object_kwargs=None, cassette: Cassette = None
+        cls,
+        storage_object_kwargs=None,
+        cassette: Cassette = None,
     ) -> Any:
         """
         Class method for what should be used as decorator of import replacing system
@@ -311,10 +317,15 @@ class ObjectStorage:
 
     @classmethod
     def decorator_plain(
-        cls, *, cassette: Cassette = None, storage_object_kwargs=None
+        cls,
+        *,
+        cassette: Cassette = None,
+        storage_object_kwargs=None,
     ) -> Any:
         return cls.decorator(
-            item_list=[], cassette=cassette, storage_object_kwargs=storage_object_kwargs
+            item_list=[],
+            cassette=cassette,
+            storage_object_kwargs=storage_object_kwargs,
         )
 
     def write(self, obj: Any, metadata: Optional[Dict] = None) -> Any:
