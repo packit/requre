@@ -1,0 +1,22 @@
+_requre:
+  DataTypes: 1
+  key_strategy: StorageKeysInspectSimple
+  version_storage_file: 3
+tests.data.special_requre_module:
+  random_number:
+    - metadata:
+        guess_type: Simple
+        latency: 7.3909759521484375e-06
+        module_call_list:
+          - unittest.main
+          - teamcity.unittestpy
+          - unittest.runner
+          - unittest.suite
+          - unittest.case
+          - requre.online_replacing
+          - test_online_replacing
+          - requre.objects
+          - requre.cassette
+          - tests.data.special_requre_module
+          - random_number
+      output: 0.9720986758204466
