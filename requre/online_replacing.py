@@ -318,7 +318,7 @@ def make_generic(_func=None):
             if _func is None:
                 return decorator_itself_cover
             else:
-                return decorator_itself_cover(_func)
+                return functools.wraps(_func)(decorator_itself_cover)(_func)
 
         return decorator_itself
 
@@ -326,9 +326,10 @@ def make_generic(_func=None):
     if _func is None:
         return decorator_cover
     else:
-        return decorator_cover(_func)
+        return functools.wraps(_func)(decorator_cover)(_func)
 
 
+@make_generic
 def replace(
     what: str,
     cassette: Optional[Cassette] = None,
@@ -370,7 +371,7 @@ def replace(
     elif decorate is not None and replace is not None:
         raise ValueError("right one from [decorate, replace] parameter has to be set.")
 
-    def decorator_cover(func):
+    def replace_decorator_cover(func):
         func_cassette = (
             getattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
             if hasattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
@@ -412,13 +413,14 @@ def replace(
         setattr(_internal, REQURE_CASSETTE_ATTRIBUTE_NAME, cassette_int)
         return _internal
 
-    return decorator_cover
+    return replace_decorator_cover
 
 
 # BACKWARD COMPATIBILITY
 replace_module_match = replace
 
 
+@make_generic
 def record(
     what: str,
     storage_file: Optional[str] = None,
@@ -464,7 +466,7 @@ def record_requests(
 
     response_headers_to_drop = response_headers_to_drop or []
 
-    def decorator_cover(func):
+    def record_requests_decorator_cover(func):
         if cassette:
             cassette_int = cassette
             if cassette_int.storage_file is None:
@@ -486,7 +488,7 @@ def record_requests(
             ),
         )(func)
 
-    return decorator_cover
+    return record_requests_decorator_cover
 
 
 @contextmanager
@@ -601,9 +603,8 @@ def cassette_setup_and_teardown_decorator(func):
 def apply_decorators_recursively_to_fn(decorator_list, func):
     if not decorator_list:
         return func
-    return decorator_list[-1](
-        apply_decorators_recursively_to_fn(decorator_list[:-1], func)
-    )
+    recursive_result = apply_decorators_recursively_to_fn(decorator_list[:-1], func)
+    return decorator_list[-1](recursive_result)
 
 
 def apply_decorator_to_all_methods(

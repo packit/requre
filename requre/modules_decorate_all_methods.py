@@ -1,16 +1,17 @@
 from typing import Callable, Optional, Tuple
-from requre.online_replacing import (
-    replace_module_match,
-    apply_decorator_to_all_methods,
-    record_requests_for_all_methods,
-)
-from requre.helpers.tempfile import MkTemp, MkDTemp
+
 from requre.cassette import Cassette
-from requre.constants import TEST_METHOD_REGEXP
-from requre.helpers.git.repo import Repo
+from requre.helpers.files import StoreFiles
 from requre.helpers.git.fetchinfo import FetchInfoStorageList
 from requre.helpers.git.pushinfo import PushInfoStorageList
-from requre.helpers.files import StoreFiles
+from requre.helpers.git.repo import Repo
+from requre.helpers.tempfile import MkDTemp, MkTemp
+from requre.online_replacing import (
+    apply_decorators_recursively_to_fn,
+    make_generic,
+    record_requests_for_all_methods,
+    replace_module_match,
+)
 
 # to keep backward compatibility and use consistent naming
 record_requests_module = record_requests_for_all_methods
@@ -18,9 +19,7 @@ record_requests_module = record_requests_for_all_methods
 
 def __replace_module_match_with_multiple_decorators(
     *decorators: Tuple[str, Callable],
-    _func=None,
     cassette: Optional[Cassette] = None,
-    regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     if not decorators:
         raise AttributeError("decorators parameter has to be defined")
@@ -29,21 +28,16 @@ def __replace_module_match_with_multiple_decorators(
         decorator_list.append(
             replace_module_match(what=what, decorate=decorate, cassette=cassette)
         )
-    if _func is None:
-        return apply_decorator_to_all_methods(
-            *decorator_list,
-            regexp_method_pattern=regexp_method_pattern,
-        )
 
-    return apply_decorator_to_all_methods(
-        *decorator_list,
-        regexp_method_pattern=regexp_method_pattern,
-    )(_func)
+    def decorator(func):
+        return apply_decorators_recursively_to_fn(decorator_list, func)
+
+    return decorator
 
 
+@make_generic
 def record_tempfile_module(
     cassette: Optional[Cassette] = None,
-    regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     decorators = [
         ("tempfile.mkdtemp", MkDTemp.decorator_plain()),
@@ -52,14 +46,12 @@ def record_tempfile_module(
     return __replace_module_match_with_multiple_decorators(
         *decorators,
         cassette=cassette,
-        regexp_method_pattern=regexp_method_pattern,
     )
 
 
+@make_generic
 def record_git_module(
-    _func=None,
     cassette: Optional[Cassette] = None,
-    regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
     decorators = [
         (
@@ -79,7 +71,5 @@ def record_git_module(
     ]
     return __replace_module_match_with_multiple_decorators(
         *decorators,
-        _func=_func,
         cassette=cassette,
-        regexp_method_pattern=regexp_method_pattern,
     )
