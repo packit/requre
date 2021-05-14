@@ -42,7 +42,6 @@ def __replace_module_match_with_multiple_decorators(
 
 
 def record_tempfile_module(
-    _func=None,
     cassette: Optional[Cassette] = None,
     regexp_method_pattern=TEST_METHOD_REGEXP,
 ):
@@ -52,7 +51,6 @@ def record_tempfile_module(
     ]
     return __replace_module_match_with_multiple_decorators(
         *decorators,
-        _func=_func,
         cassette=cassette,
         regexp_method_pattern=regexp_method_pattern,
     )

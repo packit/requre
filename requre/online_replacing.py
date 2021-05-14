@@ -267,6 +267,68 @@ def _revert_modules(module_list: List[ModuleRecord]):
                 )
 
 
+def make_generic(_func=None):
+    """
+    Decorator for decorators to make them applicable both on classes and methods/functions.
+
+    When the decorated decorator is applied on class, it will be applied on all methods.
+    and also triggers `cassette_setup`/`cassette_teardown` method before/after method execution
+    to be able to manipulate cassette in a method shared between all test cases.
+    (We do not have access to cassette from regular setUp/tearDown method.)
+
+    Can be used both with and without parenthesis.
+
+    Example:
+
+    @make_generic
+    def my_decorator(fce):
+        return fce
+
+    @my_decorator
+    class ClassA:
+        def method_b(self):
+            print("Will be decorated.")
+        def method_c(self):
+            print("Will be decorated.")
+
+    class ClassD:
+        @my_decorator
+        def method_e(self):
+            print("Will be decorated.")
+    """
+
+    def decorator_cover(decorator):
+
+        @functools.wraps(decorator)
+        def decorator_itself(*args, _func=None, regexp_method_pattern=None, **kwargs):
+            def decorator_itself_cover(function_or_class):
+                if isinstance(function_or_class, type):
+                    if regexp_method_pattern:
+                        return apply_decorator_to_all_methods(
+                            decorator(*args, **kwargs),
+                            regexp_method_pattern=regexp_method_pattern,
+                        )(function_or_class)
+                    return apply_decorator_to_all_methods(decorator(*args, **kwargs))(
+                        function_or_class
+                    )
+                return decorator(*args, **kwargs)(function_or_class)
+
+            # To support syntax with and without parentheses
+            # for the decorated decorator.
+            if _func is None:
+                return decorator_itself_cover
+            else:
+                return decorator_itself_cover(_func)
+
+        return decorator_itself
+
+    # To support syntax with and without parentheses.
+    if _func is None:
+        return decorator_cover
+    else:
+        return decorator_cover(_func)
+
+
 def replace(
     what: str,
     cassette: Optional[Cassette] = None,
@@ -377,8 +439,8 @@ def record(
     return _record_inner
 
 
+@make_generic
 def record_requests(
-    _func=None,
     response_headers_to_drop: Optional[List[str]] = None,
     storage_file=None,
     cassette: Optional[Cassette] = None,
@@ -424,10 +486,7 @@ def record_requests(
             ),
         )(func)
 
-    if _func is None:
-        return decorator_cover
-    else:
-        return decorator_cover(_func)
+    return decorator_cover
 
 
 @contextmanager
@@ -579,30 +638,4 @@ def apply_decorator_to_all_methods(
     return decorate
 
 
-def record_requests_for_all_methods(
-    _func=None,
-    cassette: Optional[Cassette] = None,
-    response_headers_to_drop: Optional[List[str]] = None,
-    regexp_method_pattern=TEST_METHOD_REGEXP,
-):
-    """
-    Apply @recording_requests decorator to all (test) methods.
-
-    :param _func: can be used to decorate classes (with, or without parenthesis).
-    :param response_headers_to_drop: list of header names we don't want to save with response
-                                        (Will be replaced to `None`.)
-    """
-    if _func is None:
-        return apply_decorator_to_all_methods(
-            record_requests(
-                cassette=cassette, response_headers_to_drop=response_headers_to_drop
-            ),
-            regexp_method_pattern=regexp_method_pattern,
-        )
-
-    return apply_decorator_to_all_methods(
-        record_requests(
-            cassette=cassette, response_headers_to_drop=response_headers_to_drop
-        ),
-        regexp_method_pattern=regexp_method_pattern,
-    )(_func)
+record_requests_for_all_methods = record_requests
