@@ -300,34 +300,48 @@ def make_generic(_func=None):
     """
 
     def decorator_cover(decorator):
-        @functools.wraps(decorator)
-        def decorator_itself(*args, _func=None, regexp_method_pattern=None, **kwargs):
+        def decorator_itself(*args, regexp_method_pattern=None, **kwargs):
+
+            is_direct_call = (
+                not kwargs
+                and not regexp_method_pattern
+                and len(args) == 1
+                and isinstance(args[0], (type, Callable))
+            )
+
+            if not is_direct_call and (args or kwargs):
+                # decorator with arguments
+                decorate = decorator(*args, **kwargs)
+            else:
+                # decorator without arguments
+                decorate = decorator
+
             def decorator_itself_cover(function_or_class):
                 if isinstance(function_or_class, type):
-                    if regexp_method_pattern:
-                        return apply_decorator_to_all_methods(
-                            decorator(*args, **kwargs),
-                            regexp_method_pattern=regexp_method_pattern,
-                        )(function_or_class)
-                    return apply_decorator_to_all_methods(decorator(*args, **kwargs))(
-                        function_or_class
-                    )
-                return decorator(*args, **kwargs)(function_or_class)
+                    return apply_decorator_to_all_methods(
+                        decorate, regexp_method_pattern=regexp_method_pattern
+                    )(function_or_class)
+                else:
+                    return decorate(function_or_class)
 
             # To support syntax with and without parentheses
             # for the decorated decorator.
-            if _func is None:
-                return decorator_itself_cover
+            if is_direct_call:
+                # call without parenthesis, the target is in the arguments
+                return decorator_itself_cover(args[0])
             else:
-                return functools.wraps(_func)(decorator_itself_cover)(_func)
+                # call with parenthesis, real target will be applied later
+                return decorator_itself_cover
 
         return decorator_itself
 
     # To support syntax with and without parentheses.
     if _func is None:
+        # call without parenthesis, the target is in the arguments
         return decorator_cover
     else:
-        return functools.wraps(_func)(decorator_cover)(_func)
+        # call with parenthesis, real target will be applied later
+        return decorator_cover(_func)
 
 
 @make_generic
@@ -527,13 +541,11 @@ def apply_decorators_recursively_to_fn(decorator_list, func):
     return decorator_list[-1](recursive_result)
 
 
-def apply_decorator_to_all_methods(
-    *decorator: Callable, regexp_method_pattern=TEST_METHOD_REGEXP
-):
+def apply_decorator_to_all_methods(*decorator: Callable, regexp_method_pattern=None):
     """
     This function works as class decorator and apply decorator to
-    all matched methods via regexp, primary usage is to use it for
-    unittest testcases.
+    all matched methods via regexp (`test.*` by default),
+    primary usage is to use it for unittest testcases.
 
     ref: https://stackoverflow.com/a/6307868
 
@@ -541,6 +553,8 @@ def apply_decorator_to_all_methods(
     to be able to manipulate cassette in a method shared between all test cases.
     (We do not have access to cassette from regular setUp/tearDown method.)
     """
+    regexp_method_pattern = regexp_method_pattern or TEST_METHOD_REGEXP
+
     # append cassette setup and teardown if exist
     decorator += (cassette_setup_and_teardown_decorator,)
 
