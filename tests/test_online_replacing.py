@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 import math
 import os
 import socket
@@ -9,11 +12,11 @@ import requests
 import tests.data.special_requre_module
 from requre.cassette import Cassette, StorageMode
 from requre.helpers.requests_response import RequestResponseHandling
-from requre.helpers.simple_object import Simple
+from requre.simple_object import Simple
 from requre.online_replacing import (
     apply_decorator_to_all_methods,
     record,
-    record_requests_for_all_methods,
+    record_requests,
     replace_module_match,
 )
 from tests.data import special_requre_module
@@ -170,7 +173,7 @@ new_cassette = Cassette()
         what="math.sin", decorate=Simple.decorator_plain(), cassette=new_cassette
     )
 )
-@record_requests_for_all_methods(cassette=new_cassette)
+@record_requests(cassette=new_cassette)
 class DecoratorClassApply(unittest.TestCase):
     # when regeneration, comment lines with assert equals, because checks for equality does not work
     def setUp(self):

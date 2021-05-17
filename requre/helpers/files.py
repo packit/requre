@@ -26,13 +26,13 @@ import logging
 import os
 import tarfile
 from io import BytesIO
-from typing import Any, Dict, Optional, Union, Type
+from typing import Any, Dict, Optional, Type, Union
 
-from requre.exceptions import PersistentStorageException
-from requre.helpers.simple_object import Simple
-from requre.helpers.guess_object import Guess
-from requre.objects import ObjectStorage
 from requre.cassette import Cassette, CassetteExecution, StorageMode
+from requre.exceptions import PersistentStorageException
+from requre.guess_object import Guess
+from requre.objects import ObjectStorage
+from requre.simple_object import Simple
 
 logger = logging.getLogger(__name__)
 

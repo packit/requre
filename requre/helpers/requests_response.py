@@ -1,37 +1,20 @@
-# MIT License
-#
-# Copyright (c) 2018-2019 Red Hat, Inc.
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
 
 
 import datetime
 import json
+from contextlib import contextmanager
 from io import BytesIO
-from typing import Any, Optional, Dict
+from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
-from requests.models import Response, Request, PreparedRequest
+from requests.models import PreparedRequest, Request, Response
 from requests.structures import CaseInsensitiveDict
 
-from requre.objects import ObjectStorage
 from requre.cassette import Cassette
+from requre.objects import ObjectStorage
+from requre.record_and_replace import make_generic, recording, replace
 
 
 def remove_password_from_url(url):
@@ -227,3 +210,68 @@ class RequestResponseHandling(ObjectStorage):
             storage_object_kwargs=storage_object_kwargs,
             cassette=cassette,
         )
+
+
+@make_generic
+def record_requests(
+    response_headers_to_drop: Optional[List[str]] = None,
+    cassette: Optional[Cassette] = None,
+):
+    """
+    Decorator which can be used to store all requests to a file
+    and replay responses on the next run.
+
+    - The matching is based on `url`.
+    - Removes tokens from the url when saving if needed.
+
+    Can be used with or without parenthesis.
+
+    :param _func: can be used to decorate function (with, or without parenthesis).
+    :param response_headers_to_drop: list of header names we don't want to save with response
+                                        (Will be replaced to `None`.)
+    :param storage_file: str - storage file to be passed to cassette instance if given,
+                               else it creates new instance
+    :param cassette: Cassette instance to pass inside object to work with
+    """
+
+    response_headers_to_drop = response_headers_to_drop or []
+
+    def record_requests_decorator_cover(func):
+        return replace(
+            what="requests.sessions.Session.send",
+            cassette=cassette,
+            decorate=RequestResponseHandling.decorator(
+                item_list=[1],
+                response_headers_to_drop=response_headers_to_drop,
+                cassette=cassette,
+            ),
+        )(func)
+
+    return record_requests_decorator_cover
+
+
+@contextmanager
+def recording_requests(
+    response_headers_to_drop: Optional[List[str]] = None, storage_file=None
+):
+    """
+    Context manager which can be used to store all requests to a file
+    and replay responses on the next run.
+
+    - The matching is based on `url`.
+    - Removes tokens from the url when saving if needed.
+
+    :param _func: can be used to decorate function (with, or without parenthesis).
+    :param response_headers_to_drop: list of header names we don't want to save with response
+                                        (Will be replaced to `None`.)
+    :param storage_file: file for reading and writing data in storage_object
+    """
+    with recording(
+        what="requests.sessions.Session.send",
+        decorate=RequestResponseHandling.decorator(
+            item_list=[1],
+            response_headers_to_drop=response_headers_to_drop,
+        ),
+        storage_file=storage_file,
+    ) as cassette:
+        yield cassette

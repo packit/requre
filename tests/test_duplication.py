@@ -1,6 +1,6 @@
 from tests.testbase import BaseClass
 import tempfile
-from requre.helpers.simple_object import Simple
+from requre.simple_object import Simple
 from requre.online_replacing import replace
 
 

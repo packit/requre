@@ -1,18 +1,23 @@
-import unittest
-import git
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
+import os
 import shutil
 import tempfile
-import os
-from requre.modules_decorate_all_methods import (
-    record_requests_module,
-    record_tempfile_module,
+import unittest
+
+import git
+
+from requre.helpers import (
     record_git_module,
+    record_tempfile_module,
 )
+from requre.online_replacing import record_requests
 
 
 @record_git_module
 @record_tempfile_module
-@record_requests_module
+@record_requests
 class ApplyCommonCase(unittest.TestCase):
     def setUp(self) -> None:
         self._tempdir = None

@@ -3,7 +3,7 @@ import time
 
 from requre.constants import VERSION_REQURE_FILE
 from requre.exceptions import PersistentStorageException
-from requre.helpers.simple_object import Simple
+from requre.simple_object import Simple
 
 from requre.cassette import (
     DataTypes,
