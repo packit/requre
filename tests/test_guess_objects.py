@@ -3,8 +3,8 @@ import math
 import os
 from requre.objects import ObjectStorage
 from requre.utils import StorageMode
-from requre.helpers.guess_object import Guess, GUESS_STR
-from requre.helpers.simple_object import Void, Simple
+from requre.guess_object import Guess, GUESS_STR
+from requre.simple_object import Void, Simple
 from requre.online_replacing import apply_decorator_to_all_methods, replace_module_match
 from requre.cassette import Cassette
 from tests.testbase import BaseClass

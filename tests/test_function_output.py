@@ -1,6 +1,6 @@
 import tempfile
 
-from requre.helpers.simple_object import Simple
+from requre.simple_object import Simple
 from requre.storage import PersistentObjectStorage
 from requre.utils import run_command, StorageMode
 from tests.testbase import BaseClass

@@ -1,5 +1,6 @@
 import warnings
-from .simple_object import Simple
+
+from requre.simple_object import Simple
 
 warnings.warn(
     "DEPRECATED: Please use Simple.decorator_plain from requre.helpers.simple_object"

@@ -1,34 +1,19 @@
-# MIT License
-#
-# Copyright (c) 2018-2019 Red Hat, Inc.
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-import os
 import functools
 import logging
-from typing import Optional, Any
+import os
+from typing import Any, Optional
+from warnings import warn
+
 from requre.cassette import Cassette, CassetteExecution
 from requre.objects import ObjectStorage
-from requre.helpers.simple_object import Simple
-from warnings import warn
+from requre.record_and_replace import (
+    make_generic,
+    replace_module_match_with_multiple_decorators,
+)
+from requre.simple_object import Simple
 
 logger = logging.getLogger(__name__)
 
@@ -153,3 +138,18 @@ class TempFile(ObjectStorage):
         name = cls._get_name(prefix)
         os.makedirs(name)
         return name
+
+
+@make_generic
+def record_tempfile_module(
+    cassette: Optional[Cassette] = None,
+):
+    """Records tempfile.mkdtemp and tempfile.mktemp calls."""
+    decorators = [
+        ("tempfile.mkdtemp", MkDTemp.decorator_plain()),
+        ("tempfile.mktemp", MkTemp.decorator_plain()),
+    ]
+    return replace_module_match_with_multiple_decorators(
+        *decorators,
+        cassette=cassette,
+    )

@@ -5,7 +5,7 @@ from pathlib import Path
 import requests
 
 from requre.cassette import Cassette, StorageMode
-from requre.helpers.simple_object import Simple
+from requre.simple_object import Simple
 from requre.online_replacing import (
     record_requests_for_all_methods,
     apply_decorator_to_all_methods,

@@ -1,3 +1,6 @@
+import random
+
+
 def hello(text="Hi! "):
     return text
 
@@ -12,3 +15,7 @@ class dynamic:
 
     def __getattr__(self, item):
         return lambda: item.upper()
+
+
+def random_number():
+    return random.random()

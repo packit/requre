@@ -1,6 +1,6 @@
 import sys
 import tempfile
-from requre.helpers.simple_object import Tuple
+from requre.simple_object import Tuple
 from requre.online_replacing import apply_decorator_to_all_methods, replace
 from requre.cassette import Cassette, StorageMode
 from tests.testbase import BaseClass, RetTuple

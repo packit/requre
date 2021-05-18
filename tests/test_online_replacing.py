@@ -1,18 +1,23 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 import math
 import os
 import socket
 import unittest
+from typing import Optional
 
 import requests
 
 import tests.data.special_requre_module
 from requre.cassette import Cassette, StorageMode
 from requre.helpers.requests_response import RequestResponseHandling
-from requre.helpers.simple_object import Simple
+from requre.simple_object import Simple
 from requre.online_replacing import (
-    replace_module_match,
     apply_decorator_to_all_methods,
-    record_requests_for_all_methods,
+    record,
+    record_requests,
+    replace_module_match,
 )
 from tests.data import special_requre_module
 from tests.data.special_requre_module import hello
@@ -168,9 +173,9 @@ new_cassette = Cassette()
         what="math.sin", decorate=Simple.decorator_plain(), cassette=new_cassette
     )
 )
-@record_requests_for_all_methods(cassette=new_cassette)
+@record_requests(cassette=new_cassette)
 class DecoratorClassApply(unittest.TestCase):
-    # when regeneration, comment lines with assert equals, because checks for eqality does not work
+    # when regeneration, comment lines with assert equals, because checks for equality does not work
     def setUp(self):
         new_cassette.storage_file = None
 
@@ -194,3 +199,50 @@ class DecoratorClassApply(unittest.TestCase):
         self.test1()
         if cassette.mode == StorageMode.read:
             self.assertEqual(len(new_cassette.storage_object["math"]["sin"]), 1)
+
+
+@record(what="tests.data.special_requre_module.random_number")
+class RecordDecoratorForClass(unittest.TestCase):
+    def test_random(self):
+        random_number = tests.data.special_requre_module.random_number()
+        self.assertEqual(random_number, 0.819349292484907)
+
+
+class RecordDecoratorForMethod(unittest.TestCase):
+    @record(what="tests.data.special_requre_module.random_number")
+    def test_random(self):
+        random_number = tests.data.special_requre_module.random_number()
+        self.assertEqual(random_number, 0.17583106733657616)
+
+
+@record(what="tests.data.special_requre_module.random_number")
+class RecordDecoratorForClassCassette(unittest.TestCase):
+    cassette: Optional[Cassette]
+
+    def setUp(self) -> None:
+        self.setup = False
+        self.teardown = False
+        self.cassette = None
+        super().setUp()
+
+    def cassette_setup(self, cassette: Cassette):
+        assert cassette
+        self.cassette = cassette
+        self.setup = True
+
+    def test_random(self, cassette: Cassette):
+        assert cassette
+        assert self.setup
+        assert not self.teardown
+        assert self.cassette == cassette
+        random_number = tests.data.special_requre_module.random_number()
+        self.assertEqual(random_number, 0.9720986758204466)
+
+    def cassette_teardown(self, cassette: Cassette):
+        assert cassette
+        assert self.cassette == cassette
+        self.teardown = True
+
+    def tearDown(self) -> None:
+        assert self.teardown
+        super().tearDown()
