@@ -273,8 +273,10 @@ def make_generic(_func=None):
     """
     Decorator for decorators to make them applicable both on classes and methods/functions.
 
-    When the decorated decorator is applied on class, it will be applied on all methods.
-    and also triggers `cassette_setup`/`cassette_teardown` method before/after method execution
+    When the decorated decorator is applied on class, it will be applied on methods.
+    By default, it applies the decorator to all `test.*` method;
+    use `regexp_method_pattern` argument to change it.
+    It also triggers `cassette_setup`/`cassette_teardown` method before/after method execution
     to be able to manipulate cassette in a method shared between all test cases.
     (We do not have access to cassette from regular setUp/tearDown method.)
 
@@ -350,7 +352,7 @@ def replace(
     cassette: Optional[Cassette] = None,
     decorate: Optional[Union[List[Callable], Callable]] = None,
     replace: Optional[Callable] = None,
-    storage_keys_strategy=StorageKeysInspectSimple,
+    storage_keys_strategy=None,
 ):
     """
     Decorator what helps you to replace/decorate functions/methods inside any already
@@ -380,6 +382,8 @@ def replace(
     :param storage_keys_strategy: you can change key strategy for storing data
                                   default simple one avoid to store stack information
     """
+    storage_keys_strategy = storage_keys_strategy or StorageKeysInspectSimple
+
     if decorate is None and replace is None:
         logger.info(f"Using default decorator for {what}")
         decorate = Guess.decorator_plain(cassette=cassette)
@@ -434,20 +438,55 @@ def replace(
 @make_generic
 def record(
     what: str,
-    storage_file: Optional[str] = None,
+    cassette: Optional[Cassette] = None,
+    storage_keys_strategy=None,
 ):
     """
     Decorator which can be used to store calls of the function and
     and replay responses on the next run.
 
+    Can be applied both on function/method and class.
+
+    When the applied on class, it will be applied on methods.
+    By default, it applies the decorator to all `test.*` method;
+    use `regexp_method_pattern` argument to change it.
+    It also triggers `cassette_setup`/`cassette_teardown` method before/after method execution
+    to be able to manipulate cassette in a method shared between all test cases.
+    (We do not have access to cassette from regular setUp/tearDown method.)
+
+    If you want to have more options for the recording, use `replace` decorator instead.
+    You can tweak the recording process, structure of the saved data
+    and also provide your own way how to store side-effects of the function.
+
+    If you want some pre-made record decorators of common use-cases
+    (like for git, tempfile or requests) take a look to `requre.helpers.__init__`.
+    They take care about the side-effects for you.
+
+    Examples:
+
+    @record(what="tests.data.special_requre_module.random_number")
+    class RecordDecoratorForClass(unittest.TestCase):
+        def test_random(self):
+            random_number = tests.data.special_requre_module.random_number()
+            self.assertEqual(random_number, 0.819349292484907)
+
+    class RecordDecoratorForMethod(unittest.TestCase):
+        @record(what="tests.data.special_requre_module.random_number")
+        def test_random(self):
+            random_number = tests.data.special_requre_module.random_number()
+            self.assertEqual(random_number, 0.17583106733657616)
+
+
     :param what: str - full path of function inside module
-    :param storage_file: path for storage file if you don't want to use default location
+    :param cassette: Cassette instance to pass inside object to work with
+    :param storage_keys_strategy: you can change key strategy for storing data
+                                  default simple one avoid to store stack information
     """
-    cassette = Cassette()
-    cassette.storage_file = storage_file
 
     def _record_inner(func):
-        return replace(what=what, cassette=cassette)(func)
+        return replace(
+            what=what, cassette=cassette, storage_keys_strategy=storage_keys_strategy
+        )(func)
 
     return _record_inner
 
