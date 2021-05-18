@@ -19,3 +19,7 @@ class dynamic:
 
 def random_number():
     return random.random()
+
+
+def another_random_number():
+    return random.random()

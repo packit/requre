@@ -208,11 +208,31 @@ class RecordDecoratorForClass(unittest.TestCase):
         self.assertEqual(random_number, 0.819349292484907)
 
 
+@record(what="tests.data.special_requre_module.random_number")
+@record(what="tests.data.special_requre_module.another_random_number")
+class RecordDecoratorForClassMultiple(unittest.TestCase):
+    def test_random(self):
+        random_number = tests.data.special_requre_module.random_number()
+        another_random_number = tests.data.special_requre_module.another_random_number()
+        self.assertEqual(0.6749983968044089, random_number)
+        self.assertEqual(0.15676319106079073, another_random_number)
+
+
 class RecordDecoratorForMethod(unittest.TestCase):
     @record(what="tests.data.special_requre_module.random_number")
     def test_random(self):
         random_number = tests.data.special_requre_module.random_number()
         self.assertEqual(random_number, 0.17583106733657616)
+
+
+class RecordDecoratorForMethodMultiple(unittest.TestCase):
+    @record(what="tests.data.special_requre_module.random_number")
+    @record(what="tests.data.special_requre_module.another_random_number")
+    def test_random(self):
+        random_number = tests.data.special_requre_module.random_number()
+        another_random_number = tests.data.special_requre_module.another_random_number()
+        self.assertEqual(0.2809709312583647, random_number)
+        self.assertEqual(0.039985857086601295, another_random_number)
 
 
 @record(what="tests.data.special_requre_module.random_number")
