@@ -439,7 +439,6 @@ def replace(
 def record(
     what: str,
     cassette: Optional[Cassette] = None,
-    storage_keys_strategy=None,
 ):
     """
     Decorator which can be used to store calls of the function and
@@ -479,14 +478,10 @@ def record(
 
     :param what: str - full path of function inside module
     :param cassette: Cassette instance to pass inside object to work with
-    :param storage_keys_strategy: you can change key strategy for storing data
-                                  default simple one avoid to store stack information
     """
 
     def _record_inner(func):
-        return replace(
-            what=what, cassette=cassette, storage_keys_strategy=storage_keys_strategy
-        )(func)
+        return replace(what=what, cassette=cassette)(func)
 
     return _record_inner
 
