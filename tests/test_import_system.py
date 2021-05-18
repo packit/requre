@@ -1,6 +1,5 @@
 import builtins
-from requre import replace, decorate
-from requre.import_system import UpgradeImportSystem
+from requre.import_system import UpgradeImportSystem, replace, decorate
 from tests.testbase import BaseClass
 from tempfile import mktemp as original_mktemp
 
