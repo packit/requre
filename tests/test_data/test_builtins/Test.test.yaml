@@ -1,0 +1,18 @@
+_requre:
+  DataTypes: 1
+  key_strategy: StorageKeysInspectSimple
+  version_storage_file: 3
+builtin_function_or_method:
+  random:
+    - metadata:
+        guess_type: Simple
+        latency: 2.384185791015625e-06
+        module_call_list:
+          - unittest.case
+          - requre.record_and_replace
+          - tests.test_builtins
+          - requre.objects
+          - requre.cassette
+          - builtin_function_or_method
+          - random
+      output: 0.8682724996217076

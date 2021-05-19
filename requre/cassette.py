@@ -99,6 +99,19 @@ class CassetteExecution:
         self._obj_cls = value
 
 
+def _get_module_name(obj: Any) -> Optional[str]:
+    module = inspect.getmodule(obj)
+    if module:
+        return module.__name__
+    elif (
+        hasattr(obj, "__class__")
+        and obj.__class__.__name__ == "builtin_function_or_method"
+    ):
+        return obj.__class__.__name__
+    else:
+        return ""
+
+
 class StorageKeysInspect:
     @staticmethod
     def get_base_keys(func: Callable) -> List[Any]:
@@ -112,9 +125,9 @@ class StorageKeysInspectFull(StorageKeysInspect):
         # callers module list, to be able to separate requests for various services in one file
         caller_list: List[str] = list()
         for currnetframe in inspect.stack():
-            if not inspect.getmodule(currnetframe[0]):
+            module_name = _get_module_name(currnetframe[0])
+            if not module_name:
                 continue
-            module_name = inspect.getmodule(currnetframe[0]).__name__
             if module_name.startswith("_"):
                 break
             # avoid to store requre.storage to module stack
@@ -127,7 +140,7 @@ class StorageKeysInspectFull(StorageKeysInspect):
                 caller_list.append(module_name)
         output += caller_list[::-1]
         # module name where function is
-        output.append(inspect.getmodule(func).__name__)
+        output.append(_get_module_name(func))
         # name of function what were used
         output.append(func.__name__)
         return output
@@ -166,12 +179,10 @@ class StorageKeysInspectOuter(StorageKeysInspect):
         # callers module list, to be able to separate requests for various services in one file
         caller_list: List[str] = list()
         for currnetframe in inspect.stack():
-            module_info = inspect.getmodule(currnetframe[0])
-            # sometimes module_info is empty and not possible to found any info.
-            if not module_info:
+            module_name = _get_module_name(currnetframe[0])
+            if not module_name:
                 continue
-            module_name = module_info.__name__
-            module_file = module_info.__file__
+            module_file = inspect.getmodule(currnetframe[0]).__file__
             # If python stack is already in directory you are (CWD) then stop appending
             # Because you dont want to track changes of test call stack or your project stack
             # This is main feature regarding to StorageKeysInspectFull, what stores it as well
@@ -190,7 +201,7 @@ class StorageKeysInspectOuter(StorageKeysInspect):
                 caller_list.append(module_name)
         output += caller_list[::-1]
         # module name where function is
-        output.append(inspect.getmodule(func).__name__)
+        output.append(_get_module_name(func))
         # name of function what were used
         output.append(func.__name__)
         return output
@@ -199,7 +210,7 @@ class StorageKeysInspectOuter(StorageKeysInspect):
 class StorageKeysInspectSimple(StorageKeysInspect):
     @staticmethod
     def get_base_keys(func: Callable) -> List[Any]:
-        return [inspect.getmodule(func).__name__, func.__name__]
+        return [_get_module_name(func), func.__name__]
 
 
 class StorageKeysInspectUnique(StorageKeysInspect):
