@@ -2,7 +2,7 @@ import os
 import time
 
 from requre.constants import VERSION_REQURE_FILE
-from requre.exceptions import PersistentStorageException
+from requre.exceptions import PersistentStorageException, StorageNoResponseLeft
 from requre.simple_object import Simple
 
 from requre.cassette import (
@@ -374,3 +374,21 @@ class KeySkipping(BaseClass):
             self.cassette.read,
             ["y"] + self.keys,
         )
+
+
+class NoItemLeft(BaseClass):
+    keys = ["a", "b"]
+
+    def setUp(self) -> None:
+        super().setUp()
+
+    def store_keys_example(self):
+        self.cassette.store(self.keys, values="c", metadata={})
+        self.cassette.store(self.keys, values="d", metadata={})
+
+    def test_missing(self):
+        self.store_keys_example()
+
+        self.assertEqual("c", self.cassette[self.keys])
+        self.assertEqual("d", self.cassette[self.keys])
+        self.assertRaises(StorageNoResponseLeft, self.cassette.read, self.keys)

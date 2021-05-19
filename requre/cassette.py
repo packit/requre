@@ -315,8 +315,10 @@ class DataStructure:
     def create_from_list(list_repr: list, cassette: Any):
         if len(list_repr) == 0:
             raise StorageNoResponseLeft(
-                "No responses left. Try to regenerate response file "
-                f"({cassette.storage_file})."
+                f"Unable to find response (file: {cassette.storage_file}). "
+                "You are in read-only mode now, that's why you are seeing this error message. "
+                "You should record the test case again "
+                "by removing the response file and running the test(s) again."
             )
         if cassette.storage_file_version <= 1:
             # Backward compatibility for requre before using DataStructure
