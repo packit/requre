@@ -1,7 +1,9 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 # Packit (test) dependencies.
 # To run tests locally via 'make check_in_container'.
-
-FROM fedora:30
+FROM fedora:34
 
 RUN dnf -y install make git python3-pip python3-pytest python3-pytest-cov && dnf clean all
 
