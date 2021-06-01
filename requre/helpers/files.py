@@ -62,11 +62,9 @@ class StoreFiles(ObjectStorage):
         # increase highest number
         suffix = f".tar.{StoreFiles.tar_compression}"
         existing_nums = sorted(
-            [
-                int(x.replace(generated, "").replace(suffix, ""))
-                for x in os.listdir(target_dir)
-                if x.startswith(generated)
-            ]
+            int(x.replace(generated, "").replace(suffix, ""))
+            for x in os.listdir(target_dir)
+            if x.startswith(generated)
         )
         next_num = 1 if not existing_nums else existing_nums[-1] + 1
         file_path = os.path.join(target_dir, f"{generated}{next_num}{suffix}")
