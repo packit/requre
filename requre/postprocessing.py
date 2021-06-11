@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 import os
 import logging
 from typing import Union, Any, Dict, Optional, List

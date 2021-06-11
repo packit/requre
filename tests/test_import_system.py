@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 import builtins
 from requre.import_system import UpgradeImportSystem, replace, decorate
 from tests.testbase import BaseClass

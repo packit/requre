@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 import pytest
 
 from requre.storage import PersistentObjectStorage

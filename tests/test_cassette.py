@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 from unittest import TestCase
 from requre.cassette import CassetteExecution
 
