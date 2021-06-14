@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 from tests.testbase import BaseClass
 import tempfile
 from requre.simple_object import Simple
