@@ -39,6 +39,7 @@ repos:
       - id: mypy
         exclude: examples
         args: [--no-strict-optional, --ignore-missing-imports]
+        additional_dependencies: [types-click, types-requests, types-PyYAML]
   - repo: https://github.com/packit-service/pre-commit-hooks
     rev: 169c6671b0175882f74acaf34ace2edf897dc375
     hooks:
