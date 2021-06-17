@@ -269,7 +269,7 @@ def _revert_modules(module_list: List[ModuleRecord]):
                 )
 
 
-def make_generic(_func=None):
+def make_generic(_decorator=None):
     """
     Decorator for decorators to make them applicable both on classes and methods/functions.
 
@@ -280,7 +280,8 @@ def make_generic(_func=None):
     to be able to manipulate cassette in a method shared between all test cases.
     (We do not have access to cassette from regular setUp/tearDown method.)
 
-    Can be used both with and without parenthesis.
+
+    Decorator make_generic can be used both with and without parenthesis:
 
     Example:
 
@@ -301,8 +302,8 @@ def make_generic(_func=None):
             print("Will be decorated.")
     """
 
-    def decorator_cover(decorator):
-        def decorator_itself(*args, regexp_method_pattern=None, **kwargs):
+    def make_generic_decorator_cover(decorator):
+        def make_generic_decorator(*args, regexp_method_pattern=None, **kwargs):
 
             is_direct_call = (
                 not kwargs
@@ -318,7 +319,7 @@ def make_generic(_func=None):
                 # decorator without arguments
                 decorate = decorator
 
-            def decorator_itself_cover(function_or_class):
+            def decorated_decorator(function_or_class):
                 if isinstance(function_or_class, type):
                     return apply_decorator_to_all_methods(
                         decorate, regexp_method_pattern=regexp_method_pattern
@@ -330,20 +331,20 @@ def make_generic(_func=None):
             # for the decorated decorator.
             if is_direct_call:
                 # call without parenthesis, the target is in the arguments
-                return decorator_itself_cover(args[0])
+                return decorated_decorator(args[0])
             else:
                 # call with parenthesis, real target will be applied later
-                return decorator_itself_cover
+                return decorated_decorator
 
-        return decorator_itself
+        return make_generic_decorator
 
-    # To support syntax with and without parentheses.
-    if _func is None:
-        # call without parenthesis, the target is in the arguments
-        return decorator_cover
+    # To support syntax with and without parentheses of the make_generic itself.
+    if _decorator is None:
+        # @make_generic()
+        return make_generic_decorator_cover
     else:
-        # call with parenthesis, real target will be applied later
-        return decorator_cover(_func)
+        # @make_generic
+        return make_generic_decorator_cover(_decorator)
 
 
 @make_generic
@@ -390,7 +391,7 @@ def replace(
     elif decorate is not None and replace is not None:
         raise ValueError("right one from [decorate, replace] parameter has to be set.")
 
-    def replace_decorator_cover(func):
+    def replace_decorator(func):
         func_cassette = (
             getattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
             if hasattr(func, REQURE_CASSETTE_ATTRIBUTE_NAME)
@@ -399,7 +400,7 @@ def replace(
         cassette_int = cassette or func_cassette or Cassette()
 
         @functools.wraps(func)
-        def _internal(*args, **kwargs):
+        def _replaced_function(*args, **kwargs):
             # set storage if not set to default one, based on function name
             if cassette_int.storage_file is None:
                 change_storage_file(cassette=cassette_int, func=func, args=args)
@@ -429,10 +430,10 @@ def replace(
                 _revert_modules(module_list)
             return output
 
-        setattr(_internal, REQURE_CASSETTE_ATTRIBUTE_NAME, cassette_int)
-        return _internal
+        setattr(_replaced_function, REQURE_CASSETTE_ATTRIBUTE_NAME, cassette_int)
+        return _replaced_function
 
-    return replace_decorator_cover
+    return replace_decorator
 
 
 @make_generic
