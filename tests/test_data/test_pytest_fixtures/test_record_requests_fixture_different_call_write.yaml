@@ -7,7 +7,7 @@ requests.sessions:
     GET:
       https://fedoraproject.org/:
         - metadata:
-            latency: 0.8099348545074463
+            latency: 0.6608798503875732
             module_call_list:
               - tests.test_pytest_fixtures
               - requests.api
@@ -257,11 +257,11 @@ requests.sessions:
               \ </ul> </div> </div> </div> </div> </div> </div> <script type=\"text/javascript\"\
               \ src=\"/static/js/bundle.js?7e94bc65\"></script> </body> </html>"
             _next: null
-            elapsed: 0.257042
+            elapsed: 0.100838
             encoding: utf-8
             headers:
               Accept-Ranges: bytes
-              AppTime: D=928
+              AppTime: D=1281
               Cache-Control: max-age=1800
               Connection: Upgrade, Keep-Alive
               Content-Encoding: gzip
@@ -273,11 +273,11 @@ requests.sessions:
                 script-src 'self'; style-src 'self' https://fonts.googleapis.com;
                 font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://builds.coreos.fedoraproject.org; "
               Content-Type: text/html; charset=utf-8
-              Date: Thu, 13 May 2021 12:47:14 GMT
-              ETag: '"40a2-5c234bb476694-gzip"'
-              Expires: Thu, 13 May 2021 13:17:14 GMT
+              Date: Fri, 18 Jun 2021 09:13:41 GMT
+              ETag: '"40a2-5c5059321cac9-gzip"'
+              Expires: Fri, 18 Jun 2021 09:43:41 GMT
               Keep-Alive: timeout=15, max=500
-              Last-Modified: Thu, 13 May 2021 11:50:19 GMT
+              Last-Modified: Fri, 18 Jun 2021 07:50:17 GMT
               Referrer-Policy: same-origin
               Server: Apache
               Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
@@ -285,8 +285,8 @@ requests.sessions:
               Upgrade: h2
               Vary: negotiate,accept,accept-language,Accept-Encoding
               X-Content-Type-Options: nosniff
-              X-Fedora-ProxyServer: proxy32.fedoraproject.org
-              X-Fedora-RequestID: YJ0f0qKjyHFSkFKUZtKxtgAACNQ
+              X-Fedora-ProxyServer: proxy36.fedoraproject.org
+              X-Fedora-RequestID: YMxjxUuMh2JExvGrFIAqqwAADAg
               X-Frame-Options: SAMEORIGIN
               X-Xss-Protection: 1; mode=block
             raw: !!binary ""
