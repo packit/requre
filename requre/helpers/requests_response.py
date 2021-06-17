@@ -214,6 +214,7 @@ class RequestResponseHandling(ObjectStorage):
 
 @make_generic
 def record_requests(
+    _func=None,
     response_headers_to_drop: Optional[List[str]] = None,
     cassette: Optional[Cassette] = None,
 ):
@@ -235,19 +236,20 @@ def record_requests(
     """
 
     response_headers_to_drop = response_headers_to_drop or []
-
-    def record_requests_decorator_cover(func):
-        return replace(
-            what="requests.sessions.Session.send",
+    replace_decorator = replace(
+        what="requests.sessions.Session.send",
+        cassette=cassette,
+        decorate=RequestResponseHandling.decorator(
+            item_list=[1],
+            response_headers_to_drop=response_headers_to_drop,
             cassette=cassette,
-            decorate=RequestResponseHandling.decorator(
-                item_list=[1],
-                response_headers_to_drop=response_headers_to_drop,
-                cassette=cassette,
-            ),
-        )(func)
+        ),
+    )
 
-    return record_requests_decorator_cover
+    if _func is not None:
+        return replace_decorator(_func)
+    else:
+        return replace_decorator
 
 
 @contextmanager

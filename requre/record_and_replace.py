@@ -300,6 +300,28 @@ def make_generic(_decorator=None):
         @my_decorator
         def method_e(self):
             print("Will be decorated.")
+
+
+    Warning:
+        If you want to use make_generic with decorator accepting key-word arguments,
+        to be able to use the final decorator without arguments or without parenthesis,
+        use the following trick to correctly apply all decorators:
+
+        @make_generic
+        def add_something(_func=None, add=1):
+            def decorator_to_return(fce):
+                def fce_to_return():
+                    return fce() + add
+
+                return fce_to_return
+
+            if _func is None:
+                # @add_something()
+                return decorator_to_return
+            else:
+                # @add_something
+                return decorator_to_return(_func)
+
     """
 
     def make_generic_decorator_cover(decorator):

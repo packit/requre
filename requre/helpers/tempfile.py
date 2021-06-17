@@ -142,6 +142,7 @@ class TempFile(ObjectStorage):
 
 @make_generic
 def record_tempfile_module(
+    _func=None,
     cassette: Optional[Cassette] = None,
 ):
     """Records tempfile.mkdtemp and tempfile.mktemp calls."""
@@ -149,7 +150,12 @@ def record_tempfile_module(
         ("tempfile.mkdtemp", MkDTemp.decorator_plain()),
         ("tempfile.mktemp", MkTemp.decorator_plain()),
     ]
-    return replace_module_match_with_multiple_decorators(
+    record_tempfile_decorator = replace_module_match_with_multiple_decorators(
         *decorators,
         cassette=cassette,
     )
+
+    if _func is not None:
+        return record_tempfile_decorator(_func)
+    else:
+        return record_tempfile_decorator
