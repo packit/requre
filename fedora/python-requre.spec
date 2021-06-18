@@ -1,7 +1,7 @@
 %global srcname requre
 
 Name:           python-%{srcname}
-Version:        0.8.0
+Version:        0.8.1
 Release:        1%{?dist}
 Summary:        Python library what allows re/store output of various objects for testing
 
@@ -57,6 +57,9 @@ rm -rf %{srcname}.egg-info
 %{python3_sitelib}/%{srcname}-%{version}-py%{python3_version}.egg-info
 
 %changelog
+* Fri Jun 18 16:08:54 CEST 2021 Frantisek Lachman <flachman@redhat.com> - 0.8.1-1
+- New upstream release 0.8.1
+
 * Fri May  7 09:25:33 CEST 2021 Frantisek Lachman <flachman@redhat.com> - 0.8.0-1
 - New upstream release 0.8.0
 
