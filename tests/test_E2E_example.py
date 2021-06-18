@@ -13,7 +13,7 @@ PAGE = "http://example.com"
 
 
 @record_requests
-class WriteCls(unittest.TestCase):
+class TestWriteCls(unittest.TestCase):
     def cassette_teardown(self, cassette: Cassette):
         self.cassette = cassette
         assert cassette.storage_file
@@ -26,7 +26,7 @@ class WriteCls(unittest.TestCase):
         requests.get(PAGE)
 
 
-class Write(unittest.TestCase):
+class TestWrite(unittest.TestCase):
     def cassette_setup(self, cassette: Cassette):
         sf = self.cassette.storage_file
         self.cassette.storage_object = {}
@@ -40,16 +40,17 @@ class Write(unittest.TestCase):
 
     @record_requests
     def test(self):
-        self.variable = True
+        self.test_executed = True
         requests.get(PAGE)
 
     def tearDown(self):
-        assert self.variable
+        assert self.test_executed
 
 
 @record_requests
-class Read(unittest.TestCase):
+class TestRead(unittest.TestCase):
     def cassette_setup(self, cassette: Cassette):
+        # disable network for read mode to prove it read from file
         if cassette.mode == StorageMode.read:
             setattr(socket, "socket", lambda x: x)
 
@@ -65,7 +66,7 @@ class Read(unittest.TestCase):
 @record_requests
 class TestFail(unittest.TestCase):
     def test(self):
-        self.variable = True
+        self.test_executed = True
 
     def tearDown(self):
-        assert self.variable
+        assert self.test_executed

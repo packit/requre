@@ -7,7 +7,7 @@ requests.sessions:
     GET:
       http://example.com/:
         - metadata:
-            latency: 0.31810760498046875
+            latency: 0.3191874027252197
             module_call_list:
               - unittest.case
               - requre.record_and_replace
@@ -41,20 +41,20 @@ requests.sessions:
               https://www.iana.org/domains/example\">More information...</a></p>\n</div>\n\
               </body>\n</html>\n"
             _next: null
-            elapsed: 0.317687
+            elapsed: 0.318763
             encoding: UTF-8
             headers:
               Accept-Ranges: bytes
-              Age: "320706"
+              Age: "351312"
               Cache-Control: max-age=604800
               Content-Encoding: gzip
               Content-Length: "648"
               Content-Type: text/html; charset=UTF-8
-              Date: Fri, 18 Jun 2021 09:06:35 GMT
-              Etag: '"3147526947"'
-              Expires: Fri, 25 Jun 2021 09:06:35 GMT
+              Date: Fri, 18 Jun 2021 09:59:15 GMT
+              Etag: '"3147526947+ident"'
+              Expires: Fri, 25 Jun 2021 09:59:15 GMT
               Last-Modified: Thu, 17 Oct 2019 07:18:26 GMT
-              Server: ECS (dcb/7EA7)
+              Server: ECS (dcb/7F15)
               Vary: Accept-Encoding
               X-Cache: HIT
             raw: !!binary ""
