@@ -16,6 +16,7 @@ from requre.record_and_replace import (
 
 @make_generic
 def record_git_module(
+    _func=None,
     cassette: Optional[Cassette] = None,
 ):
     decorators = [
@@ -34,7 +35,12 @@ def record_git_module(
         ("git.remote.Remote.fetch", FetchInfoStorageList.decorator_plain()),
         ("git.remote.Remote.pull", FetchInfoStorageList.decorator_plain()),
     ]
-    return replace_module_match_with_multiple_decorators(
+    record_git_decorator = replace_module_match_with_multiple_decorators(
         *decorators,
         cassette=cassette,
     )
+
+    if _func is not None:
+        return record_git_decorator(_func)
+    else:
+        return record_git_decorator
