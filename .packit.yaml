@@ -34,6 +34,7 @@ jobs:
     trigger: commit
     metadata:
       branch: main
+      project: packit-dev
       targets:
         - fedora-all
         - epel-8
@@ -42,6 +43,7 @@ jobs:
   - job: copr_build
     trigger: release
     metadata:
+      project: packit-releases
       targets:
         - fedora-all
         - epel-8
