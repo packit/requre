@@ -32,10 +32,10 @@ $ pip3 install --user requre
 
 You can also install `requre` from `main` branch, if you are brave enough:
 
-You can use our [`packit/packit-requre-master` Copr repository](https://copr.fedorainfracloud.org/coprs/packit/packit-requre-master/):
+You can use our [`packit/packit-dev` Copr repository](https://copr.fedorainfracloud.org/coprs/packit/packit-dev/):
 
 ```
-$ dnf copr enable packit/packit-requre-master
+$ dnf copr enable packit/packit-dev
 $ dnf install python3-requre
 ```
 
