@@ -35,7 +35,7 @@ class GithubTests(unittest.TestCase):
             )
         service = GithubService(token=token)
         ogr_project = service.get_project(namespace="packit-service", repo="ogr")
-        pr_comments = ogr_project.get_pr_comments(9)
+        pr_comments = ogr_project.get_pr(9).get_comments()
         assert pr_comments
         assert len(pr_comments) == 2
 
