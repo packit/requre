@@ -5,7 +5,7 @@ from typing import Optional
 
 from requre.cassette import Cassette
 from requre.helpers.files import StoreFiles
-from requre.helpers.git.fetchinfo import FetchInfoStorageList
+from requre.helpers.git.fetchinfo import RemoteFetch
 from requre.helpers.git.pushinfo import PushInfoStorageList
 from requre.helpers.git.repo import Repo
 from requre.record_and_replace import (
@@ -32,8 +32,8 @@ def record_git_module(
             "git.remote.Remote.push",
             PushInfoStorageList.decorator_plain(),
         ),
-        ("git.remote.Remote.fetch", FetchInfoStorageList.decorator_plain()),
-        ("git.remote.Remote.pull", FetchInfoStorageList.decorator_plain()),
+        ("git.remote.Remote.fetch", RemoteFetch.decorator_plain()),
+        ("git.remote.Remote.pull", RemoteFetch.decorator_plain()),
     ]
     record_git_decorator = replace_module_match_with_multiple_decorators(
         *decorators,
