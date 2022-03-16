@@ -45,5 +45,5 @@ repos:
     hooks:
       - id: check-rebase
         args:
-          - git://github.com/packit/requre.git
+          - https://github.com/packit/requre.git
         stages: [manual, push]
