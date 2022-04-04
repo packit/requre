@@ -68,5 +68,6 @@ jobs:
     trigger: commit
     metadata:
       dist_git_branches:
-        - fedora-stable # rawhide updates are created automatically
+        - fedora-latest # branched version, rawhide updates are created automatically
+        - fedora-stable
         - epel-8
