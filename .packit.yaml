@@ -3,6 +3,8 @@ specfile_path: fedora/python-requre.spec
 # https://packit.dev/docs/configuration/#top-level-keys
 downstream_package_name: python-requre
 upstream_project_url: https://github.com/packit/requre
+issue_repository: https://github.com/packit/requre
+
 # we are setting this so we can use packit from requre's dist-git
 # packit can't know what's the upstream name when running from distgit
 upstream_package_name: requre
