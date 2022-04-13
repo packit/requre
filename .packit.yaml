@@ -1,4 +1,5 @@
 ---
+packit_instances: ["prod", "stg"]
 specfile_path: fedora/python-requre.spec
 # https://packit.dev/docs/configuration/#top-level-keys
 downstream_package_name: python-requre
@@ -29,6 +30,7 @@ jobs:
     trigger: commit
   - job: propose_downstream
     trigger: release
+    packit_instances: ["prod", "stg"]
     metadata:
       dist_git_branches: fedora-all
   - job: copr_build
@@ -60,12 +62,14 @@ jobs:
   # downstream automation:
   - job: koji_build
     trigger: commit
+    packit_instances: ["stg"]
     metadata:
       dist_git_branches:
         - fedora-all
         - epel-8
   - job: bodhi_update
     trigger: commit
+    packit_instances: ["stg"]
     metadata:
       dist_git_branches:
         - fedora-latest # branched version, rawhide updates are created automatically
