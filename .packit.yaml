@@ -33,47 +33,42 @@ jobs:
     trigger: commit
   - job: propose_downstream
     trigger: release
-    metadata:
-      dist_git_branches: fedora-all
+    dist_git_branches:
+      - fedora-all
   - job: copr_build
     trigger: pull_request
-    metadata:
-      targets:
-        - fedora-all
-        - epel-8
+    targets:
+      - fedora-all
+      - epel-8
   - job: copr_build
     trigger: commit
-    metadata:
-      branch: main
-      project: packit-dev
-      targets:
-        - fedora-all
-        - epel-8
-      list_on_homepage: True
-      preserve_project: True
+    branch: main
+    project: packit-dev
+    targets:
+      - fedora-all
+      - epel-8
+    list_on_homepage: True
+    preserve_project: True
   - job: copr_build
     trigger: release
-    metadata:
-      project: packit-releases
-      targets:
-        - fedora-all
-        - epel-8
-      list_on_homepage: True
-      preserve_project: True
+    project: packit-releases
+    targets:
+      - fedora-all
+      - epel-8
+    list_on_homepage: True
+    preserve_project: True
 
   # downstream automation:
   - job: koji_build
     trigger: commit
     packit_instances: ["stg"]
-    metadata:
-      dist_git_branches:
-        - fedora-all
-        - epel-8
+    dist_git_branches:
+      - fedora-all
+      - epel-8
   - job: bodhi_update
     trigger: commit
     packit_instances: ["stg"]
-    metadata:
-      dist_git_branches:
-        - fedora-latest # branched version, rawhide updates are created automatically
-        - fedora-stable
-        - epel-8
+    dist_git_branches:
+      - fedora-latest # branched version, rawhide updates are created automatically
+      - fedora-stable
+      - epel-8
