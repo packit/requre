@@ -767,7 +767,7 @@ class Cassette:
 
         :return: dict
         """
-        with open(self.storage_file, "r") as yaml_file:
+        with open(self.storage_file) as yaml_file:
             output = yaml.safe_load(yaml_file)
         self.storage_object = output
         # set proper storage strategy if stored in file

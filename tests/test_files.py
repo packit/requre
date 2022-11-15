@@ -65,12 +65,12 @@ class FileStorage(Base):
         PersistentObjectStorage().cassette.mode = StorageMode.read
 
         self.create_file_content("first", target_file=self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
             self.assertNotIn("cao", content)
         self.create_file_content("second", target_file=self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertNotIn("ahoj", content)
             self.assertIn("cao", content)
@@ -92,7 +92,7 @@ class FileStorage(Base):
 
         self.create_temp_file()
         self.create_file_content("first", self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
             self.assertNotIn("cao", content)
@@ -100,7 +100,7 @@ class FileStorage(Base):
 
         self.create_temp_file()
         self.create_file_content("second", target_file=self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertNotIn("ahoj", content)
             self.assertIn("cao", content)
@@ -118,7 +118,7 @@ class FileStorage(Base):
             filename="ahoj", target_dir=self.temp_dir, content="ciao"
         )
         self.assertIn("ahoj", os.listdir(self.temp_dir))
-        with open(os.path.join(self.temp_dir, "ahoj"), "r") as fd:
+        with open(os.path.join(self.temp_dir, "ahoj")) as fd:
             content = fd.read()
             self.assertIn("ciao", content)
 
@@ -131,7 +131,7 @@ class FileStorage(Base):
         )
         self.assertIn("ahoj", os.listdir(self.temp_dir))
         self.assertNotIn("nonsense", os.listdir(self.temp_dir))
-        with open(os.path.join(self.temp_dir, "ahoj"), "r") as fd:
+        with open(os.path.join(self.temp_dir, "ahoj")) as fd:
             content = fd.read()
             self.assertIn("ciao", content)
             self.assertNotIn("bad", content)
@@ -155,7 +155,7 @@ class FileStorage(Base):
         )
         self.assertIn(filename, os.listdir(self.temp_dir))
         self.assertNotIn("nonsense", os.listdir(self.temp_dir))
-        with open(os.path.join(self.temp_dir, filename), "r") as fd:
+        with open(os.path.join(self.temp_dir, filename)) as fd:
             content = fd.read()
             self.assertIn("hidden", content)
             self.assertNotIn("bad", content)
@@ -186,12 +186,12 @@ class SessionRecordingWithFileStore(Base):
         before = str(PersistentObjectStorage().cassette.storage_object)
 
         self.create_file_content("ahoj", target_file=self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
             self.assertNotIn("cao", content)
         self.create_file_content("cao", target_file=self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertNotIn("ahoj", content)
             self.assertIn("cao", content)
@@ -218,7 +218,7 @@ class DynamicFileStorage(Base):
         PersistentObjectStorage().cassette.mode = StorageMode.read
         self.create_temp_file()
         self.write_to_file("ahoj", self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
             self.assertNotIn("cao", content)
@@ -226,7 +226,7 @@ class DynamicFileStorage(Base):
 
         self.create_temp_file()
         self.write_to_file("cao", self.temp_file)
-        with open(self.temp_file, "r") as fd:
+        with open(self.temp_file) as fd:
             content = fd.read()
             self.assertNotIn("ahoj", content)
             self.assertIn("cao", content)
@@ -254,18 +254,18 @@ class StoreOutputFile(Base):
         PersistentObjectStorage().cassette.dump()
         PersistentObjectStorage().cassette.mode = StorageMode.read
         oofile1 = self.create_file("first")
-        with open(ofile1, "r") as fd:
+        with open(ofile1) as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
             self.assertNotIn("cao", content)
-        with open(oofile1, "r") as fd:
+        with open(oofile1) as fd:
             content = fd.read()
             self.assertIn("ahoj", content)
             self.assertNotIn("cao", content)
         # mix with positional option
 
         oofile2 = self.create_file("second")
-        with open(oofile2, "r") as fd:
+        with open(oofile2) as fd:
             content = fd.read()
             self.assertNotIn("ahoj", content)
             self.assertIn("cao", content)

@@ -78,7 +78,7 @@ class FilePostprocessing(unittest.TestCase):
             "test_fedpkg_clone.yaml:output:str:random_output"
         )
         run_command(f"{CMD_TOOL} --replaces {replacement} {self.storage_file_tmp}")
-        with open(self.storage_file_tmp, mode="r") as opened_file:
+        with open(self.storage_file_tmp) as opened_file:
             output = opened_file.read()
             self.assertIn("random_output", output)
             self.assertIn("requre.openshift_integration", output)
@@ -88,7 +88,7 @@ class FilePostprocessing(unittest.TestCase):
     def testLatency(self):
         replacement = "clone%store_function_output:latency:int:50"
         run_command(f"{CMD_TOOL} --replaces {replacement} {self.storage_file_tmp}")
-        with open(self.storage_file_tmp, mode="r") as opened_file:
+        with open(self.storage_file_tmp) as opened_file:
             output = opened_file.read()
             self.assertNotIn("random_output", output)
             self.assertIn("requre.openshift_integration", output)
@@ -103,7 +103,7 @@ class FilePostprocessing(unittest.TestCase):
             f"{CMD_TOOL} --replaces {replacement} {self.storage_file_tmp}", output=True
         )
         print(output)
-        with open(self.storage_file_tmp, mode="r") as opened_file:
+        with open(self.storage_file_tmp) as opened_file:
             output = opened_file.read()
             self.assertNotIn("random_output", output)
             self.assertIn("requre.openshift_integration", output)

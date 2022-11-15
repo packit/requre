@@ -19,7 +19,7 @@ class GithubTests(unittest.TestCase):
         token = os.environ.get("GITHUB_TOKEN")
         cassette = Cassette()
         if cassette.mode == StorageMode.write and (not token):
-            raise EnvironmentError(
+            raise OSError(
                 f"You are in Requre write mode, please set proper GITHUB_TOKEN"
                 f" env variables {cassette.storage_file}"
             )
