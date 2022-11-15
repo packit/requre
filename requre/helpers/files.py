@@ -90,7 +90,7 @@ class StoreFiles(ObjectStorage):
                         tar_item.name = "."
                     try:
                         tar_store.extract(tar_item, path=pathname)
-                    except IOError:
+                    except OSError:
                         # rewrite readonly files if necessary
                         os.remove(os.path.join(pathname, tar_item.name))
                         tar_store.extract(tar_item, path=pathname)

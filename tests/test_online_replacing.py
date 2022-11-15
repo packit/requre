@@ -24,7 +24,7 @@ from tests.data.special_requre_module import hello
 
 
 def guard(*args, **kwargs):
-    raise IOError("No Internet connection")
+    raise OSError("No Internet connection")
 
 
 original_socket = socket.socket
