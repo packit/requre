@@ -326,7 +326,6 @@ def make_generic(_decorator=None):
 
     def make_generic_decorator_cover(decorator):
         def make_generic_decorator(*args, regexp_method_pattern=None, **kwargs):
-
             is_direct_call = (
                 not kwargs
                 and not regexp_method_pattern

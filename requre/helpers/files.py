@@ -284,7 +284,6 @@ class StoreFiles(ObjectStorage):
         def internal(func):
             @functools.wraps(func)
             def store_files_int_int(*args, **kwargs):
-
                 output = None
                 class_test_id_list = [
                     cls.__name__,
