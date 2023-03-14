@@ -62,7 +62,6 @@ class DictProcessing:
 
     @staticmethod
     def minimal_match(dict_obj: Dict, metadata: Dict):
-
         tmp_dict = dict_obj
         first_item: Dict = {}
         key_name = DataTypes.__name__
