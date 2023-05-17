@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import sys
+import types
 from contextlib import contextmanager
 from typing import Any, Callable, List, Optional, Tuple, Union
 
@@ -193,6 +194,10 @@ def _parse_and_replace_sys_modules(
     module_list: List[ModuleRecord] = []
     # go over all modules, and try to find match
     for module in sys.modules.copy().values():
+        if not isinstance(module, types.ModuleType):
+            # ignore non-modules (for example coverage abuses sys.modules
+            # to store its DebugOutputFile object)
+            continue
         module_list += _apply_module_replacement(
             what=what,
             module=module,
