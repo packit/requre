@@ -22,3 +22,10 @@ def remove_storage_file_after(request):
     # PersistentObjectStorage().cassette.dump()
     if storage_file.is_file():
         storage_file.unlink()
+
+
+def pytest_collection_modifyitems(items):
+    # make sure Duplicated::test test is executed last
+    items[:] = sorted(
+        items, key=lambda i: i.cls is not None and i.cls.__name__ == "Duplicated"
+    )
