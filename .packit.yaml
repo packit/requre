@@ -41,7 +41,6 @@ jobs:
     trigger: pull_request
     targets:
       - fedora-all
-      - epel-8
       - epel-9
   - job: copr_build
     trigger: commit
@@ -49,7 +48,6 @@ jobs:
     project: packit-dev
     targets:
       - fedora-all
-      - epel-8
       - epel-9
     list_on_homepage: True
     preserve_project: True
@@ -58,7 +56,6 @@ jobs:
     project: packit-releases
     targets:
       - fedora-all
-      - epel-8
       - epel-9
     list_on_homepage: True
     preserve_project: True
@@ -69,7 +66,6 @@ jobs:
     packit_instances: ["stg"]
     dist_git_branches:
       - fedora-all
-      - epel-8
       - epel-9
   - job: bodhi_update
     trigger: commit
@@ -77,5 +73,4 @@ jobs:
     dist_git_branches:
       - fedora-latest # branched version, rawhide updates are created automatically
       - fedora-stable
-      - epel-8
       - epel-9
