@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "requre"
+authors = [
+    { name = "Red Hat", email = "packit@redhat.com" },
+]
+description = "Library for testing Python code that allows to store output of various objects and use the stored data for testing."
+license = "MIT"
+license-files = { paths = ["LICENSE"] }
+requires-python = ">=3.6"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+]
+dynamic = ["version"]
+keywords = [
+    "testing",
+    "persistent_storage",
+    "session_storage",
+]
+dependencies = [
+    "click",
+    "GitPython",
+    "pytest",
+    "PyYAML",
+    "requests",
+]
+
+[project.urls]
+Homepage = "https://github.com/packit/requre"
+
+[project.optional-dependencies]
+testing = ["pytest"]
+
+[project.scripts]
+requre-patch = "requre.requre_patch:requre_base"
+
+[tool.hatch.version]
+source = "vcs"
+# we can't use pre-release-based version scheme because it generates versions
+# that are sorted higher than the last stable release by RPM
+# for example:
+#   - pre-release (guess-next-dev):
+#       0.20.1.dev1+g0abcdef.d20230921 > 0.20.1
+#   - post-release (no-guess-dev):
+#       0.20.0.post1.dev1+g0abcdef < 0.20.1
+raw-options.version_scheme = "no-guess-dev"
