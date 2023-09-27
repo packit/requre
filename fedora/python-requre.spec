@@ -17,7 +17,6 @@ BuildRequires:  python3dist(pyyaml)
 BuildRequires:  python3dist(requests)
 BuildRequires:  python3dist(setuptools)
 BuildRequires:  python3dist(setuptools-scm)
-BuildRequires:  python3dist(setuptools-scm-git-archive)
 BuildRequires:  python3dist(sphinx)
 
 %description
