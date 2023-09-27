@@ -1,60 +1,60 @@
-%global srcname requre
+%global desc %{expand:
+REQUest REcordingRequre [rekure] - Is Library for storing output of various
+function and methods to persistent storage and be able to replay the stored
+output to functions.}
 
-Name:           python-%{srcname}
+
+Name:           python-requre
 Version:        0.8.2
 Release:        1%{?dist}
-Summary:        Python library what allows re/store output of various objects for testing
+Summary:        Python library that allows re/store output of various objects for testing
 
 License:        MIT
 URL:            https://github.com/packit/requre
-Source0:        %{pypi_source}
+Source0:        %{pypi_source requre}
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  python3dist(click)
-BuildRequires:  python3dist(pytest)
-BuildRequires:  python3dist(pyyaml)
-BuildRequires:  python3dist(requests)
-BuildRequires:  python3dist(setuptools)
-BuildRequires:  python3dist(setuptools-scm)
-BuildRequires:  python3dist(setuptools-scm-git-archive)
-BuildRequires:  python3dist(sphinx)
+
 
 %description
-REQUest REcordingRequre [rekure] - Is Library for storing output of various
-function and methods to persistent storage and be able to replay the stored
-output to functions.
+%{desc}
 
-%package -n     python3-%{srcname}
+
+%package -n     python3-requre
 Summary:        %{summary}
 
-# https://docs.fedoraproject.org/en-US/packaging-guidelines/Python/#_provides
-%if 0%{?fedora} < 33
-%{?python_provide:%python_provide python3-%{srcname}}
-%endif
 
-%description -n python3-%{srcname}
-REQUest REcordingRequre [rekure] - Is Library for storing output of various
-function and methods to persistent storage and be able to replay the stored
-output to functions.
+%description -n python3-requre
+%{desc}
+
 
 %prep
-%autosetup -n %{srcname}-%{version}
-# Remove bundled egg-info
-rm -rf %{srcname}.egg-info
+%autosetup -n requre-%{version}
+
+
+%generate_buildrequires
+# The -w flag is required for EPEL 9's older hatchling
+%pyproject_buildrequires %{?el9:-w}
+
 
 %build
-%py3_build
+%pyproject_wheel
+
 
 %install
-%py3_install
+%pyproject_install
+%pyproject_save_files requre
 
-%files -n python3-%{srcname}
+
+%files -n python3-requre -f %{pyproject_files}
+# Epel9 does not tag the license file in pyproject_files as a license. Manually install it in this case
+%if 0%{?el9}
 %license LICENSE
+%endif
 %doc README.md
 %{_bindir}/requre-patch
-%{python3_sitelib}/%{srcname}
-%{python3_sitelib}/%{srcname}-%{version}-py%{python3_version}.egg-info
+
 
 %changelog
 * Wed Apr 13 2022 Frantisek Lachman <flachman@redhat.com> - 0.8.2-1
