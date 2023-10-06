@@ -8,6 +8,7 @@ authors = [
     { name = "Red Hat", email = "packit@redhat.com" },
 ]
 description = "Library for testing Python code that allows to store output of various objects and use the stored data for testing."
+readme = "README.md"
 license = "MIT"
 license-files = { paths = ["LICENSE"] }
 requires-python = ">=3.6"
