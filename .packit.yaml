@@ -20,13 +20,15 @@ actions:
   #   LookupError: setuptools-scm was unable to detect version for '/builddir/build/BUILD/requre-0.11.1'.
   #   Make sure you're either building from a fully intact git repository or PyPI tarballs.
   create-archive:
-    - python3 setup.py sdist --dist-dir ./fedora/
+    - python3 -m build --sdist --outdir ./fedora/
     - bash -c "ls -1t ./fedora/*.tar.gz | head -n 1"
-  get-current-version: python3 setup.py --version
+  get-current-version:
+    - hatch version
 
 srpm_build_deps:
-  - python3-pip # "python3 setup.py --version" needs it
-  - python3-setuptools_scm
+  - python3-build
+  - hatch
+  - python3-hatch-vcs
 
 jobs:
   - job: sync_from_downstream
@@ -39,7 +41,6 @@ jobs:
     trigger: pull_request
     targets:
       - fedora-all
-      - epel-8
       - epel-9
   - job: copr_build
     trigger: commit
@@ -47,7 +48,6 @@ jobs:
     project: packit-dev
     targets:
       - fedora-all
-      - epel-8
       - epel-9
     list_on_homepage: True
     preserve_project: True
@@ -56,7 +56,6 @@ jobs:
     project: packit-releases
     targets:
       - fedora-all
-      - epel-8
       - epel-9
     list_on_homepage: True
     preserve_project: True
@@ -67,7 +66,6 @@ jobs:
     packit_instances: ["stg"]
     dist_git_branches:
       - fedora-all
-      - epel-8
       - epel-9
   - job: bodhi_update
     trigger: commit
@@ -75,5 +73,4 @@ jobs:
     dist_git_branches:
       - fedora-latest # branched version, rawhide updates are created automatically
       - fedora-stable
-      - epel-8
       - epel-9
