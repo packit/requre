@@ -1,4 +1,9 @@
-# 0.8.2 Latest
+# 0.8.3
+
+- Fix an issue of clashing with the _coverage_.
+- Packaging has been modernized.
+
+# 0.8.2
 
 - No user-facing changes.
 

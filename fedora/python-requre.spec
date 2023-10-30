@@ -5,7 +5,7 @@ output to functions.}
 
 
 Name:           python-requre
-Version:        0.8.2
+Version:        0.8.3
 Release:        1%{?dist}
 Summary:        Python library that allows re/store output of various objects for testing
 
@@ -57,6 +57,9 @@ Summary:        %{summary}
 
 
 %changelog
+* Mon Oct 30 2023 Packit Team <hello@packit.dev> - 0.8.3-1
+- New upstream release 0.8.3
+
 * Wed Apr 13 2022 Frantisek Lachman <flachman@redhat.com> - 0.8.2-1
 - New upstream release 0.8.2
 
