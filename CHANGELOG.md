@@ -1,5 +1,7 @@
 # 0.8.4
 
+- Provide `__version__` of the package so it can be easily checked when installed on the system.
+
 # 0.8.3
 
 - Fix an issue of clashing with the _coverage_.
