@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 from requre.helpers.files import StoreFiles
 from requre.cassette import Cassette
 from tempfile import mkdtemp

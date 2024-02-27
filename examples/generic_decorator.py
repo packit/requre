@@ -1,3 +1,6 @@
+# Copyright Contributors to the Packit project.
+# SPDX-License-Identifier: MIT
+
 from requre.objects import ObjectStorage
 from requre.cassette import Cassette
 
