@@ -25,6 +25,10 @@ actions:
   get-current-version:
     - hatch version
 
+files_to_sync:
+  - fedora/python-requre.spec
+  - .packit.yaml
+
 srpm_build_deps:
   - python3-build
   - hatch
