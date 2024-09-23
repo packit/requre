@@ -17,7 +17,7 @@ from requre.constants import (
 
 
 CMD_RELATIVE = f"""python3 {os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                "requre", "requre_patch.py")}"""
+                                         "requre", "requre_patch.py")}"""
 CMD_TOOL = "requre-patch"
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")

@@ -30,15 +30,21 @@ class StoreAnyRequest(BaseClass):
         """
         Test if is class is able to explicitly write and read request handling
         """
-        keys = [self.domain]
+        # example.com domain is not acceptig POST requests anymore
+        # using stg.packit.dev instead
+        keys = [
+            "https://stg.packit.dev/api/webhooks/github",
+        ]
         sess = RequestResponseHandling(store_keys=keys)
         response = self.requests.post(*keys)
         sess.write(response)
 
         response_after = sess.read()
         self.assertIsInstance(response_after, self.requests.models.Response)
-        self.assertNotIn("Example Domain", str(sess.get_cassette().storage_object))
-        self.assertIn("Example Domain", response_after.text)
+        self.assertNotIn(
+            "We haven't received any JSON data", str(sess.get_cassette().storage_object)
+        )
+        self.assertIn("We haven't received any JSON data", response_after.text)
 
     @unittest.skipIf(not network_connection_available(), "No network connection")
     def testExecuteWrapper(self):
