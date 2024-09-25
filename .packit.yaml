@@ -26,7 +26,8 @@ actions:
     - hatch version
 
 files_to_sync:
-  - fedora/python-requre.spec
+  - src: fedora/python-requre.spec
+    dest: .
   - .packit.yaml
 
 srpm_build_deps:
