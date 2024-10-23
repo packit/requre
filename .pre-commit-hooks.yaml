@@ -19,4 +19,4 @@
     --replaces "requests.sessions%_content:token:str:v1.1cd89d399b8c70f8b88e22cbdaa72abbe5e390db"
   language: python
   types: [yaml]
-  files: (^|/)test[^/]+\.yaml$
+  files: (^|/)test.*\.yaml$
