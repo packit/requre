@@ -1,7 +1,7 @@
 # Copyright Contributors to the Packit project.
 # SPDX-License-Identifier: MIT
 
-FROM fedora:34
+FROM fedora:latest
 
 RUN dnf -y install \
     make \
