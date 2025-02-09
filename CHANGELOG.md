@@ -1,3 +1,7 @@
+# 0.8.5
+
+- Trigger a new release to confirm the correct SPDX licence.
+
 # 0.8.4
 
 - Provide `__version__` of the package so it can be easily checked when installed on the system.
