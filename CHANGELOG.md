@@ -1,3 +1,7 @@
+# 0.8.6
+
+- Trigger a new release to fix the PyPI upload action.
+
 # 0.8.5
 
 - Trigger a new release to confirm the correct SPDX licence.
