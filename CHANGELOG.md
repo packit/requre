@@ -1,6 +1,5 @@
 # 0.8.6
 
-
 # 0.8.5
 
 - Trigger a new release to confirm the correct SPDX licence.
