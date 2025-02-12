@@ -10,7 +10,7 @@ import socket
 from requre.storage import PersistentObjectStorage
 from requre.utils import StorageMode
 
-EXAMPLE_COM_IP = "93.184.216.34"
+EXAMPLE_COM_IP = "23.192.228.80"
 
 
 class RetTuple:
