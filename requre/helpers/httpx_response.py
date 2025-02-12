@@ -237,7 +237,7 @@ def record_httpx(
         what="httpx._client.Client.send",
         cassette=cassette,
         decorate=HTTPXRequestResponseHandling.decorator(
-            item_list=["url"],
+            item_list=[1],
             response_headers_to_drop=response_headers_to_drop,
             cassette=cassette,
         ),
@@ -268,7 +268,7 @@ def recording_httpx(
     with recording(
         what="httpx._client.Client.send",
         decorate=HTTPXRequestResponseHandling.decorator(
-            item_list=["url"],
+            item_list=[1],
             response_headers_to_drop=response_headers_to_drop,
         ),
         storage_file=storage_file,
