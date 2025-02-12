@@ -27,7 +27,7 @@ def remove_password_from_url(url):
         return url
 
 
-class StreamableBytesIO(IOBase):
+class FakeBaseHTTPResponse(IOBase):
     def __init__(self, raw_data: bytes, decoded_data: bytes) -> None:
         self.raw_stream = BytesIO(raw_data)
         self.decoded_stream = BytesIO(decoded_data)
@@ -63,6 +63,11 @@ class StreamableBytesIO(IOBase):
                 yield chunk
 
         return generate()
+
+    def _decode(self, data: bytes, decode_content: bool, flush_decoder: bool) -> bytes:
+        if not decode_content:
+            return data
+        return self.decoded_stream.read()
 
 
 class RequestResponseHandling(ObjectStorage):
@@ -106,16 +111,21 @@ class RequestResponseHandling(ObjectStorage):
             output[key] = getattr(response, key)
         for key in self.__response_keys_special:
             if key == "raw":
-                binary_data = response.raw.read()
-                output[key] = binary_data
-                if hasattr(response.raw, "stream"):
-                    decoded_binary_data = response.raw.read(decode_content=True)
-                    output[f"{key}_decoded"] = decoded_binary_data
+                if hasattr(response.raw, "_decode"):
+                    # urllib3.response.BaseHTTPResponse
+                    raw_data = response.raw.read(decode_content=False)
+                    decoded_data = response.raw._decode(
+                        raw_data, decode_content=True, flush_decoder=True
+                    )
+                    output[key] = raw_data
+                    output[f"{key}_decoded"] = decoded_data
                     # replay it back to raw
-                    response.raw = StreamableBytesIO(binary_data, decoded_binary_data)
+                    response.raw = FakeBaseHTTPResponse(raw_data, decoded_data)
                 else:
+                    raw_data = response.raw.read()
+                    output[key] = raw_data
                     # replay it back to raw
-                    response.raw = BytesIO(binary_data)
+                    response.raw = BytesIO(raw_data)
             if key == "headers":
                 headers_dict = dict(response.headers)
                 for header in self.response_headers_to_drop:
@@ -151,7 +161,9 @@ class RequestResponseHandling(ObjectStorage):
         for key in self.__response_keys_special:
             if key == "raw":
                 if f"{key}_decoded" in data:
-                    response.raw = StreamableBytesIO(data[key], data[f"{key}_decoded"])
+                    response.raw = FakeBaseHTTPResponse(
+                        data[key], data[f"{key}_decoded"]
+                    )
                 else:
                     response.raw = BytesIO(data[key])
             if key == "headers":
