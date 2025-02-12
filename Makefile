@@ -1,4 +1,4 @@
-TEST_TARGET := ./tests
+TEST_TARGET ?= ./tests
 CONTAINER_ENGINE ?= $(shell command -v podman 2> /dev/null || echo docker)
 TESTS_CONTAINER_RUN=$(CONTAINER_ENGINE) run --rm -ti -v $(CURDIR):/src:Z $(TESTS_IMAGE)
 TESTS_IMAGE=requre_tests
