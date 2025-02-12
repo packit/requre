@@ -5,8 +5,8 @@
 import datetime
 import json
 from contextlib import contextmanager
-from io import BytesIO
-from typing import Any, Dict, List, Optional
+from io import BytesIO, IOBase
+from typing import Any, Dict, Generator, List, Optional
 from urllib.parse import urlparse
 
 from requests.models import PreparedRequest, Request, Response
@@ -25,6 +25,44 @@ def remove_password_from_url(url):
         ).geturl()
     else:
         return url
+
+
+class StreamableBytesIO(IOBase):
+    def __init__(self, raw_data: bytes, decoded_data: bytes) -> None:
+        self.raw_stream = BytesIO(raw_data)
+        self.decoded_stream = BytesIO(decoded_data)
+
+    def readable(self) -> bool:
+        return True
+
+    def read(
+        self,
+        amt: Optional[int] = None,
+        decode_content: Optional[bool] = None,
+        cache_content: bool = False,
+    ) -> bytes:
+        stream = self.decoded_stream if decode_content else self.raw_stream
+        return stream.read(amt)
+
+    def read1(
+        self, amt: Optional[int] = None, decode_content: Optional[bool] = None
+    ) -> bytes:
+        stream = self.decoded_stream if decode_content else self.raw_stream
+        return stream.read1(amt)
+
+    def stream(
+        self, amt: Optional[int] = 2**16, decode_content: Optional[bool] = None
+    ) -> Generator[bytes, None, None]:
+        stream = self.decoded_stream if decode_content else self.raw_stream
+
+        def generate():
+            while True:
+                chunk = stream.read(amt)
+                if not chunk:
+                    break
+                yield chunk
+
+        return generate()
 
 
 class RequestResponseHandling(ObjectStorage):
@@ -70,8 +108,14 @@ class RequestResponseHandling(ObjectStorage):
             if key == "raw":
                 binary_data = response.raw.read()
                 output[key] = binary_data
-                # replay it back to raw
-                response.raw = BytesIO(binary_data)
+                if hasattr(response.raw, "stream"):
+                    decoded_binary_data = response.raw.read(decode_content=True)
+                    output[f"{key}_decoded"] = decoded_binary_data
+                    # replay it back to raw
+                    response.raw = StreamableBytesIO(binary_data, decoded_binary_data)
+                else:
+                    # replay it back to raw
+                    response.raw = BytesIO(binary_data)
             if key == "headers":
                 headers_dict = dict(response.headers)
                 for header in self.response_headers_to_drop:
@@ -106,7 +150,10 @@ class RequestResponseHandling(ObjectStorage):
             setattr(response, key, data[key])
         for key in self.__response_keys_special:
             if key == "raw":
-                response.raw = BytesIO(data[key])
+                if f"{key}_decoded" in data:
+                    response.raw = StreamableBytesIO(data[key], data[f"{key}_decoded"])
+                else:
+                    response.raw = BytesIO(data[key])
             if key == "headers":
                 response.headers = CaseInsensitiveDict(data[key])
             if key == "elapsed":
