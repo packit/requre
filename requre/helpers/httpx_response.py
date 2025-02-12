@@ -6,23 +6,12 @@ import datetime
 import json
 from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
 
 import httpx
 
 from requre.cassette import Cassette
 from requre.objects import ObjectStorage
 from requre.record_and_replace import make_generic, recording, replace
-
-
-def remove_password_from_url(url):
-    urlobject = urlparse(url)
-    if urlobject.password:
-        return urlobject._replace(
-            netloc="{}:{}@{}".format(urlobject.username, "???", urlobject.hostname)
-        ).geturl()
-    else:
-        return url
 
 
 class HTTPXRequestResponseHandling(ObjectStorage):
@@ -41,7 +30,7 @@ class HTTPXRequestResponseHandling(ObjectStorage):
         # replace request if given as key and use prettier url
         for index, key in enumerate(store_keys):
             if isinstance(key, httpx.Request):
-                store_keys[index] = remove_password_from_url(key.url)
+                store_keys[index] = str(key.url)
                 store_keys.insert(index, key.method)
         super().__init__(store_keys, cassette=cassette)
         self.response_headers_to_drop = response_headers_to_drop or []

@@ -5,10 +5,7 @@ import importlib
 import unittest
 
 from requre.exceptions import ItemNotInStorage
-from requre.helpers.httpx_response import (
-    HTTPXRequestResponseHandling,
-    remove_password_from_url,
-)
+from requre.helpers.httpx_response import HTTPXRequestResponseHandling
 from requre.utils import StorageMode
 from tests.testbase import BaseClass, network_connection_available
 
@@ -197,18 +194,3 @@ class StoreAnyRequest(BaseClass):
 
         self.assertIn("headers", saved_item["output"])
         self.assertNotIn("NotKnownHeader", saved_item["output"]["headers"])
-
-    def testUrlCleanup(self):
-        self.assertEqual(
-            remove_password_from_url("http://user:pass@www.google.com/"),
-            "http://user:???@www.google.com/",
-        )
-        self.assertEqual(
-            remove_password_from_url("http://www.google.com/"), "http://www.google.com/"
-        )
-        self.assertIn(
-            "/a/b/asdsa?x&y=y#z",
-            remove_password_from_url(
-                "http://user:pass@www.google.com/a/b/asdsa?x&y=y#z"
-            ),
-        )
