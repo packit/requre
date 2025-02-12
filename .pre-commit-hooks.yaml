@@ -17,6 +17,9 @@
     --replaces "requests.sessions%_content:expires_at:str:2019-11-01T14:35:53Z"
     --replaces "requests.sessions%send:elapsed:float:0.2"
     --replaces "requests.sessions%_content:token:str:v1.1cd89d399b8c70f8b88e22cbdaa72abbe5e390db"
+    --replaces ":set-cookie:str:a 'b';"
+    --replaces "copr.v3.helpers:login:str:somelogin"
+    --replaces "copr.v3.helpers:token:str:sometoken"
   language: python
   types: [yaml]
   files: (^|/)test.*\.yaml$
