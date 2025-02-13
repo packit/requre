@@ -10,6 +10,7 @@ This file is used by users to import special recording decorators or context man
 """
 
 from requre.helpers.git.helper import record_git_module
+from requre.helpers.httpx_response import record_httpx, recording_httpx
 from requre.helpers.requests_response import record_requests, recording_requests
 from requre.helpers.tempfile import record_tempfile_module
 
@@ -18,4 +19,6 @@ __all__ = [
     recording_requests.__name__,
     record_tempfile_module.__name__,
     record_git_module.__name__,
+    record_httpx.__name__,
+    recording_httpx.__name__,
 ]

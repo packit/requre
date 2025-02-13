@@ -36,6 +36,7 @@ dependencies = [
     "pytest",
     "PyYAML",
     "requests",
+    "httpx",
 ]
 
 [project.urls]

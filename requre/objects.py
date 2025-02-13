@@ -267,9 +267,11 @@ class ObjectStorage:
                     else:
                         # out of index check. This is bad but possible use case
                         # raise warning and continue
-                        if len(args) <= arg_keys.index(param_name):
+                        if param_name not in arg_keys or len(args) <= arg_keys.index(
+                            param_name
+                        ):
                             warnings.warn(
-                                f"You've defined keys: {item_list} but '{param_name}' is not part"
+                                f"You've defined keys: {item_list}, but '{param_name}' is not part"
                                 f" of args:{args} and kwargs:{kwargs},"
                                 f" original function and args: {func.__name__}({arg_keys})"
                             )
