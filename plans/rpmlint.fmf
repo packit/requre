@@ -1,0 +1,14 @@
+summary:
+  Run linters on source code and packaging files
+
+prepare:
+  - name: packages
+    how: install
+    package:
+    - rpmlint
+
+discover:
+  how: shell
+  tests:
+  - name: rpmlint
+    test: rpmlint fedora/python-requre.spec

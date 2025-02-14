@@ -1,0 +1,5 @@
+summary:
+  Basic smoke test
+
+discover+:
+  filter: tier:0
