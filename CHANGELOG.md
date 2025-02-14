@@ -1,3 +1,7 @@
+# 0.9.0
+
+- Supports recording of the requests done by `httpx` via `record_httpx()` and `recording_httpx()` decorators. (#297)
+
 # 0.8.6
 
 - Trigger a new release to fix the PyPI upload action.
