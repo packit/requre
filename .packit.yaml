@@ -36,15 +36,20 @@ srpm_build_deps:
   - python3-hatch-vcs
 
 jobs:
-  - job: propose_downstream
-    trigger: release
-    dist_git_branches:
-      - fedora-all
+  # PR jobs
   - job: copr_build
     trigger: pull_request
     targets:
       - fedora-all
       - epel-9
+
+  - job: tests
+    trigger: pull_request
+    targets:
+      - fedora-all
+      - epel-9
+
+  # Latest-greatest development build
   - job: copr_build
     trigger: commit
     branch: main
@@ -54,6 +59,13 @@ jobs:
       - epel-9
     list_on_homepage: True
     preserve_project: True
+
+  # Jobs on release
+  - job: propose_downstream
+    trigger: release
+    dist_git_branches:
+      - fedora-all
+
   - job: copr_build
     trigger: release
     project: packit-releases
@@ -63,13 +75,14 @@ jobs:
     list_on_homepage: True
     preserve_project: True
 
-  # downstream automation:
+  # Downstream automation
   - job: koji_build
     trigger: commit
     packit_instances: ["stg"]
     dist_git_branches:
       - fedora-all
       - epel-9
+
   - job: bodhi_update
     trigger: commit
     packit_instances: ["stg"]
