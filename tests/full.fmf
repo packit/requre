@@ -1,0 +1,27 @@
+summary:
+  Unit & integration tests
+
+require:
+  - python3-flexmock
+  - python3-pytest
+  - python3-pytest-cov
+
+  - python3-pyyaml
+
+  - python3-httpx
+  - python3-requests
+  - python3-urllib3
+
+  - python3-GitPython
+  - python3-ogr
+
+component:
+  - requre
+tier: 1
+tag:
+  - basic
+
+test: pytest-3 -v --cov=requre --cov-report=term-missing $TEST_TARGET
+duration: 30m
+environment:
+  TEST_TARGET: .
