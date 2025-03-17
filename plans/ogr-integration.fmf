@@ -22,3 +22,7 @@ adjust:
   - when: "distro == rhel-8 or distro == centos-8 or distro == centos-stream-8"
     because: "ogr doesn't support EL 8"
     enabled: false
+
+  - when: "distro == centos-stream-9 or distro == fedora-40"
+    because: "packaged version of python-pyforgejo is not sufficient"
+    enabled: false
