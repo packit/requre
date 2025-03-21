@@ -1,3 +1,9 @@
+# 0.9.1
+
+- Adjusted `requre-purge` to not replace GitHub tokens with dummy token that
+  still looks like a legit one and also case-sensitiveness on the cookies from
+  Pagure.
+
 # 0.9.0
 
 - Supports recording of the requests done by `httpx` via `record_httpx()` and `recording_httpx()` decorators. (#297)
