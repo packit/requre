@@ -1,6 +1,3 @@
-summary:
-  Basic smoke test
-
 require:
   - python3-requre
 
@@ -8,4 +5,10 @@ tag:
   - smoke
 tier: 0
 
-test: ./smoke.sh
+/importing:
+  summary: Basic smoke test consisting of importing the Python module
+  test: ./smoke.sh
+
+/requre-patch:
+  summary: Basic smoke test that should display requre-patch's help
+  test: requre-patch --help
