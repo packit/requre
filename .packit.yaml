@@ -42,12 +42,14 @@ jobs:
     targets:
       - fedora-all
       - epel-9
+      - epel-10-all
 
   - job: tests
     trigger: pull_request
     targets:
       - fedora-all
       - epel-9
+      - epel-10-all
 
   # Latest-greatest development build
   - job: copr_build
@@ -57,6 +59,7 @@ jobs:
     targets:
       - fedora-all
       - epel-9
+      - epel-10-all
     list_on_homepage: True
     preserve_project: True
 
@@ -64,7 +67,10 @@ jobs:
   - job: propose_downstream
     trigger: release
     dist_git_branches:
-      - fedora-all
+      fedora-all: {}
+      epel-10:
+        fast_forward_merge_into:
+          - epel-10-branched
 
   - job: copr_build
     trigger: release
@@ -72,6 +78,7 @@ jobs:
     targets:
       - fedora-all
       - epel-9
+      - epel-10-all
     list_on_homepage: True
     preserve_project: True
 
@@ -82,6 +89,7 @@ jobs:
     dist_git_branches:
       - fedora-all
       - epel-9
+      - epel-10-all
 
   - job: bodhi_update
     trigger: commit
@@ -90,3 +98,4 @@ jobs:
       - fedora-latest # branched version, rawhide updates are created automatically
       - fedora-stable
       - epel-9
+      - epel-10-all

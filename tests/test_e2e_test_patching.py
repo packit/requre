@@ -82,7 +82,7 @@ class NoApplied(unittest.TestCase):
         run_command(cmd=f"{CMD_RELATIVE} clean", fail=False)
 
     def test_help(self):
-        run_command(cmd=f"{CMD_RELATIVE}")
+        run_command(cmd=f"{CMD_RELATIVE} --help")
 
     def test_bad_command(self):
         self.assertRaises(
