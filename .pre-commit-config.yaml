@@ -63,7 +63,7 @@ repos:
           - --comment-style
           - "#"
   - repo: https://github.com/teemtee/tmt.git
-    rev: 1.41.0
+    rev: 1.66.0
     hooks:
       - id: tmt-lint
         # Do not run in pre-commit.ci as it requires an internet access
