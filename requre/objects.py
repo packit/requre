@@ -16,7 +16,6 @@ from requre.cassette import (
     CassetteExecution,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
