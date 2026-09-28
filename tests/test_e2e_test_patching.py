@@ -15,7 +15,6 @@ from requre.constants import (
     ENV_REPLACEMENT_NAME,
 )
 
-
 CMD_RELATIVE = f"""python3 {os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                          "requre", "requre_patch.py")}"""
 CMD_TOOL = "requre-patch"
